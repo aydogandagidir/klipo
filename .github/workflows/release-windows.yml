@@ -96,15 +96,18 @@ jobs:
           includeUpdaterJson: false
 
       - name: Generate + upload updater manifest (latest.json)
-        # The auto-update path needs THREE assets on the GitHub Release:
-        #   1. `Klipo_<v>_x64-setup.nsis.zip`     — the updater payload
-        #   2. `Klipo_<v>_x64-setup.nsis.zip.sig` — its Ed25519 signature
-        #   3. `latest.json`                       — manifest the plugin reads
-        # tauri-action uploaded only the user-facing `.msi` + `.exe` in
-        # the prior step. Here we explicitly upload the updater files and
-        # build the manifest so existing builds calling the
-        # `releases/latest/download/latest.json` endpoint actually find
-        # something Tauri can verify.
+        # In Tauri 2.x with `bundle.createUpdaterArtifacts: true`, the build
+        # signs the installer files directly:
+        #   bundle/nsis/Klipo_<v>_x64-setup.exe        ← user-facing installer
+        #   bundle/nsis/Klipo_<v>_x64-setup.exe.sig    ← Ed25519 sig of the .exe
+        # No separate `.nsis.zip` payload archive is produced anymore (Tauri 1.x
+        # path). The updater plugin reads `latest.json`, downloads the .exe URL,
+        # verifies its bytes against the signature in the manifest, runs it
+        # silently to upgrade.
+        #
+        # tauri-action already uploaded `.exe` + `.exe.sig` in the prior step.
+        # All this step needs to do is read the .sig content, build the
+        # manifest, and upload `latest.json` to the same draft release.
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         env:
@@ -113,21 +116,21 @@ jobs:
           $tag = "${{ github.ref_name }}"
           $version = $tag.TrimStart('v')
           $bundleDir = "src-tauri/target/release/bundle/nsis"
-          $zipPath = Join-Path $bundleDir "Klipo_${version}_x64-setup.nsis.zip"
-          $sigPath = Join-Path $bundleDir "Klipo_${version}_x64-setup.nsis.zip.sig"
+          $installerName = "Klipo_${version}_x64-setup.exe"
+          $installerPath = Join-Path $bundleDir $installerName
+          $sigPath = Join-Path $bundleDir "${installerName}.sig"
 
-          if (-not (Test-Path $zipPath)) {
+          if (-not (Test-Path $installerPath)) {
             Get-ChildItem $bundleDir
-            throw "expected $zipPath to exist after tauri build"
+            throw "expected $installerPath to exist after tauri build"
           }
           if (-not (Test-Path $sigPath)) {
             Get-ChildItem $bundleDir
-            throw "expected $sigPath to exist after tauri build"
+            throw "expected $sigPath to exist after tauri build (is bundle.createUpdaterArtifacts = true in tauri.conf.json?)"
           }
 
           $sig = (Get-Content $sigPath -Raw).Trim()
-          $zipName = Split-Path $zipPath -Leaf
-          $zipUrl = "https://github.com/${env:GITHUB_REPOSITORY}/releases/download/${tag}/${zipName}"
+          $installerUrl = "https://github.com/${env:GITHUB_REPOSITORY}/releases/download/${tag}/${installerName}"
           $pubDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 
           # Order matters for Tauri's deserialiser; use [ordered] hashtables.
@@ -138,7 +141,7 @@ jobs:
             platforms = [ordered]@{
               "windows-x86_64" = [ordered]@{
                 signature = $sig
-                url = $zipUrl
+                url = $installerUrl
               }
             }
           }
@@ -147,5 +150,5 @@ jobs:
           Write-Host $manifestJson
           Set-Content -Path "latest.json" -Value $manifestJson -Encoding utf8
 
-          Write-Host "Uploading updater payload + signature + manifest to release ${tag}..."
-          gh release upload "$tag" "$zipPath" "$sigPath" "latest.json" --clobber
+          Write-Host "Uploading latest.json to release ${tag}..."
+          gh release upload "$tag" "latest.json" --clobber
