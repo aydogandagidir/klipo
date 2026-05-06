@@ -62,12 +62,13 @@ jobs:
 
       - name: Build, sign, package, draft release
         # tauri-action runs `pnpm tauri build` with the signing env vars
-        # set, generates the updater `latest.json` manifest from the
-        # per-bundle `.sig` files (because `includeUpdaterJson: true`),
-        # creates a draft GitHub Release on the matching tag, and uploads
-        # all bundle artifacts + the manifest as release assets. Single
-        # step replaces the previous build → collect → upload → release
-        # chain.
+        # set, then drafts a GitHub Release on the matching tag and
+        # uploads MSI + NSIS bundles. We DO NOT use `includeUpdaterJson`
+        # — that branch of the action's filter only sees `.msi`/`.exe`
+        # files in `Found artifacts:` and skips the updater payload
+        # `.nsis.zip` (+ its `.sig`) entirely, which makes manifest
+        # generation fail with "Signature not found... Skipping upload".
+        # The dedicated step below handles the manifest correctly.
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -92,4 +93,59 @@ jobs:
             Existing v0.1.x users will see this release as available via Settings → General → Updates → "Check for updates". Click "Download and install" to upgrade in place.
           releaseDraft: true
           prerelease: ${{ contains(github.ref_name, '-') }}
-          includeUpdaterJson: true
+          includeUpdaterJson: false
+
+      - name: Generate + upload updater manifest (latest.json)
+        # The auto-update path needs THREE assets on the GitHub Release:
+        #   1. `Klipo_<v>_x64-setup.nsis.zip`     — the updater payload
+        #   2. `Klipo_<v>_x64-setup.nsis.zip.sig` — its Ed25519 signature
+        #   3. `latest.json`                       — manifest the plugin reads
+        # tauri-action uploaded only the user-facing `.msi` + `.exe` in
+        # the prior step. Here we explicitly upload the updater files and
+        # build the manifest so existing builds calling the
+        # `releases/latest/download/latest.json` endpoint actually find
+        # something Tauri can verify.
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag.TrimStart('v')
+          $bundleDir = "src-tauri/target/release/bundle/nsis"
+          $zipPath = Join-Path $bundleDir "Klipo_${version}_x64-setup.nsis.zip"
+          $sigPath = Join-Path $bundleDir "Klipo_${version}_x64-setup.nsis.zip.sig"
+
+          if (-not (Test-Path $zipPath)) {
+            Get-ChildItem $bundleDir
+            throw "expected $zipPath to exist after `tauri build`"
+          }
+          if (-not (Test-Path $sigPath)) {
+            Get-ChildItem $bundleDir
+            throw "expected $sigPath to exist after `tauri build`"
+          }
+
+          $sig = (Get-Content $sigPath -Raw).Trim()
+          $zipName = Split-Path $zipPath -Leaf
+          $zipUrl = "https://github.com/${env:GITHUB_REPOSITORY}/releases/download/${tag}/${zipName}"
+          $pubDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+
+          # Order matters for Tauri's deserialiser; use [ordered] hashtables.
+          $manifest = [ordered]@{
+            version = $version
+            notes = "Klipo ${tag}. Full release notes: https://github.com/${env:GITHUB_REPOSITORY}/releases/tag/${tag}"
+            pub_date = $pubDate
+            platforms = [ordered]@{
+              "windows-x86_64" = [ordered]@{
+                signature = $sig
+                url = $zipUrl
+              }
+            }
+          }
+          $manifestJson = $manifest | ConvertTo-Json -Depth 6
+          Write-Host "Generated latest.json:"
+          Write-Host $manifestJson
+          Set-Content -Path "latest.json" -Value $manifestJson -Encoding utf8
+
+          Write-Host "Uploading updater payload + signature + manifest to release ${tag}..."
+          gh release upload "$tag" "$zipPath" "$sigPath" "latest.json" --clobber
