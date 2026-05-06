@@ -1,0 +1,161 @@
+import { Info, Lock, Shield, Sliders } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+
+import { setSetting } from "@/lib/ipc";
+import { ExcludedAppsTab } from "@/routes/settings/ExcludedAppsTab";
+import { GeneralTab } from "@/routes/settings/GeneralTab";
+import { PrivacyTab } from "@/routes/settings/PrivacyTab";
+import { cn } from "@/lib/utils";
+
+/**
+ * Klipo Settings window root.
+ *
+ * Layout (M6):
+ *   ┌──────────────────┬───────────────────────────────────────┐
+ *   │  Sidebar         │  Active tab pane                       │
+ *   │  · General       │                                        │
+ *   │  · Excluded apps │  (form fields, descriptions, etc.)     │
+ *   │  · Privacy       │                                        │
+ *   │  · About         │                                        │
+ *   └──────────────────┴───────────────────────────────────────┘
+ *
+ * For v0.1 we ship the General tab fully wired (theme + hotkey display +
+ * history limit), and stub the others with "Coming soon" placeholders.
+ * The remaining tabs land alongside their respective backend features
+ * (excluded-apps editor in M6.x, privacy/wipe-all in M6.y).
+ */
+type TabId = "general" | "excluded" | "privacy" | "about";
+
+interface TabDef {
+  id: TabId;
+  label: string;
+  icon: LucideIcon;
+}
+
+const TABS: TabDef[] = [
+  { id: "general", label: "General", icon: Sliders },
+  { id: "excluded", label: "Excluded apps", icon: Shield },
+  { id: "privacy", label: "Privacy", icon: Lock },
+  { id: "about", label: "About", icon: Info },
+];
+
+export function Settings() {
+  const [active, setActive] = useState<TabId>("general");
+
+  // Esc closes the Settings window. The window itself is configured to
+  // hide-instead-of-destroy in lib.rs, so reopening is instant.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        // Importing lazily avoids pulling the Tauri runtime into the popup
+        // bundle when this module isn't actually rendered.
+        void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
+          void getCurrentWindow().hide();
+        });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <div className="settings-window flex h-full bg-background text-foreground">
+      <aside className="flex w-52 shrink-0 flex-col border-r border-border bg-muted/30 px-2 py-4">
+        <h1 className="mb-4 px-3 text-sm font-semibold tracking-tight text-foreground">
+          Klipo Settings
+        </h1>
+        <nav className="flex flex-col gap-1">
+          {TABS.map((t) => {
+            const Icon = t.icon;
+            const isActive = t.id === active;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActive(t.id)}
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors",
+                  isActive
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                )}
+              >
+                <Icon className="h-4 w-4" aria-hidden="true" />
+                <span>{t.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+        <div className="mt-auto px-3 pt-4 text-[10px] text-muted-foreground">
+          Klipo v0.1.0 · Esc to close
+        </div>
+      </aside>
+
+      <main className="flex-1 overflow-y-auto p-8">
+        {active === "general" && <GeneralTab />}
+        {active === "excluded" && <ExcludedAppsTab />}
+        {active === "privacy" && <PrivacyTab />}
+        {active === "about" && <AboutTab />}
+      </main>
+    </div>
+  );
+}
+
+// ---------------- About tab ----------------
+
+function AboutTab() {
+  const [replayState, setReplayState] = useState<"idle" | "armed" | "error">("idle");
+
+  const replay = async () => {
+    try {
+      await setSetting("onboarding_done", "off");
+      setReplayState("armed");
+    } catch {
+      setReplayState("error");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold">About Klipo</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Cross-platform clipboard manager — fast, private, with opt-in end-to-end encrypted sync.
+        </p>
+      </div>
+      <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
+        <dt className="text-muted-foreground">Version</dt>
+        <dd className="font-mono">0.1.0</dd>
+        <dt className="text-muted-foreground">License</dt>
+        <dd>Apache-2.0</dd>
+        <dt className="text-muted-foreground">Platform</dt>
+        <dd className="font-mono">{navigator.platform}</dd>
+        <dt className="text-muted-foreground">User agent</dt>
+        <dd className="break-all font-mono text-xs">{navigator.userAgent}</dd>
+      </dl>
+      <div className="space-y-2 border-t border-border/40 pt-4">
+        <h3 className="text-sm font-medium">Replay welcome tour</h3>
+        <p className="text-xs text-muted-foreground">
+          Resets the first-run wizard. Press your hotkey from any app afterwards to see the tour
+          again.
+        </p>
+        <button
+          type="button"
+          onClick={() => void replay()}
+          className="rounded-md border border-border bg-card px-3 py-1.5 text-sm transition-colors hover:bg-accent/40"
+        >
+          Replay onboarding
+        </button>
+        {replayState === "armed" ? (
+          <p className="text-xs text-emerald-500">
+            Done — press your hotkey from any app to see the tour again.
+          </p>
+        ) : null}
+        {replayState === "error" ? (
+          <p className="text-xs text-destructive">Could not reset onboarding flag.</p>
+        ) : null}
+      </div>
+    </div>
+  );
+}

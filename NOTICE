@@ -1,0 +1,25 @@
+Klipo
+Copyright 2026 Aydoğan Dağıdır
+
+This product includes software developed by:
+
+- The Tauri Programme within The Commons Conservancy (https://tauri.app/) — Apache-2.0 / MIT
+- The Rust Project (https://www.rust-lang.org/) — Apache-2.0 / MIT
+- Facebook, Inc. and its affiliates (React) — MIT
+- Vercel, Inc. (Next-related tooling, indirectly) — MIT
+- Tailwind Labs, Inc. (Tailwind CSS) — MIT
+- shadcn (shadcn/ui pattern library) — MIT
+- TanStack (react-virtual) — MIT
+- Pacocoursey (cmdk) — MIT
+- Lucide Contributors (lucide-react icons) — ISC
+- Ryan McGrath et al. (sqlx) — Apache-2.0 / MIT
+- The SQLite Consortium — Public Domain
+- Frank Denis et al. (libsodium / sodiumoxide) — ISC
+- Microsoft Corporation (windows-rs bindings) — Apache-2.0 / MIT
+- Bheisler et al. (criterion.rs) — Apache-2.0 / MIT
+
+For each third-party dependency, see its respective license file in:
+- Rust crates: $CARGO_HOME/registry/src/...
+- Node packages: ./node_modules/<pkg>/LICENSE
+
+Klipo's source is licensed under Apache-2.0. See LICENSE for full text.

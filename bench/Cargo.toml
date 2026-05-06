@@ -1,0 +1,31 @@
+[package]
+name = "klipo-bench"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Phase A prototype benchmarks for Klipo. Validates SQLite + FTS5 + sqlx fits performance budget BEFORE committing the stack."
+license = "Apache-2.0"
+
+[dependencies]
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio-rustls", "macros"] }
+tokio = { version = "1.36", features = ["macros", "rt-multi-thread"] }
+uuid = { version = "1.7", features = ["v7"] }
+sha2 = "0.10"
+rand = "0.8"
+tempfile = "3.10"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
+
+[[bench]]
+name = "sqlite_fts"
+harness = false
+
+[[bench]]
+name = "turkish_search"
+harness = false
+
+[profile.bench]
+opt-level = 3
+lto = "thin"
+codegen-units = 1

@@ -1,0 +1,80 @@
+# Build outputs
+target/
+dist/
+build/
+out/
+*.dmg
+*.msi
+*.exe
+*.AppImage
+*.deb
+*.rpm
+
+# TypeScript compile artifacts (source-of-truth is the .ts files)
+*.tsbuildinfo
+tailwind.config.js
+tailwind.config.d.ts
+vite.config.js
+vite.config.d.ts
+
+# Node
+node_modules/
+.pnpm-store/
+.npm/
+pnpm-debug.log*
+npm-debug.log*
+yarn-error.log
+
+# Rust
+**/*.rs.bk
+Cargo.lock.bak
+
+# Tauri
+src-tauri/target/
+src-tauri/Cargo.lock
+src-tauri/gen/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.shared.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.p12
+*.keychain
+keys/
+secrets/
+# Tauri updater signing keys — NEVER commit these. The pubkey lives in
+# tauri.conf.json (safe to share); the privkey is generated locally and
+# uploaded to GitHub Secrets only. See docs/release-signing.md.
+*.key
+klipo-updater.key*
+*.tauri.private.key
+
+# Test artifacts
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+benchmark-results/*.json
+
+# Bench raw outputs (keep summary md)
+bench/target/
+bench/criterion/
+
+# Misc
+*.log
+.cache/
+.turbo/
+
+# Placeholder icon source (regenerated locally; real design lands in M7)
+/app-icon.png

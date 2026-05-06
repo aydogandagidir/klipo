@@ -1,0 +1,95 @@
+[package]
+name = "klipo"
+version = "0.1.0"
+description = "Klipo — cross-platform clipboard manager."
+authors = ["Aydoğan Dağıdır"]
+license = "Apache-2.0"
+edition = "2021"
+rust-version = "1.83"
+
+[lib]
+# The library is what `tauri::Builder` actually wires into; Cargo's bin entry
+# point in src/main.rs only forwards to lib::run(). Tauri 2 best practice.
+name = "klipo_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset", "tray-icon"] }
+tauri-plugin-global-shortcut = "2"
+# Auto-update plugin. The runtime works without a real signing key — calls
+# to `check()` simply error with a readable message, which the frontend's
+# Updates row in Settings → General surfaces to the user. To activate
+# real updates: see docs/release-signing.md.
+tauri-plugin-updater = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time", "fs"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+thiserror = "2"
+anyhow = "1"
+once_cell = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+base64 = "0.22"
+
+# M2: storage layer
+sqlx = { version = "0.8", default-features = false, features = [
+    "sqlite",
+    "runtime-tokio",
+    "tls-rustls",
+    "migrate",
+    "macros",
+] }
+uuid = { version = "1", features = ["v7", "serde"] }
+sha2 = "0.10"
+
+# M3: clipboard watcher
+regex = "1.11"
+
+# M3.2: multi-format capture (image re-encode + thumbnails)
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "webp"] }
+
+# M3.2 paste: arboard handles the cross-platform clipboard format conversion
+# for binary payloads (CF_DIB / CF_BITMAP / NSPasteboardTypePNG) — saves us
+# from hand-rolling DIB headers Paint won't accept.
+arboard = { version = "3.4", default-features = false, features = ["image-data"] }
+
+# M5.x.1: native OS drag-and-drop from the popup so file clips can be dropped
+# into Chromium-based apps (browsers / Discord / Slack / Notion) — Chromium's
+# security policy refuses CF_HDROP from Ctrl+V but accepts native drops.
+tauri-plugin-drag = "2"
+
+# M4: popup window styling. Mica (Win 11) / acrylic (Win 10) blur.
+window-vibrancy = "0.6"
+
+[target.'cfg(windows)'.dependencies]
+# Match the version Tauri 2.11.x already pulls in (windows-core 0.61) to avoid
+# duplicate-version trait-impl conflicts.
+windows = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_DataExchange",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Memory",
+    "Win32_System_Threading",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Registry",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_Graphics_Gdi",
+] }
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time", "test-util"] }
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+incremental = false
+opt-level = 3
+strip = true

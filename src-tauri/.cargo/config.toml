@@ -1,0 +1,8 @@
+# Cargo / clippy / rustc settings scoped to src-tauri.
+# Keep clippy strict — the CLAUDE.md non-negotiables require zero warnings.
+
+[target.'cfg(all())']
+rustflags = [
+    "-Dunsafe_op_in_unsafe_fn",
+    "-Dwarnings",
+]
