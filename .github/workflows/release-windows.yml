@@ -7,16 +7,21 @@ name: Release (Windows)
 # Output:
 #   - `Klipo_<version>_x64_en-US.msi`               (Windows Installer)
 #   - `Klipo_<version>_x64-setup.exe`               (NSIS bootstrapper)
+#   - `Klipo_<version>_x64-setup.nsis.zip`          (NSIS payload, for updater)
+#   - `Klipo_<version>_x64-setup.nsis.zip.sig`      (Ed25519 signature)
+#   - `latest.json`                                  (updater manifest)
 #   - GitHub Release with auto-generated notes (tag flow only)
 #
-# Code-signing: not wired yet — `pnpm tauri build` produces unsigned MSIs.
-# When the project picks up an EV cert, add a `signtool sign` step before
-# the release upload and store the cert in the `WINDOWS_CERT_BASE64` /
-# `WINDOWS_CERT_PASSWORD` repo secrets.
+# Code-signing (Authenticode/EV cert): not wired yet — `tauri build`
+# produces unsigned MSIs. When the project picks up an EV cert, add a
+# `signtool sign` step before `tauri-action`'s upload phase.
 #
-# Tauri-signed updates: the `TAURI_PRIVATE_KEY` / `TAURI_KEY_PASSWORD`
-# secrets cover the auto-update payload signing once the updater plugin
-# is re-enabled (Cargo.toml comment in `src-tauri/Cargo.toml`).
+# Tauri-signed updates: `TAURI_SIGNING_PRIVATE_KEY` +
+# `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` GitHub Secrets cover the
+# auto-update payload signing. `tauri-action`'s `includeUpdaterJson: true`
+# generates `latest.json` from the per-bundle `.sig` files and uploads
+# it as a release asset, which is what Klipo's `tauri.conf.json`
+# `plugins.updater.endpoints` URL points to.
 
 on:
   push:
@@ -55,46 +60,36 @@ jobs:
       - name: Install frontend deps
         run: pnpm install --frozen-lockfile=false
 
-      - name: Build & bundle
+      - name: Build, sign, package, draft release
+        # tauri-action runs `pnpm tauri build` with the signing env vars
+        # set, generates the updater `latest.json` manifest from the
+        # per-bundle `.sig` files (because `includeUpdaterJson: true`),
+        # creates a draft GitHub Release on the matching tag, and uploads
+        # all bundle artifacts + the manifest as release assets. Single
+        # step replaces the previous build → collect → upload → release
+        # chain.
+        uses: tauri-apps/tauri-action@v0
         env:
-          # Optional — Tauri bundles unsigned if these are not set, which is
-          # what we want until an EV cert arrives. CI surfaces a warning
-          # inside `tauri build` instead of failing.
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-        run: pnpm tauri build
-
-      - name: Collect artifacts
-        id: collect
-        shell: pwsh
-        run: |
-          $msi = Get-ChildItem -Path src-tauri/target/release/bundle/msi -Filter *.msi | Select-Object -First 1
-          $exe = Get-ChildItem -Path src-tauri/target/release/bundle/nsis -Filter *.exe | Select-Object -First 1
-          if (-not $msi) { throw "no MSI produced" }
-          if (-not $exe) { throw "no NSIS installer produced" }
-          "msi=$($msi.FullName)"  | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          "exe=$($exe.FullName)"  | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          "msi_name=$($msi.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          "exe_name=$($exe.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          name: klipo-windows-${{ github.sha }}
-          path: |
-            src-tauri/target/release/bundle/msi/*.msi
-            src-tauri/target/release/bundle/nsis/*.exe
-          retention-days: 14
+          tagName: ${{ github.ref_name }}
+          releaseName: "Klipo ${{ github.ref_name }}"
+          releaseBody: |
+            ## What's new
 
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Klipo ${{ github.ref_name }}
-          draft: true
+            See [`CHANGELOG.md`](https://github.com/aydogandagidir/klipo/blob/${{ github.ref_name }}/CHANGELOG.md) for the full change list.
+
+            ## Install
+
+            - **Windows 10/11** — download `Klipo_*_x64-setup.exe` (NSIS, recommended) or `Klipo_*_x64_en-US.msi`.
+            - WebView2 runtime is required (preinstalled on Windows 11; install [Evergreen Bootstrapper](https://developer.microsoft.com/microsoft-edge/webview2/) for Windows 10).
+            - SmartScreen will show "Unknown publisher" until an EV cert is provisioned — click "More info" → "Run anyway".
+
+            ## Auto-update
+
+            Existing v0.1.x users will see this release as available via Settings → General → Updates → "Check for updates". Click "Download and install" to upgrade in place.
+          releaseDraft: true
           prerelease: ${{ contains(github.ref_name, '-') }}
-          generate_release_notes: true
-          files: |
-            ${{ steps.collect.outputs.msi }}
-            ${{ steps.collect.outputs.exe }}
+          includeUpdaterJson: true
