@@ -74,6 +74,14 @@ export async function hidePopup(): Promise<void> {
   return invoke<void>("hide_popup");
 }
 
+/** Quit Klipo entirely. Tears down the watcher, closes windows, exits the
+ * process. Wired into the popup's Ctrl+Q shortcut, the tray menu, and the
+ * Settings → About tab. Resolves just before the process exits, so callers
+ * shouldn't await additional work after this. */
+export async function quitApp(): Promise<void> {
+  return invoke<void>("quit_app");
+}
+
 /** Hide the popup, then write the clip's text into the OS clipboard and
  * synthesize Ctrl+V so the previously-active app receives a paste. */
 export async function pasteClip(id: string): Promise<void> {
@@ -325,6 +333,7 @@ export const ipc = {
   countLiveClips,
   hidePopup,
   pasteClip,
+  quitApp,
   blobAssetUrl,
   thumbAssetUrl,
   thumbDataUrl,

@@ -328,6 +328,7 @@ pub fn run() {
             commands::delete_clip,
             commands::count_live_clips,
             commands::hide_popup,
+            commands::quit_app,
             commands::paste_clip,
             commands::resolve_blob_path,
             commands::resolve_thumb_path,

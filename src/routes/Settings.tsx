@@ -2,7 +2,9 @@ import { Info, Lock, Shield, Sliders } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { setSetting } from "@/lib/ipc";
+import { Power } from "lucide-react";
+
+import { quitApp, setSetting } from "@/lib/ipc";
 import { ExcludedAppsTab } from "@/routes/settings/ExcludedAppsTab";
 import { GeneralTab } from "@/routes/settings/GeneralTab";
 import { PrivacyTab } from "@/routes/settings/PrivacyTab";
@@ -88,7 +90,7 @@ export function Settings() {
           })}
         </nav>
         <div className="mt-auto px-3 pt-4 text-[10px] text-muted-foreground">
-          Klipo v0.1.0 · Esc to close
+          Klipo v0.1.1 · Esc to close
         </div>
       </aside>
 
@@ -126,7 +128,7 @@ function AboutTab() {
       </div>
       <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Version</dt>
-        <dd className="font-mono">0.1.0</dd>
+        <dd className="font-mono">0.1.1</dd>
         <dt className="text-muted-foreground">License</dt>
         <dd>Apache-2.0</dd>
         <dt className="text-muted-foreground">Platform</dt>
@@ -155,6 +157,29 @@ function AboutTab() {
         {replayState === "error" ? (
           <p className="text-xs text-destructive">Could not reset onboarding flag.</p>
         ) : null}
+      </div>
+
+      <div className="space-y-2 border-t border-border/40 pt-4">
+        <h3 className="text-sm font-medium">Quit Klipo</h3>
+        <p className="max-w-prose text-xs text-muted-foreground">
+          Klipo lives in the Windows system tray (the chevron <span aria-hidden="true">▲</span> area
+          next to the clock). Right-click the tray icon and choose <em>Quit</em>, or press{" "}
+          <kbd className="rounded bg-muted/50 px-1 font-mono">Ctrl+Q</kbd> while the popup is open —
+          both close the app cleanly. If <em>Run at login</em> is enabled, Klipo will start again on
+          the next sign-in.
+        </p>
+        <button
+          type="button"
+          onClick={() =>
+            void quitApp().catch(() => {
+              /* if quit fails the app stays running — visible to user */
+            })
+          }
+          className="inline-flex items-center gap-2 rounded-md border border-destructive/40 bg-card px-3 py-1.5 text-sm text-destructive transition-colors hover:bg-destructive/10"
+        >
+          <Power className="h-4 w-4" aria-hidden="true" />
+          Quit Klipo
+        </button>
       </div>
     </div>
   );

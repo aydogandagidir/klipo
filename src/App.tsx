@@ -15,6 +15,7 @@ import {
   openSettings,
   pasteClip,
   pinClip,
+  quitApp,
   searchClips,
   setSetting,
 } from "@/lib/ipc";
@@ -237,6 +238,15 @@ export function App() {
       } else if (e.key.toLowerCase() === "p" && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         if (selectedClip) await handleTogglePin(selectedClip);
+      } else if (e.key.toLowerCase() === "q" && (e.ctrlKey || e.metaKey)) {
+        // Ctrl+Q closes Klipo entirely (vs. Esc which only hides the popup).
+        // Discoverable via the footer hint + onboarding step 3.
+        e.preventDefault();
+        try {
+          await quitApp();
+        } catch {
+          /* if quit fails the app stays running — no-op */
+        }
       }
     },
     [
@@ -339,13 +349,14 @@ export function App() {
 
       <div className="flex items-center justify-between gap-2 border-t border-border/30 px-1 pt-1 text-[10px] text-muted-foreground">
         <span className="truncate">
-          <kbd className="rounded bg-muted/50 px-1">↑↓</kbd> navigate ·{" "}
+          <kbd className="rounded bg-muted/50 px-1">↑↓</kbd> nav ·{" "}
           <kbd className="rounded bg-muted/50 px-1">Enter</kbd> paste ·{" "}
           <kbd className="rounded bg-muted/50 px-1">Ctrl+P</kbd> pin ·{" "}
           <kbd className="rounded bg-muted/50 px-1">Del</kbd> delete ·{" "}
-          <kbd className="rounded bg-muted/50 px-1">Esc</kbd> close
+          <kbd className="rounded bg-muted/50 px-1">Esc</kbd> close ·{" "}
+          <kbd className="rounded bg-muted/50 px-1">Ctrl+Q</kbd> quit
         </span>
-        <span className="shrink-0 font-mono">{isPasting ? "pasting…" : "Klipo v0.1.0"}</span>
+        <span className="shrink-0 font-mono">{isPasting ? "pasting…" : "Klipo v0.1.1"}</span>
       </div>
 
       <AlertDialog

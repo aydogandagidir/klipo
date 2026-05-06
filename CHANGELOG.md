@@ -5,6 +5,37 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-05-06 — Quit UX + CI workflow fix
+
+First post-launch hotfix. Two real-world issues from the v0.1.0 install
+flow surfaced:
+
+### Fixed
+- **CI workflow conflict with `pnpm/action-setup@v4`** — both `version: 9`
+  in workflow YAML and `packageManager: pnpm@9.12.0` in `package.json`
+  triggered `ERR_PNPM_BAD_PM_VERSION` and aborted both CI and Release
+  pipelines in 6 seconds. Removed the redundant YAML pin; `package.json`
+  is now the single source of truth, action-setup discovers from it.
+
+### Added — Quit UX (was undiscoverable in v0.1.0)
+- **`Ctrl+Q` shortcut** in the popup quits Klipo entirely (vs. `Esc`
+  which only hides the popup). Footer now shows the hint.
+- **`commands::quit_app` IPC** — calls `app.exit(0)` so plugin / storage
+  drop hooks run before the process terminates.
+- **Settings → About → "Quit Klipo" button** with explanatory text about
+  the Windows tray icon (chevron `▲` overflow on Win 11) and the
+  difference between hide-popup and quit-app.
+- **Onboarding tour gained a 4th step** ("Klipo lives in your tray")
+  that walks new users through the tray right-click → Quit flow + the
+  `Ctrl+Q` shortcut. Surfaces both paths so neither is missed.
+- **README "How Klipo Works" gained a "How to quit Klipo" section**
+  enumerating all three quit paths.
+
+### Verified — v0.1.1
+- ✅ `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings`
+- ✅ `cargo test --lib` — **56 tests pass** (no test changes since v0.1.0)
+- ✅ `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm build`
+
 ## [0.1.0] — 2026-05-06 — Phase B complete: Windows MVP
 
 First public release. Klipo runs as a daily-driver clipboard manager on Windows 10 1809+ / Windows 11 with full feature parity for the Phase B scope: capture (text / image / file / RTF / HTML), dedup, sensitive-content guard, native drag-and-drop, complete Settings UI, hotkey rebind, autostart, and onboarding tour.
@@ -475,5 +506,6 @@ First public release. Klipo runs as a daily-driver clipboard manager on Windows 
 - Crypto: libsodium (sodiumoxide) — no OpenSSL.
 - Sync CRDT: LWW-Element-Set with tombstones, ordered by Hybrid Logical Clock.
 
+[0.1.1]: https://github.com/aydogandagidir/klipo/releases/tag/v0.1.1
 [0.1.0]: https://github.com/aydogandagidir/klipo/releases/tag/v0.1.0
-[Unreleased]: https://github.com/aydogandagidir/klipo/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/aydogandagidir/klipo/compare/v0.1.1...HEAD

@@ -26,6 +26,16 @@ Klipo is a **headless** app — no visible window unless you summon it.
    receives a normal paste.
 5. **Esc** closes the popup without pasting.
 
+### How to quit Klipo
+
+Klipo keeps running after you close the popup — that's the whole point of a clipboard manager. To shut it down completely:
+
+- **Easy:** while the popup is open, press `Ctrl+Q`.
+- **Anywhere:** find the Klipo icon in the Windows tray (the chevron `▲` next to the system clock; on Win 11 you may need to expand the overflow first), **right-click** → **Quit**.
+- **From Settings:** open Settings (gear icon in the popup, or tray right-click → Settings…) → About tab → **Quit Klipo** button.
+
+If "Run at login" is enabled (Settings → General), Klipo will start again on the next sign-in. Toggle it off if you only want it on demand.
+
 ### "It looked like it duplicated the clip"
 
 It didn't. When Klipo pastes, the OS sees its own clipboard write as a

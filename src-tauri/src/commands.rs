@@ -88,6 +88,22 @@ pub async fn hide_popup(window: tauri::Window) -> Result<(), String> {
     window.hide().map_err(map_err)
 }
 
+/// Quit Klipo entirely — tear down the watcher, close the popup, exit the
+/// process. Reachable from three UI surfaces:
+///   1. Tray icon → right-click → "Quit"
+///   2. Popup → `Ctrl+Q`
+///   3. Settings → About → "Quit Klipo" button
+///
+/// We use `app.exit(0)` rather than `std::process::exit` so Tauri's
+/// graceful-shutdown hooks (RAII drop on `Storage`, plugin cleanup, etc.)
+/// run before the process actually terminates.
+#[tauri::command]
+pub async fn quit_app(app: tauri::AppHandle) -> Result<(), String> {
+    tracing::info!(target: "klipo::lifecycle", "user-initiated quit");
+    app.exit(0);
+    Ok(())
+}
+
 /// Resolve a relative `blob_path` (as stored in `clips.blob_path`) to an
 /// absolute filesystem path. The frontend hands this to Tauri's
 /// `convertFileSrc` so the image / thumbnail renders via the asset protocol.

@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Copy, Keyboard, Pin } from "lucide-react";
+import { ArrowRight, Check, Copy, Keyboard, Pin, Power } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -81,6 +81,26 @@ export function OnboardingOverlay({ hotkeyLabel, onComplete }: OnboardingOverlay
           </p>
           <p className="mt-2 text-muted-foreground">
             Open the gear icon for full settings — themes, excluded apps, privacy controls.
+          </p>
+        </>
+      ),
+    },
+    {
+      icon: Power,
+      title: "Klipo lives in your tray",
+      body: (
+        <>
+          <p>
+            Klipo runs quietly in the background even when the popup is hidden. To close it, find
+            the Klipo icon in the Windows tray (the <span aria-hidden="true">▲</span> chevron next
+            to the system clock), <strong>right-click</strong> it, and choose <em>Quit</em>.
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            Or, while the popup is open, press{" "}
+            <kbd className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px]">Ctrl+Q</kbd> to
+            close Klipo entirely.{" "}
+            <kbd className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px]">Esc</kbd> only
+            hides the popup; the watcher keeps running.
           </p>
         </>
       ),
