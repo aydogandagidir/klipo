@@ -118,11 +118,11 @@ jobs:
 
           if (-not (Test-Path $zipPath)) {
             Get-ChildItem $bundleDir
-            throw "expected $zipPath to exist after `tauri build`"
+            throw "expected $zipPath to exist after tauri build"
           }
           if (-not (Test-Path $sigPath)) {
             Get-ChildItem $bundleDir
-            throw "expected $sigPath to exist after `tauri build`"
+            throw "expected $sigPath to exist after tauri build"
           }
 
           $sig = (Get-Content $sigPath -Raw).Trim()
