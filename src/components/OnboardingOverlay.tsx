@@ -18,7 +18,7 @@ interface Step {
 }
 
 /**
- * 3-step welcome tutorial for first-run users.
+ * 4-step welcome tutorial for first-run users.
  *
  * Lives inside the popup (not the Settings window) so it's the first thing
  * a user sees the very first time they press the hotkey. Skip / Done both
@@ -93,14 +93,17 @@ export function OnboardingOverlay({ hotkeyLabel, onComplete }: OnboardingOverlay
           <p>
             Klipo runs quietly in the background even when the popup is hidden. To close it, find
             the Klipo icon in the Windows tray (the <span aria-hidden="true">▲</span> chevron next
-            to the system clock), <strong>right-click</strong> it, and choose <em>Quit</em>.
-          </p>
-          <p className="mt-2 text-muted-foreground">
-            Or, while the popup is open, press{" "}
-            <kbd className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px]">Ctrl+Q</kbd> to
-            close Klipo entirely.{" "}
+            to the system clock), <strong>right-click</strong> it, and choose <em>Quit</em>. Or
+            press{" "}
+            <kbd className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px]">Ctrl+Q</kbd>{" "}
+            from the popup —{" "}
             <kbd className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px]">Esc</kbd> only
             hides the popup; the watcher keeps running.
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            <strong>To use Klipo again after quitting:</strong> open the Start menu, type{" "}
+            <em>Klipo</em>, hit Enter — the tray icon and your hotkey come right back. To skip this
+            on every login, enable <em>Run at login</em> in Settings → General.
           </p>
         </>
       ),

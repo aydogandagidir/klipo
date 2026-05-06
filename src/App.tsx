@@ -356,7 +356,7 @@ export function App() {
           <kbd className="rounded bg-muted/50 px-1">Esc</kbd> close ·{" "}
           <kbd className="rounded bg-muted/50 px-1">Ctrl+Q</kbd> quit
         </span>
-        <span className="shrink-0 font-mono">{isPasting ? "pasting…" : "Klipo v0.1.1"}</span>
+        <span className="shrink-0 font-mono">{isPasting ? "pasting…" : "Klipo v0.1.2"}</span>
       </div>
 
       <AlertDialog

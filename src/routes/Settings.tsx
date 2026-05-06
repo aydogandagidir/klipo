@@ -90,7 +90,7 @@ export function Settings() {
           })}
         </nav>
         <div className="mt-auto px-3 pt-4 text-[10px] text-muted-foreground">
-          Klipo v0.1.1 · Esc to close
+          Klipo v0.1.2 · Esc to close
         </div>
       </aside>
 
@@ -128,7 +128,7 @@ function AboutTab() {
       </div>
       <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Version</dt>
-        <dd className="font-mono">0.1.1</dd>
+        <dd className="font-mono">0.1.2</dd>
         <dt className="text-muted-foreground">License</dt>
         <dd>Apache-2.0</dd>
         <dt className="text-muted-foreground">Platform</dt>
@@ -165,8 +165,13 @@ function AboutTab() {
           Klipo lives in the Windows system tray (the chevron <span aria-hidden="true">▲</span> area
           next to the clock). Right-click the tray icon and choose <em>Quit</em>, or press{" "}
           <kbd className="rounded bg-muted/50 px-1 font-mono">Ctrl+Q</kbd> while the popup is open —
-          both close the app cleanly. If <em>Run at login</em> is enabled, Klipo will start again on
-          the next sign-in.
+          both close the app cleanly.
+        </p>
+        <p className="max-w-prose text-xs text-muted-foreground">
+          <strong>To bring Klipo back after quitting:</strong> press{" "}
+          <kbd className="rounded bg-muted/50 px-1 font-mono">Win</kbd>, type <em>Klipo</em>, hit
+          Enter. The hotkey works again within a second. Enable <em>Run at login</em> above to skip
+          this step every reboot.
         </p>
         <button
           type="button"

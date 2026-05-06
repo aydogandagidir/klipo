@@ -34,7 +34,17 @@ Klipo keeps running after you close the popup — that's the whole point of a cl
 - **Anywhere:** find the Klipo icon in the Windows tray (the chevron `▲` next to the system clock; on Win 11 you may need to expand the overflow first), **right-click** → **Quit**.
 - **From Settings:** open Settings (gear icon in the popup, or tray right-click → Settings…) → About tab → **Quit Klipo** button.
 
-If "Run at login" is enabled (Settings → General), Klipo will start again on the next sign-in. Toggle it off if you only want it on demand.
+### How to bring Klipo back after quitting
+
+Quitting kills the process — your hotkey stops responding because nothing is listening for it anymore. To start Klipo again:
+
+- **Easiest:** Press `Win`, type **Klipo**, hit Enter.
+- **Or:** Run `%LOCALAPPDATA%\Klipo\Klipo.exe` (the path the NSIS installer dropped Klipo into).
+- **Or:** Use `Win + R`, type **klipo**, hit Enter.
+
+Within a couple of seconds the tray icon reappears and the hotkey works again.
+
+If you'd rather not think about this every reboot, enable **Run at login** in Settings → General — Klipo then starts automatically when you sign in to Windows.
 
 ### "It looked like it duplicated the clip"
 

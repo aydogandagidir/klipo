@@ -5,6 +5,57 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] — 2026-05-06 — Relaunch discoverability + release pipeline hardening
+
+This release ships almost no runtime changes; it's the first release proven
+to flow end-to-end through `tauri-plugin-updater`, and folds in the
+docs / onboarding gaps that surfaced once a real user updated from v0.1.0
+to v0.1.1 in production.
+
+### Added — relaunch UX
+- **Onboarding step 4** (the tray-quit step) gained a "to use Klipo again
+  after quitting" paragraph: `Win` → type `Klipo` → Enter, plus the
+  Settings → General → Run-at-login pointer for users who never want to
+  think about it.
+- **Settings → About → Quit Klipo block** now has a sibling paragraph
+  describing the same Start-menu relaunch path, so users who reach for
+  the Quit button discover the round-trip in the same view.
+- **README → "How to bring Klipo back after quitting"** section added
+  next to the existing "How to quit". Lists the three relaunch paths
+  (Start menu, `%LOCALAPPDATA%\Klipo\Klipo.exe`, `Win+R klipo`) and
+  recommends Run-at-login for daily-driver setups.
+
+### Fixed — release pipeline (lessons from v0.1.0/v0.1.1 cycle)
+The chain of issues that blocked v0.1.0/v0.1.1 from publishing a working
+auto-update endpoint, all settled in this version:
+
+- `pnpm/action-setup@v4` strict-version conflict with `package.json`'s
+  `packageManager` field (`ERR_PNPM_BAD_PM_VERSION`). YAML pin removed.
+- Hand-rolled release pipeline didn't generate a manifest.
+  Switched to `tauri-apps/tauri-action@v0` for the bundle + draft-release
+  step.
+- `tauri-action`'s asset filter excluded the updater payloads.
+  Replaced its `includeUpdaterJson` path with a dedicated PowerShell
+  step that reads `<installer>.sig` and writes a Tauri-shaped
+  `latest.json` directly to the release.
+- Tauri 2.x defaults `bundle.createUpdaterArtifacts` to `false`, so no
+  `.sig` file was being produced. Set it to `true` in `tauri.conf.json`.
+- The PowerShell step initially pointed `latest.json`'s `url` at the
+  obsolete Tauri 1.x `.nsis.zip` path. Updated to the direct
+  `Klipo_<v>_x64-setup.exe` URL — Tauri 2 verifies the installer
+  bytes against the embedded signature and runs it silently.
+- Repo went public so the `releases/latest/download/...` redirect could
+  resolve without an auth header (the updater plugin doesn't ship
+  bearer tokens to user binaries).
+
+### Verified — v0.1.2
+- ✅ `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings`
+- ✅ `cargo test --lib` — 56 tests pass (no behavior changes since v0.1.1)
+- ✅ `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm build`
+- ✅ Live end-to-end auto-update from v0.1.0 → v0.1.1 succeeded in
+  production: `latest.json` fetched, signature validated, installer
+  downloaded, app restarted at the new version.
+
 ## [0.1.1] — 2026-05-06 — Quit UX + CI workflow fix
 
 First post-launch hotfix. Two real-world issues from the v0.1.0 install
@@ -506,6 +557,7 @@ First public release. Klipo runs as a daily-driver clipboard manager on Windows 
 - Crypto: libsodium (sodiumoxide) — no OpenSSL.
 - Sync CRDT: LWW-Element-Set with tombstones, ordered by Hybrid Logical Clock.
 
+[0.1.2]: https://github.com/aydogandagidir/klipo/releases/tag/v0.1.2
 [0.1.1]: https://github.com/aydogandagidir/klipo/releases/tag/v0.1.1
 [0.1.0]: https://github.com/aydogandagidir/klipo/releases/tag/v0.1.0
-[Unreleased]: https://github.com/aydogandagidir/klipo/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/aydogandagidir/klipo/compare/v0.1.2...HEAD
