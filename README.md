@@ -5,6 +5,10 @@
 
 **Status:** v0.1 shipped. Daily-driver Windows MVP with auto-update wired. Faz C (macOS port) is next.
 
+<p align="center">
+  <img src="./assets/hero.gif" alt="Klipo demo: clipboard popup with captured clips, sensitive content guard, polished settings UI" width="720">
+</p>
+
 ## Download
 
 Grab the latest signed installer for Windows 10/11 from the [Releases page](https://github.com/aydogandagidir/klipo/releases/latest):
@@ -28,6 +32,13 @@ What ships in v0.1 (Windows):
 - Native OS drag-and-drop from the popup into browser-shell apps (Chromium silently rejects `Ctrl+V` of file payloads — drag is the only working path)
 - Hotkey rebind, theme picker, autostart, wipe-all, full Settings UI
 - Auto-update via signed manifest + Tauri-plugin-updater (verified working in production: v0.1.0 → v0.1.1 → v0.1.2 chain)
+
+## What it looks like
+
+| Captured clipboard | Sensitive content guarded | Polished settings |
+| :---: | :---: | :---: |
+| ![Klipo popup with captured clips](./assets/screenshots/popup.png) | ![Klipo popup with sensitive clip flagged with red border and SENSITIVE badge](./assets/screenshots/popup-sensitive.png) | ![Klipo Settings General tab showing theme, hotkey, run-at-login, updates](./assets/screenshots/settings.png) |
+| `Ctrl+Alt+V` from any app summons the popup. Search filters across kinds; ↑↓ navigates; Enter pastes back. | API keys, credit cards, JWTs and 10+ other patterns get a red left border, blurred preview, and a paste-confirm dialog. | Theme, hotkey rebind, history limit, autostart, signed auto-updates — all in one decorated window. |
 
 ---
 
