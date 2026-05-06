@@ -23,9 +23,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install pnpm
+        # Version is read from package.json's `packageManager` field
+        # (`pnpm@9.12.0`). Specifying it twice — here AND in package.json —
+        # causes `action-setup@v4` to abort with ERR_PNPM_BAD_PM_VERSION.
+        # Keep `packageManager` as the single source of truth.
         uses: pnpm/action-setup@v4
         with:
-          version: 9
           run_install: false
 
       - name: Setup Node
