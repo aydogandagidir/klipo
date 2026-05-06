@@ -1,3 +1,66 @@
+# Klipo Performance Results — 2026-05
+
+This file collects two kinds of measurements:
+
+1. **Release-time perf (`docs/perf-runbook.md` §1–§5)** — measured against
+   the production-built binary for each shipped tag. Cold start, warm
+   hotkey, search latency, paste latency, RAM. Manual stopwatch +
+   tracing logs.
+2. **Phase A storage benches (`bench/`)** — `cargo bench` output for
+   the SQLite + FTS5 kernel. Criterion-driven, machine-independent.
+
+Each new release campaign appends a `## Run — vX.Y.Z` section under (1).
+
+---
+
+## Run — v0.1.2 (2026-05-06) · Release-time bundle measurement
+
+| Field          | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Tester         | Aydoğan (CI artifact)                                          |
+| Klipo build    | `v0.1.2` (commit `3825728`)                                    |
+| Machine        | GitHub Actions `windows-latest` runner                         |
+| OS             | Windows Server 2022 / 2025 (CI image)                          |
+| Build profile  | release (LTO=true, opt-level=3, codegen-units=1, strip=true)   |
+
+| Metric                            | Value     | Budget     | Verdict |
+| --------------------------------- | --------- | ---------- | ------- |
+| NSIS installer (`.exe`)           | 3.78 MB   | <15 MB     | ✅ 25%  |
+| MSI installer (`.msi`)            | 5.22 MB   | <15 MB     | ✅ 35%  |
+| Updater manifest (`latest.json`)  | 779 B     | n/a        | —      |
+| Ed25519 sig (per installer)       | 416 B     | n/a        | —      |
+
+> The NSIS bundle ships at ~25% of the perf-budget cap for installer size.
+> Headroom is comfortable for adding tessdata for Phase C OCR (~30 MB) or
+> WASM modules for snippet preview (~5 MB).
+
+### Deferred — local-machine metrics (require user-side measurement)
+
+These need a real Windows machine running the production MSI/NSIS install
+and `KLIPO_LOG=info,klipo::perf=debug` to harvest logs. Maintainer fills in
+when the runbook is exercised. See [`docs/perf-runbook.md`](../docs/perf-runbook.md):
+
+| Metric                          | p50 | p95 | Budget    | Verdict |
+| ------------------------------- | --- | --- | --------- | ------- |
+| Cold start → popup visible      | TBD | TBD | <300 ms   | TBD     |
+| Warm hotkey → popup re-focused  | TBD | TBD | <100 ms   | TBD     |
+| Search 1k clips                 | TBD | TBD | <50 ms    | TBD     |
+| Search 10k clips                | TBD | TBD | <150 ms   | TBD     |
+| Paste (Enter → app receives)    | TBD | TBD | <60 ms    | TBD     |
+| RAM idle (popup hidden)         | TBD | TBD | <100 MB   | TBD     |
+| RAM with 10k clips loaded       | TBD | TBD | <250 MB   | TBD     |
+
+Tracing targets emit the corresponding metrics:
+
+- `klipo::perf` → `popup_visible_ms` (process start → first focus)
+- `klipo::perf` → `hotkey_to_focus_ms` (hotkey press → re-focus)
+- DevTools console (popup) → `klipo:search_ms` per FTS5 query
+
+Open Klipo with `KLIPO_LOG=info,klipo::perf=debug` set, exercise each path
+10 times, drop p50 + p95 into the table.
+
+---
+
 # Phase A Benchmark Results — 2026-05
 
 **Status:** Placeholder. To be filled in once the bench crate compiles and runs on a target Windows machine.

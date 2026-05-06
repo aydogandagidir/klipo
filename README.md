@@ -1,9 +1,33 @@
 # Klipo
 
 > Cross-platform clipboard manager with end-to-end encrypted sync.
-> Fast, private, keyboard-first — on macOS and Windows.
+> Fast, private, keyboard-first — on Windows today, macOS in v0.2.
 
-**Status:** v0.1 dev. M1–M6 landed (storage + capture + paste + native drag + Settings UI + onboarding). M7 (release pipeline) ahead.
+**Status:** v0.1 shipped. Daily-driver Windows MVP with auto-update wired. Faz C (macOS port) is next.
+
+## Download
+
+Grab the latest signed installer for Windows 10/11 from the [Releases page](https://github.com/aydogandagidir/klipo/releases/latest):
+
+- **`Klipo_<version>_x64-setup.exe`** — NSIS installer (recommended, ~3.8 MB). Faster install, smaller download, smoother auto-update path.
+- **`Klipo_<version>_x64_en-US.msi`** — Windows Installer (~5.3 MB). Use this for Group Policy / SCCM / Intune deployment.
+
+> First launch will trigger Windows SmartScreen ("Unknown publisher"). Click **More info** → **Run anyway** — the installer is signed for auto-update integrity (Ed25519) but doesn't yet carry an EV Authenticode cert (planned post-launch). The Tauri-signed update payload + the public source on this repo are the trust anchors until then.
+
+After installing, press **`Ctrl+Alt+V`** anywhere to open Klipo. The 4-step onboarding tour walks through summon, paste, pin/delete, and how to quit.
+
+## Why Klipo
+
+The clipboard manager space has a gap that Klipo fills: **cross-platform + modern UI + AI-native + offline-first + opt-in E2E sync.** Most existing options are platform-locked, paid, or developer-flavored. Klipo aims to feel native on every desktop, keep your data on your machine by default, and earn its place in your daily flow.
+
+What ships in v0.1 (Windows):
+
+- Capture: text · image · file · RTF · HTML, with hash-based dedup
+- Search: SQLite FTS5 with Türkçe character folding
+- Privacy: 13-pattern sensitive content guard (API keys, credit cards, JWTs); per-app exclusion list with seed for common password managers
+- Native OS drag-and-drop from the popup into browser-shell apps (Chromium silently rejects `Ctrl+V` of file payloads — drag is the only working path)
+- Hotkey rebind, theme picker, autostart, wipe-all, full Settings UI
+- Auto-update via signed manifest + Tauri-plugin-updater (verified working in production: v0.1.0 → v0.1.1 → v0.1.2 chain)
 
 ---
 
@@ -114,14 +138,6 @@ cargo bench --bench turkish_search
 ```
 
 ---
-
-## Why Klipo
-
-The clipboard manager space has a gap that Klipo fills:
-
-**Cross-platform + modern UI + AI-native + offline-first + opt-in E2E sync.**
-
-Most existing options are platform-locked, paid, design-dated, or developer-flavored. Klipo is built to feel native on every desktop, keep your data on your machine by default, and earn its place in your daily flow without asking for trust it hasn't proven.
 
 ## Principles
 
