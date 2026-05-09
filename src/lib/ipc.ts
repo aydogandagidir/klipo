@@ -225,6 +225,33 @@ export async function wipeAllData(): Promise<number> {
   return invoke<number>("wipe_all_data");
 }
 
+/** Counters returned by `resensitizeHistory`. UI surfaces these as a
+ * "Scanned N clips: M newly flagged" toast. Mirrors `ResensitizeReport`
+ * in `src-tauri/src/storage/clips.rs`. */
+export interface ResensitizeReport {
+  /** Total live, text-bearing clips processed. */
+  scanned: number;
+  /** Rows that flipped sensitive=false → true (newly detected). */
+  flagged: number;
+  /** Rows that flipped sensitive=true → false (regex loosened — rare). */
+  unflagged: number;
+  /** Rows whose verdict matched what was already on disk. */
+  unchanged: number;
+}
+
+/**
+ * Re-run the current sensitive-content regex set against every live,
+ * text-bearing clip and update each row's `sensitive` flag.
+ *
+ * Data-preserving: only `sensitive` changes; text content, blobs, hashes
+ * and pinned/deleted state are untouched. Use after a regex bump (e.g.
+ * v0.1.3 added the `sk-proj-` OpenAI format) so historical clips inherit
+ * the new verdict without losing data.
+ */
+export async function resensitizeHistory(): Promise<ResensitizeReport> {
+  return invoke<ResensitizeReport>("resensitize_history");
+}
+
 // ---------- Hotkey rebind (M6.3) ----------
 
 /**
@@ -349,6 +376,7 @@ export const ipc = {
   appDataDirPath,
   openDataFolder,
   wipeAllData,
+  resensitizeHistory,
   registerHotkey,
   getAutostart,
   setAutostart,

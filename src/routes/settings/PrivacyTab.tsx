@@ -1,9 +1,17 @@
-import { Folder, Trash2 } from "lucide-react";
+import { Folder, ShieldAlert, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { AlertDialog } from "@/components/AlertDialog";
 import { ToggleSwitch } from "@/components/ToggleSwitch";
-import { appDataDirPath, getSetting, openDataFolder, setSetting, wipeAllData } from "@/lib/ipc";
+import {
+  appDataDirPath,
+  getSetting,
+  openDataFolder,
+  resensitizeHistory,
+  setSetting,
+  wipeAllData,
+} from "@/lib/ipc";
+import type { ResensitizeReport } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 
 /**
@@ -33,6 +41,7 @@ export function PrivacyTab() {
       <TelemetryRow />
       <SyncRow />
       <DataFolderRow />
+      <ResensitizeRow />
       <WipeRow />
     </div>
   );
@@ -159,6 +168,75 @@ function DataFolderRow() {
           </code>
         ) : null}
         {error ? <p className="text-xs text-destructive">{error}</p> : null}
+      </div>
+    </Row>
+  );
+}
+
+// ---------------- Re-scan history (resensitize) ----------------
+
+/**
+ * "Re-scan history" action.
+ *
+ * Triggers a backend pass that re-runs the current sensitive-content regex
+ * set against every live, text-bearing clip and flips the `sensitive`
+ * column where the verdict has changed. **No data is deleted or
+ * rewritten** — only the boolean flag (and `sync_version`) changes.
+ *
+ * Use case: after a Klipo update bumps the regex set (e.g. v0.1.3 added
+ * the `sk-proj-` / `sk-svcacct-` / `sk-admin-` OpenAI formats),
+ * historical clips that were captured under the old regex still carry
+ * the old verdict. One click here brings them in line with the new rules.
+ */
+function ResensitizeRow() {
+  const [busy, setBusy] = useState(false);
+  const [outcome, setOutcome] = useState<
+    { kind: "ok"; report: ResensitizeReport } | { kind: "err"; msg: string } | null
+  >(null);
+
+  const run = async () => {
+    setBusy(true);
+    setOutcome(null);
+    try {
+      const report = await resensitizeHistory();
+      setOutcome({ kind: "ok", report });
+    } catch (e: unknown) {
+      setOutcome({
+        kind: "err",
+        msg: e instanceof Error ? e.message : String(e),
+      });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Row
+      label="Re-scan history"
+      description="Re-runs the current sensitive-content rules over every clip already in your history. Updates the red border / blur for clips that match the latest regex set. No data is deleted — only the sensitive flag is updated in place."
+    >
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={() => void run()}
+          disabled={busy}
+          className={cn(
+            "inline-flex w-fit items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-accent/40",
+            busy && "opacity-60",
+          )}
+        >
+          <ShieldAlert className="h-4 w-4" aria-hidden="true" />
+          {busy ? "Scanning…" : "Re-scan history"}
+        </button>
+        {outcome?.kind === "ok" ? (
+          <p className="text-xs text-emerald-500">
+            Scanned {outcome.report.scanned} clip
+            {outcome.report.scanned === 1 ? "" : "s"}: {outcome.report.flagged} newly flagged
+            {outcome.report.unflagged > 0 ? `, ${outcome.report.unflagged} unflagged` : ""},{" "}
+            {outcome.report.unchanged} unchanged.
+          </p>
+        ) : null}
+        {outcome?.kind === "err" ? <p className="text-xs text-destructive">{outcome.msg}</p> : null}
       </div>
     </Row>
   );

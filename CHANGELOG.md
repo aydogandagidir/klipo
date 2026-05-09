@@ -26,6 +26,21 @@ v0.1.0–0.1.2 remain available under Apache-2.0; v0.1.3+ is governed by
   explicit assertion that Anthropic's `sk-ant-…` keys are not
   mis-classified as OpenAI keys.
 
+### Added — Settings → Privacy → Re-scan history
+- **One-tap re-scan** of the existing clip history with the current
+  sensitive-content regex set. Backed by a new Tauri command
+  `resensitize_history` and a `Storage::resensitize_all` method that
+  is **strictly UPDATE-only**: only the `sensitive` flag (and
+  `sync_version`) ever changes — no clip is inserted, deleted, or
+  rewritten. Soft-deleted rows are skipped.
+- Returns a `ResensitizeReport { scanned, flagged, unflagged, unchanged }`
+  surfaced as a toast in the Settings UI. Solves the v0.1.3 migration
+  case: clips captured before the regex bump still carried their old
+  verdict; one click brings them in line with the new rules without any
+  data loss.
+- Covered by 4 storage tests (flip, idempotent, soft-delete-skip, unflag
+  on regex loosening) and a manual verification step in dev mode.
+
 ### Changed — licensing & branding
 - License switched to a proprietary EULA. See [`LICENSE`](./LICENSE),
   [`LEGAL/EULA.md`](./LEGAL/EULA.md), [`LEGAL/PRIVACY.md`](./LEGAL/PRIVACY.md),
