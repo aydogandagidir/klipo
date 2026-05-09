@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "private": true,
   "description": "Cross-platform clipboard manager — fast, private, end-to-end encrypted sync.",
-  "license": "Apache-2.0",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "packageManager": "pnpm@9.12.0",
   "engines": {

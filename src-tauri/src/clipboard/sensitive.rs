@@ -26,7 +26,16 @@ const PATTERN_DEFS: &[(&str, &str)] = &[
         "aws_secret_key",
         r"(?i)aws[A-Za-z0-9_]{0,20}['\x22]?[A-Za-z0-9/+=]{40}['\x22]?",
     ),
-    ("openai_key", r"sk-[A-Za-z0-9]{32,}"),
+    // Matches both legacy OpenAI keys (`sk-<40+ alphanumerics>`) and the
+    // newer project / service-account / admin formats introduced in 2024,
+    // which embed dashes and underscores (e.g. `sk-proj-...`,
+    // `sk-svcacct-...`, `sk-admin-...`). The first alternative covers the
+    // newer formats explicitly so anthropic's `sk-ant-` prefix isn't
+    // accidentally caught here (anthropic_key handles that).
+    (
+        "openai_key",
+        r"sk-(?:proj-|svcacct-|admin-)[A-Za-z0-9_\-]{32,}|sk-[A-Za-z0-9]{32,}",
+    ),
     ("anthropic_key", r"sk-ant-[A-Za-z0-9_\-]{40,}"),
     ("github_token", r"gh[pousr]_[A-Za-z0-9]{36,}"),
     ("google_api_key", r"AIza[0-9A-Za-z_\-]{35}"),
@@ -121,6 +130,56 @@ mod tests {
     fn detects_openai_key() {
         let r = scan("OPENAI_KEY=sk-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         assert!(r.matched.contains(&"openai_key"));
+    }
+
+    #[test]
+    fn detects_openai_project_key() {
+        // OpenAI project keys (introduced 2024) include dashes and are much
+        // longer than the legacy format. Reproduces the actual screenshot
+        // case from the v0.1.3 bug report.
+        let r = scan(
+            "OPENAI_KEY=sk-proj-6Of9IB6ypHeWeRuWqggTvU-P8Y0dxdLrQwB9t51AAAAAAAAAAAAAAAAAAAAAAA",
+        );
+        assert!(
+            r.matched.contains(&"openai_key"),
+            "matched: {:?}",
+            r.matched
+        );
+    }
+
+    #[test]
+    fn detects_openai_service_account_key() {
+        let r = scan("KEY=sk-svcacct-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA_-_BBB");
+        assert!(
+            r.matched.contains(&"openai_key"),
+            "matched: {:?}",
+            r.matched
+        );
+    }
+
+    #[test]
+    fn detects_openai_admin_key() {
+        let r = scan("ADMIN=sk-admin-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        assert!(
+            r.matched.contains(&"openai_key"),
+            "matched: {:?}",
+            r.matched
+        );
+    }
+
+    #[test]
+    fn anthropic_key_does_not_falsely_match_openai_pattern() {
+        // The anthropic_key pattern owns `sk-ant-...`. We want to assert
+        // anthropic still matches, AND that the openai pattern alone would
+        // not also flag it as openai (avoids confusing the user about
+        // which provider leaked).
+        let r = scan("ANTHROPIC_API_KEY=sk-ant-api03-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo");
+        assert!(r.matched.contains(&"anthropic_key"));
+        assert!(
+            !r.matched.contains(&"openai_key"),
+            "openai pattern should not catch anthropic keys: {:?}",
+            r.matched
+        );
     }
 
     #[test]
