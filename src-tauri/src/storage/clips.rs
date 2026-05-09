@@ -360,6 +360,72 @@ impl Storage {
         Ok(result.rows_affected() > 0)
     }
 
+    /// Re-run a sensitive-content classifier against every live, text-bearing
+    /// clip and update the `sensitive` flag in place.
+    ///
+    /// **Data-preserving by design:** only the `sensitive` column (and
+    /// `sync_version`) ever changes. No INSERT, no DELETE, no text-content
+    /// rewrites, no blob touches, no FTS5 mutations. Soft-deleted rows are
+    /// skipped — they're filtered by the existing partial unique index and
+    /// the retention worker eventually GCs them.
+    ///
+    /// `scan_fn(text) -> bool` is the verdict function. Production callers
+    /// inject `crate::clipboard::sensitive::scan(t).is_sensitive()`; tests
+    /// pass deterministic stubs.
+    ///
+    /// Use case: after a regex update (e.g. v0.1.3 added the `sk-proj-`,
+    /// `sk-svcacct-`, `sk-admin-` OpenAI formats), historical clips that
+    /// were captured under the older regex still carry their old verdict —
+    /// this method is the one-tap migration.
+    pub async fn resensitize_all<F>(&self, scan_fn: F) -> StorageResult<ResensitizeReport>
+    where
+        F: Fn(&str) -> bool,
+    {
+        let rows = sqlx::query(
+            "SELECT id, text_content, sensitive
+             FROM clips
+             WHERE deleted_at IS NULL AND text_content IS NOT NULL",
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        let mut report = ResensitizeReport::default();
+
+        for row in &rows {
+            let id: String = row.try_get("id")?;
+            let text: Option<String> = row.try_get("text_content")?;
+            let was_sensitive: i64 = row.try_get("sensitive")?;
+            let was_sensitive = was_sensitive != 0;
+
+            let Some(text) = text else { continue };
+
+            report.scanned += 1;
+            let now_sensitive = scan_fn(&text);
+
+            if now_sensitive == was_sensitive {
+                report.unchanged += 1;
+                continue;
+            }
+
+            sqlx::query(
+                "UPDATE clips SET sensitive = ?, sync_version = sync_version + 1
+                 WHERE id = ?",
+            )
+            .bind(now_sensitive as i64)
+            .bind(&id)
+            .execute(self.pool())
+            .await?;
+
+            if now_sensitive {
+                report.flagged += 1;
+            } else {
+                report.unflagged += 1;
+            }
+        }
+
+        Ok(report)
+    }
+
     /// Hard-delete EVERY clip row (bypasses tombstone retention).
     ///
     /// Caller is the Settings UI's "Wipe all data" path, which has its own
@@ -379,6 +445,23 @@ impl Storage {
             .await?;
         Ok(result.rows_affected())
     }
+}
+
+/// Outcome of `resensitize_all`. UI surfaces this as a toast:
+/// "Scanned N clips: M newly flagged, K unflagged, L unchanged."
+///
+/// `Default` is derived so the storage method can accumulate counters
+/// idiomatically.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ResensitizeReport {
+    /// Total live, text-bearing clips processed.
+    pub scanned: i64,
+    /// Rows that flipped `sensitive=0 → 1` (newly detected by an updated regex).
+    pub flagged: i64,
+    /// Rows that flipped `sensitive=1 → 0` (regex was loosened — rare).
+    pub unflagged: i64,
+    /// Rows whose verdict matched what was already on disk — no UPDATE issued.
+    pub unchanged: i64,
 }
 
 /// One row from the `excluded_apps` table, surfaced to the Settings UI.
@@ -631,6 +714,160 @@ mod tests {
             "expected InvalidKind, got {err:?}"
         );
     }
+
+    // ---------------- resensitize_all ----------------
+
+    #[tokio::test]
+    async fn resensitize_all_flips_only_changed_rows() {
+        let s = Storage::open_in_memory().await.unwrap();
+
+        // 1 benign clip — should stay sensitive=false.
+        let benign = match s
+            .insert_clip(sample_text("hello world", "h_benign"))
+            .await
+            .unwrap()
+        {
+            InsertOutcome::Inserted { id } => id,
+            _ => unreachable!(),
+        };
+
+        // 1 clip that the OLD regex missed (simulates the v0.1.2 sk-proj bug):
+        // text contains a "secret-y" marker but DB says sensitive=false.
+        let bug_case = match s
+            .insert_clip(sample_text("contains secret_xyz token", "h_bug"))
+            .await
+            .unwrap()
+        {
+            InsertOutcome::Inserted { id } => id,
+            _ => unreachable!(),
+        };
+
+        // 1 clip already correctly flagged.
+        let mut already = sample_text("AKIA-fake-already-flagged", "h_already");
+        already.sensitive = true;
+        let already_id = match s.insert_clip(already).await.unwrap() {
+            InsertOutcome::Inserted { id } => id,
+            _ => unreachable!(),
+        };
+
+        // Stub scanner: flags texts containing "secret_" or "AKIA".
+        let report = s
+            .resensitize_all(|text| text.contains("secret_") || text.contains("AKIA"))
+            .await
+            .unwrap();
+
+        assert_eq!(report.scanned, 3);
+        assert_eq!(
+            report.flagged, 1,
+            "only the bug-case row should flip 0→1: {:?}",
+            report
+        );
+        assert_eq!(report.unflagged, 0);
+        assert_eq!(
+            report.unchanged, 2,
+            "benign + already-flagged stay put: {:?}",
+            report
+        );
+
+        // Data preservation: count unchanged, every row still readable, text intact.
+        assert_eq!(s.count_live().await.unwrap(), 3);
+        let benign_clip = s.get_clip(&benign).await.unwrap();
+        let flipped_clip = s.get_clip(&bug_case).await.unwrap();
+        let already_clip = s.get_clip(&already_id).await.unwrap();
+        assert!(!benign_clip.sensitive);
+        assert!(flipped_clip.sensitive, "newly flagged row");
+        assert!(already_clip.sensitive);
+        assert_eq!(
+            benign_clip.text_content.as_deref(),
+            Some("hello world"),
+            "text content must not be mutated"
+        );
+        assert_eq!(
+            flipped_clip.text_content.as_deref(),
+            Some("contains secret_xyz token"),
+            "text content must not be mutated"
+        );
+    }
+
+    #[tokio::test]
+    async fn resensitize_all_is_idempotent() {
+        let s = Storage::open_in_memory().await.unwrap();
+        s.insert_clip(sample_text("contains secret_zzz", "h1"))
+            .await
+            .unwrap();
+
+        let scan = |t: &str| t.contains("secret_");
+        let first = s.resensitize_all(scan).await.unwrap();
+        let second = s.resensitize_all(scan).await.unwrap();
+
+        assert_eq!(first.flagged, 1);
+        assert_eq!(first.unchanged, 0);
+        // Second run sees the row already at sensitive=1 → no UPDATE issued.
+        assert_eq!(second.flagged, 0);
+        assert_eq!(second.unflagged, 0);
+        assert_eq!(second.unchanged, 1);
+    }
+
+    #[tokio::test]
+    async fn resensitize_all_skips_soft_deleted_rows() {
+        let s = Storage::open_in_memory().await.unwrap();
+        let live_id = match s
+            .insert_clip(sample_text("contains secret_live", "h_live"))
+            .await
+            .unwrap()
+        {
+            InsertOutcome::Inserted { id } => id,
+            _ => unreachable!(),
+        };
+        let dead_id = match s
+            .insert_clip(sample_text("contains secret_dead", "h_dead"))
+            .await
+            .unwrap()
+        {
+            InsertOutcome::Inserted { id } => id,
+            _ => unreachable!(),
+        };
+        s.soft_delete(&dead_id).await.unwrap();
+
+        let report = s
+            .resensitize_all(|t| t.contains("secret_"))
+            .await
+            .unwrap();
+
+        assert_eq!(
+            report.scanned, 1,
+            "soft-deleted rows must not be touched: {:?}",
+            report
+        );
+        assert_eq!(report.flagged, 1);
+
+        // Live row updated; dead row's row state is undisturbed (still tombstoned).
+        let live = s.get_clip(&live_id).await.unwrap();
+        assert!(live.sensitive);
+        assert!(s.get_clip(&dead_id).await.is_err()); // NotFound — still soft-deleted
+    }
+
+    #[tokio::test]
+    async fn resensitize_all_can_unflag_when_pattern_loosens() {
+        // Edge case: a future regex update REMOVES a pattern. Existing rows
+        // flagged by the old version should be able to flip back. This is
+        // mainly a contract test — we don't expect to use it often, but the
+        // API should support it.
+        let s = Storage::open_in_memory().await.unwrap();
+        let mut paranoid = sample_text("plain text", "h_paranoid");
+        paranoid.sensitive = true; // wrongly flagged by an over-eager old regex
+        s.insert_clip(paranoid).await.unwrap();
+
+        // New scanner says nothing is sensitive.
+        let report = s.resensitize_all(|_| false).await.unwrap();
+        assert_eq!(report.unflagged, 1);
+        assert_eq!(report.flagged, 0);
+
+        // Row still exists (data preserved).
+        assert_eq!(s.count_live().await.unwrap(), 1);
+    }
+
+    // ---------------- settings ----------------
 
     #[tokio::test]
     async fn settings_get_and_upsert() {

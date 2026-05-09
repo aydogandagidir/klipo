@@ -9,7 +9,7 @@
 //! "no clipboard content in logs" non-negotiable.
 
 use crate::perf::StartTime;
-use crate::storage::clips::{Clip, ExcludedApp};
+use crate::storage::clips::{Clip, ExcludedApp, ResensitizeReport};
 use crate::storage::search::SearchHit;
 use crate::storage::Storage;
 use tauri::State;
@@ -593,6 +593,35 @@ pub async fn register_hotkey(
         .await
         .map_err(map_err)?;
     Ok(chord)
+}
+
+/// Re-run the current sensitive-content regex set against every live,
+/// text-bearing clip and update each row's `sensitive` flag in place.
+///
+/// **Data-preserving:** only the `sensitive` column (+ `sync_version`)
+/// changes. No INSERT, no DELETE, no text rewrites. Triggered from
+/// Settings → Privacy → "Re-scan history".
+///
+/// Returns a `ResensitizeReport` with scanned / flagged / unflagged /
+/// unchanged counters so the UI can render a toast like
+/// "Scanned 247 clips: 5 newly flagged".
+#[tauri::command]
+pub async fn resensitize_history(
+    storage: State<'_, Storage>,
+) -> Result<ResensitizeReport, String> {
+    let report = storage
+        .resensitize_all(|text| crate::clipboard::sensitive::scan(text).is_sensitive())
+        .await
+        .map_err(map_err)?;
+    tracing::info!(
+        target: "klipo::resensitize",
+        scanned = report.scanned,
+        flagged = report.flagged,
+        unflagged = report.unflagged,
+        unchanged = report.unchanged,
+        "user-initiated resensitize finished"
+    );
+    Ok(report)
 }
 
 /// Hard-delete every clip and remove the on-disk blob + thumbnail trees.

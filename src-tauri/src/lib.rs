@@ -344,6 +344,7 @@ pub fn run() {
             commands::app_data_dir_path,
             commands::open_data_folder,
             commands::wipe_all_data,
+            commands::resensitize_history,
             commands::register_hotkey,
             commands::get_autostart,
             commands::set_autostart,
