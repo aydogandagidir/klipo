@@ -12,16 +12,46 @@ name: Release (Windows)
 #   - `latest.json`                                  (updater manifest)
 #   - GitHub Release with auto-generated notes (tag flow only)
 #
-# Code-signing (Authenticode/EV cert): not wired yet — `tauri build`
-# produces unsigned MSIs. When the project picks up an EV cert, add a
-# `signtool sign` step before `tauri-action`'s upload phase.
+# Code-signing (Authenticode): REQUIRED before commercial v0.1.3+ release.
+# Klipo v0.1.0–0.1.2 shipped unsigned (Apache-2.0 era). From v0.1.3 on, the
+# product is sold via Gumroad under a proprietary EULA — SmartScreen
+# "Unknown publisher" warnings are unacceptable for paying customers.
 #
-# Tauri-signed updates: `TAURI_SIGNING_PRIVATE_KEY` +
-# `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` GitHub Secrets cover the
-# auto-update payload signing. `tauri-action`'s `includeUpdaterJson: true`
-# generates `latest.json` from the per-bundle `.sig` files and uploads
-# it as a release asset, which is what Klipo's `tauri.conf.json`
-# `plugins.updater.endpoints` URL points to.
+# Pick ONE of the two paths below; both are wire-in-place additions to
+# `tauri.conf.json` `bundle.windows`:
+#
+#   Option A — Azure Trusted Signing (recommended for solo/indie):
+#     ~$10/month, no hardware token, no $300 EV cert sticker.
+#     1. Create an Azure Trusted Signing account + identity validation.
+#     2. Add `bundle.windows.signCommand` to tauri.conf.json that invokes
+#        `azuresigntool sign` with secret-injected creds.
+#     3. Add the secrets to this repo:
+#         - AZURE_TENANT_ID
+#         - AZURE_CLIENT_ID
+#         - AZURE_CLIENT_SECRET
+#         - AZURE_CODESIGN_ACCOUNT
+#         - AZURE_CODESIGN_PROFILE
+#     4. Reference: https://learn.microsoft.com/azure/trusted-signing/
+#
+#   Option B — EV Authenticode cert (Sectigo / DigiCert / SSL.com):
+#     ~$200–400/year, hardware token (HSM) or cloud HSM (DigiCert KeyLocker).
+#     1. Add `bundle.windows.certificateThumbprint` (or signCommand for HSM).
+#     2. Add WINDOWS_CODESIGN_THUMBPRINT secret (or KeyLocker creds).
+#     3. tauri-action picks the cert from the local Windows cert store at
+#        sign time — works on `windows-latest` runners with prepared HSM.
+#
+# Both paths produce a fully Authenticode-signed `Klipo_<v>_x64-setup.exe`
+# that SmartScreen accepts without "Run anyway" friction.
+#
+# Verification step (add after build, before manifest generation):
+#   - run: signtool verify /pa /v "src-tauri/target/release/bundle/nsis/Klipo_${version}_x64-setup.exe"
+#
+# Tauri-signed updates (independent of Authenticode — both are required):
+# `TAURI_SIGNING_PRIVATE_KEY` + `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` GitHub
+# Secrets cover the auto-update payload signing (Ed25519 / minisign).
+# `tauri-action`'s `includeUpdaterJson: true` generates `latest.json` from
+# the per-bundle `.sig` files and uploads it as a release asset, which is
+# what Klipo's `tauri.conf.json` `plugins.updater.endpoints` URL points to.
 
 on:
   push:

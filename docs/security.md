@@ -119,7 +119,9 @@ pub const SENSITIVE_PATTERNS: &[(&str, &str)] = &[
     ("credit_card",       r"\b(?:\d[ -]*?){13,19}\b"),
     ("aws_access_key",    r"AKIA[0-9A-Z]{16}"),
     ("aws_secret_key",    r"(?i)aws(.{0,20})?(?-i)['\"]?[A-Za-z0-9/+=]{40}['\"]?"),
-    ("openai_key",        r"sk-[A-Za-z0-9]{32,}"),
+    // Catches both legacy `sk-...` and the post-2024 `sk-proj-...`,
+    // `sk-svcacct-...`, `sk-admin-...` formats which include dashes.
+    ("openai_key",        r"sk-(?:proj-|svcacct-|admin-)[A-Za-z0-9_\-]{32,}|sk-[A-Za-z0-9]{32,}"),
     ("anthropic_key",     r"sk-ant-[A-Za-z0-9_-]{40,}"),
     ("github_token",      r"gh[pousr]_[A-Za-z0-9]{36,}"),
     ("google_api_key",    r"AIza[0-9A-Za-z_-]{35}"),

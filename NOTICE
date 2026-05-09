@@ -22,4 +22,11 @@ For each third-party dependency, see its respective license file in:
 - Rust crates: $CARGO_HOME/registry/src/...
 - Node packages: ./node_modules/<pkg>/LICENSE
 
-Klipo's source is licensed under Apache-2.0. See LICENSE for full text.
+Klipo from version 0.1.3 onward is a commercial product distributed under a
+proprietary End User License Agreement. See LICENSE and LEGAL/EULA.md.
+
+Klipo versions 0.1.0, 0.1.1, and 0.1.2 were released under the Apache License,
+Version 2.0, and remain available under that license. The historical Apache-2.0
+license text is preserved at LICENSE-Apache-2.0-historical.md.
+
+Third-party components listed above retain their original open-source licenses.

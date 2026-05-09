@@ -5,6 +5,49 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] — 0.1.3 — Commercial pivot + sensitive-content fixes
+
+This is the first commercial release. The licensing model changes from
+Apache-2.0 to a proprietary EULA owned by **bluedev** (Aydoğan Dağıdır).
+v0.1.0–0.1.2 remain available under Apache-2.0; v0.1.3+ is governed by
+[`LEGAL/EULA.md`](./LEGAL/EULA.md).
+
+### Fixed — sensitive content detection
+- **OpenAI project keys (`sk-proj-…`)**, service-account keys
+  (`sk-svcacct-…`), and admin keys (`sk-admin-…`) are now flagged as
+  sensitive. The legacy regex assumed pure-alphanumeric bodies and
+  silently let through the post-2024 OpenAI formats, which include
+  dashes. Reproduces the user-reported bug where `sk-proj-…` clips
+  appeared in the popup without a red border or blurred preview.
+  Updated pattern lives at
+  [`src-tauri/src/clipboard/sensitive.rs`](./src-tauri/src/clipboard/sensitive.rs)
+  and is mirrored in [`docs/security.md` §3.1](./docs/security.md).
+- New regression tests cover all four OpenAI key formats and an
+  explicit assertion that Anthropic's `sk-ant-…` keys are not
+  mis-classified as OpenAI keys.
+
+### Changed — licensing & branding
+- License switched to a proprietary EULA. See [`LICENSE`](./LICENSE),
+  [`LEGAL/EULA.md`](./LEGAL/EULA.md), [`LEGAL/PRIVACY.md`](./LEGAL/PRIVACY.md),
+  [`LEGAL/REFUND.md`](./LEGAL/REFUND.md). Apache-2.0 text preserved at
+  [`LICENSE-Apache-2.0-historical.md`](./LICENSE-Apache-2.0-historical.md).
+- README now identifies bluedev as the publisher and points at the
+  Gumroad listing (when live).
+
+### Added — pre-launch documentation
+- Gumroad product page copy at [`docs/gumroad-product-page.md`](./docs/gumroad-product-page.md).
+- bluedev.dev landing page copy at [`docs/landing-bluedev.md`](./docs/landing-bluedev.md).
+- Authenticode signing setup walkthrough (Azure Trusted Signing + EV cert)
+  in [`docs/release-signing.md`](./docs/release-signing.md) §6.
+
+### Required before tagging v0.1.3
+- [ ] Authenticode-sign the installer (see release-signing.md §6).
+- [ ] Decide whether to make the GitHub repository private or
+      source-available under a non-redistribution license.
+- [ ] Set the Gumroad listing price.
+
+---
+
 ## [0.1.2] — 2026-05-06 — Relaunch discoverability + release pipeline hardening
 
 This release ships almost no runtime changes; it's the first release proven

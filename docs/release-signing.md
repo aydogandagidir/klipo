@@ -108,12 +108,94 @@ Don't skip step 5 — without it, anyone on the old build is stranded.
 
 ---
 
-## 6. What's NOT signed (yet)
+## 6. Authenticode signing (REQUIRED for v0.1.3+ commercial release)
 
-The Klipo MSI itself is not Authenticode-signed in v0.1. Windows SmartScreen will show a "Publisher: Unknown" warning the first time a user runs the installer. To fix this:
+Klipo v0.1.0–0.1.2 shipped without Authenticode signing — Windows SmartScreen showed "Publisher: Unknown" on first run. That was acceptable for the Apache-2.0 era, but **paying customers will not accept this**. Before listing on Gumroad, Klipo v0.1.3+ must be Authenticode-signed.
 
-1. Acquire an EV (Extended Validation) code-signing certificate (~$300/year).
-2. Add a `signtool sign` step to `release-windows.yml` between `tauri build` and the upload to GitHub Release.
-3. Cert + private key live as `WINDOWS_CERT_BASE64` + `WINDOWS_CERT_PASSWORD` GitHub secrets.
+This is **independent of** the Tauri updater signing above; both are required and cover different threat models (SmartScreen reputation vs. update integrity).
 
-EV cert is independent of the Tauri updater signing above — they cover different threat models (SmartScreen reputation vs. update integrity). Ship the updater signing first; EV cert can land in v0.1.x if budget allows.
+### Option A — Azure Trusted Signing (recommended)
+
+Cost: ~$10/month. No hardware token. No $300/yr sticker. Available since Mar 2024.
+
+1. **Set up an Azure account** (if you don't have one). The first $200 of Azure credit is enough to cover the first ~18 months of signing.
+2. **Create a Trusted Signing account + identity validation:**
+   ```
+   Azure Portal → Search "Trusted Signing" → Create account
+     → Account name: bluedev-codesign
+     → Region: West Europe (or nearest)
+     → Pricing tier: Basic (~$9.99/mo)
+   ```
+3. **Identity validation:** As an individual sole proprietor (Aydoğan Dağıdır / bluedev), submit:
+   - Government photo ID (passport or national ID).
+   - Proof of address (utility bill, bank statement < 3 months old).
+   - Validation typically completes in 1-3 business days.
+4. **Create a certificate profile** in the Trusted Signing account → Certificate profiles → New → Type: "Public Trust Identity (Individual)".
+5. **Set up a service principal** for CI access:
+   ```
+   az ad sp create-for-rbac --name "klipo-codesign-ci" \
+     --role "Code Signing Certificate Profile Signer" \
+     --scopes /subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.CodeSigning/codeSigningAccounts/bluedev-codesign
+   ```
+   Save the `appId`, `tenant`, and `password` — these become the secrets below.
+6. **Add GitHub repo secrets** (Settings → Secrets and variables → Actions):
+   | Secret name | Source |
+   |---|---|
+   | `AZURE_TENANT_ID` | service principal `tenant` |
+   | `AZURE_CLIENT_ID` | service principal `appId` |
+   | `AZURE_CLIENT_SECRET` | service principal `password` |
+   | `AZURE_CODESIGN_ENDPOINT` | e.g. `https://weu.codesigning.azure.net/` |
+   | `AZURE_CODESIGN_ACCOUNT` | `bluedev-codesign` |
+   | `AZURE_CODESIGN_PROFILE` | the profile name created in step 4 |
+7. **Configure Tauri to call AzureSignTool** by adding `bundle.windows.signCommand` to `tauri.conf.json`:
+   ```json
+   "bundle": {
+     "windows": {
+       "signCommand": "AzureSignTool sign -kvu %AZURE_CODESIGN_ENDPOINT% -kvi %AZURE_CLIENT_ID% -kvt %AZURE_TENANT_ID% -kvs %AZURE_CLIENT_SECRET% -kvc %AZURE_CODESIGN_PROFILE% -tr http://timestamp.digicert.com -td sha256 %1"
+     }
+   }
+   ```
+8. **Install AzureSignTool in CI** by adding a step before `tauri-action`:
+   ```yaml
+   - name: Install AzureSignTool
+     run: dotnet tool install --global AzureSignTool
+   ```
+9. **Verify** after the build:
+   ```yaml
+   - name: Verify Authenticode signature
+     shell: pwsh
+     run: |
+       $exe = "src-tauri/target/release/bundle/nsis/Klipo_${{ env.VERSION }}_x64-setup.exe"
+       signtool verify /pa /v $exe
+   ```
+
+Reference: https://learn.microsoft.com/azure/trusted-signing/
+
+### Option B — EV Authenticode certificate (Sectigo / DigiCert / SSL.com)
+
+Cost: ~$200–400/year. Requires hardware token (HSM) shipped to your address, OR cloud HSM (DigiCert KeyLocker, ~$25/mo).
+
+Pros over Option A: instant SmartScreen reputation (EV-signed binaries skip the reputation-building phase). Best if you expect heavy first-week download volume.
+
+Cons: more friction. The cert lives on a hardware token that must be physically present on the signing machine, OR in a cloud HSM that has its own integration overhead.
+
+1. Buy an EV cert (Sectigo, DigiCert, SSL.com — pick one).
+2. For hardware-token flow: the signing must run on a self-hosted Windows runner with the token attached. GitHub-hosted `windows-latest` won't work without KeyLocker.
+3. For DigiCert KeyLocker: install KeyLocker tools on the runner, configure `bundle.windows.signCommand` to use `smctl sign` instead of `AzureSignTool`.
+4. Add the appropriate secrets (`SM_HOST`, `SM_API_KEY`, `SM_CLIENT_CERT_FILE`, `SM_CLIENT_CERT_PASSWORD`).
+5. Verification step is the same `signtool verify /pa /v ...` as in Option A.
+
+### Verification (both options)
+
+After tagging a release, run on a clean Windows 11 VM (no Klipo build tools):
+
+```powershell
+signtool verify /pa /v Klipo_0.1.3_x64-setup.exe
+```
+
+Expected output:
+```
+Successfully verified: Klipo_0.1.3_x64-setup.exe
+```
+
+Then double-click the installer and confirm SmartScreen no longer shows "Unknown publisher". The publisher should read "bluedev" or "Aydoğan Dağıdır" depending on what the cert profile is registered to.

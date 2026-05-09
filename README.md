@@ -16,7 +16,7 @@ Grab the latest signed installer for Windows 10/11 from the [Releases page](http
 - **`Klipo_<version>_x64-setup.exe`** — NSIS installer (recommended, ~3.8 MB). Faster install, smaller download, smoother auto-update path.
 - **`Klipo_<version>_x64_en-US.msi`** — Windows Installer (~5.3 MB). Use this for Group Policy / SCCM / Intune deployment.
 
-> First launch will trigger Windows SmartScreen ("Unknown publisher"). Click **More info** → **Run anyway** — the installer is signed for auto-update integrity (Ed25519) but doesn't yet carry an EV Authenticode cert (planned post-launch). The Tauri-signed update payload + the public source on this repo are the trust anchors until then.
+> **Note on SmartScreen:** historical builds (v0.1.0 – v0.1.2) were signed only for auto-update integrity (Ed25519) and triggered a "Unknown publisher" SmartScreen warning. Klipo v0.1.3 onward is **Authenticode-signed** (see [release notes](https://github.com/aydogandagidir/klipo/releases)) so SmartScreen accepts it normally. If your installer is unsigned, you are on a historical build — please upgrade.
 
 After installing, press **`Ctrl+Alt+V`** anywhere to open Klipo. The 4-step onboarding tour walks through summon, paste, pin/delete, and how to quit.
 
@@ -169,7 +169,14 @@ See [docs/](./docs/) for detailed architecture, security model, and protocol spe
 
 ## License
 
-Apache-2.0. See [LICENSE](./LICENSE) and [NOTICE](./NOTICE).
+Klipo (v0.1.3 and later) is a **commercial product** distributed under a proprietary End User License Agreement.
+
+- License terms: [LICENSE](./LICENSE) · [LEGAL/EULA.md](./LEGAL/EULA.md)
+- Privacy: [LEGAL/PRIVACY.md](./LEGAL/PRIVACY.md)
+- Refund policy: [LEGAL/REFUND.md](./LEGAL/REFUND.md)
+- Buy a license: [Klipo on Gumroad](https://gumroad.com/l/klipo) _(coming soon)_
+
+Earlier versions (**v0.1.0 – v0.1.2**) remain available under **Apache-2.0** — see [LICENSE-Apache-2.0-historical.md](./LICENSE-Apache-2.0-historical.md). Third-party components retain their original open-source licenses; see [NOTICE](./NOTICE).
 
 ## Status & Contributing
 
@@ -178,3 +185,7 @@ Pre-1.0. The Windows daily-driver path works end-to-end: capture, search, paste 
 Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening a PR. Architecture and budgets you must respect: [`docs/perf-budget.md`](./docs/perf-budget.md), [`docs/security.md`](./docs/security.md). Vulnerability disclosure: [`SECURITY.md`](./SECURITY.md).
 
 Architecture feedback before code lands → open a discussion.
+
+---
+
+Klipo is built and maintained by [**bluedev**](https://bluedev.dev) — software & AI business automation. Support: support@bluedev.dev.
