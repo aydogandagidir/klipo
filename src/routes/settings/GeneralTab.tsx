@@ -350,7 +350,7 @@ function HistoryLimitRow() {
   return (
     <Row
       label="History limit"
-      description="How many clips to keep before pruning the oldest unpinned ones. Default 10,000."
+      description="How many clips Klipo keeps in your local database before pruning the oldest unpinned ones. Default 10,000. The popup itself shows up to the most recent 1,000 at a time for snappy open — use search (Ctrl+F) to find anything older."
     >
       <div className="flex items-center gap-2">
         <input

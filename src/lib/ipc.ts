@@ -44,11 +44,21 @@ export async function ping(): Promise<string> {
 
 // ---------- Clip CRUD ----------
 
-export async function listClips(limit = 50, offset = 0): Promise<Clip[]> {
+/**
+ * List recent live clips, pinned-first.
+ *
+ * Default limit (500) covers the typical "I want to see everything I've
+ * captured today" case without paying the cost of a 10K-row JSON payload
+ * on every popup open. Callers that want to honour the user's full
+ * `history_limit` setting (up to the backend ceiling of 10,000) should
+ * pass it explicitly.
+ */
+export async function listClips(limit = 500, offset = 0): Promise<Clip[]> {
   return invoke<Clip[]>("list_clips", { limit, offset });
 }
 
-export async function searchClips(query: string, limit = 50): Promise<SearchHit[]> {
+/** FTS5 + recency search. Same default-limit reasoning as `listClips`. */
+export async function searchClips(query: string, limit = 500): Promise<SearchHit[]> {
   return invoke<SearchHit[]>("search_clips", { query, limit });
 }
 

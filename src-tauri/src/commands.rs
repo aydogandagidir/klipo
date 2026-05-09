@@ -26,25 +26,34 @@ pub async fn ping(start: State<'_, StartTime>) -> Result<String, String> {
 }
 
 /// List recent live (non-deleted) clips, pinned-first.
+///
+/// `limit` is clamped to a generous ceiling so callers that want to render
+/// the user's full visible history (matching `history_limit`) can do so in
+/// one round-trip. The ceiling exists only to bound JSON payload size and
+/// DOM render cost — the frontend should typically pass `history_limit`
+/// (capped at ~1000 for snappy popup-open) here.
 #[tauri::command]
 pub async fn list_clips(
     storage: State<'_, Storage>,
     limit: Option<i64>,
     offset: Option<i64>,
 ) -> Result<Vec<Clip>, String> {
-    let limit = limit.unwrap_or(50).clamp(1, 200);
+    let limit = limit.unwrap_or(500).clamp(1, 10_000);
     let offset = offset.unwrap_or(0).max(0);
     storage.list_clips(limit, offset).await.map_err(map_err)
 }
 
 /// Full-text + recency search. Empty `query` returns `list_clips`-equivalent.
+///
+/// Same clamp policy as `list_clips` so search results aren't artificially
+/// truncated when the user has a large history.
 #[tauri::command]
 pub async fn search_clips(
     storage: State<'_, Storage>,
     query: String,
     limit: Option<i64>,
 ) -> Result<Vec<SearchHit>, String> {
-    let limit = limit.unwrap_or(50).clamp(1, 200);
+    let limit = limit.unwrap_or(500).clamp(1, 10_000);
     storage.search_clips(&query, limit).await.map_err(map_err)
 }
 
