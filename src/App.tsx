@@ -44,38 +44,82 @@ export function App() {
    * so users who replay onboarding from Settings → About see it again. */
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [hotkeyLabel, setHotkeyLabel] = useState<string>("Ctrl+Alt+V");
+  /**
+   * How many clips the popup pulls per refresh. Bound to the user's
+   * `history_limit` setting at mount, capped at 1000 so opening the popup
+   * stays snappy even if the user has 10K rows in storage. Beyond the cap,
+   * search (Ctrl+F) is the right UX — FTS5 makes it instant. Default 500
+   * before the setting load resolves.
+   */
+  const [historyLimit, setHistoryLimit] = useState<number>(500);
 
   const searchRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  const refresh = useCallback(async (currentQuery: string) => {
-    // Stamp before the IPC round-trip; difference is logged after the
-    // results land. `klipo:search_ms` shows up in DevTools console (and
-    // eventually in `bench/results-<yyyy-mm>.md` once the runbook flow
-    // gets exercised). No-op on production builds since console.debug
-    // is filtered by default; surfaces under DevTools "Verbose" only.
-    const t0 = typeof performance !== "undefined" ? performance.now() : 0;
-    try {
-      let count: number;
-      if (currentQuery.trim().length === 0) {
-        const items = await listClips(50, 0);
-        setClips(items);
-        count = items.length;
-      } else {
-        const hits = await searchClips(currentQuery, 50);
-        setClips(hits.map((h) => h.clip));
-        count = hits.length;
+  const refresh = useCallback(
+    async (currentQuery: string) => {
+      // Stamp before the IPC round-trip; difference is logged after the
+      // results land. `klipo:search_ms` shows up in DevTools console (and
+      // eventually in `bench/results-<yyyy-mm>.md` once the runbook flow
+      // gets exercised). No-op on production builds since console.debug
+      // is filtered by default; surfaces under DevTools "Verbose" only.
+      const t0 = typeof performance !== "undefined" ? performance.now() : 0;
+      try {
+        let count: number;
+        if (currentQuery.trim().length === 0) {
+          const items = await listClips(historyLimit, 0);
+          setClips(items);
+          count = items.length;
+        } else {
+          const hits = await searchClips(currentQuery, historyLimit);
+          setClips(hits.map((h) => h.clip));
+          count = hits.length;
+        }
+        setSelectedIndex((prev) => Math.max(0, prev));
+        setError(null);
+        if (typeof performance !== "undefined") {
+          const ms = (performance.now() - t0).toFixed(1);
+          // eslint-disable-next-line no-console
+          console.debug(
+            "klipo:search_ms",
+            ms,
+            "query.len",
+            currentQuery.length,
+            "hits",
+            count,
+            "limit",
+            historyLimit,
+          );
+        }
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : String(e));
       }
-      setSelectedIndex((prev) => Math.max(0, prev));
-      setError(null);
-      if (typeof performance !== "undefined") {
-        const ms = (performance.now() - t0).toFixed(1);
-        // eslint-disable-next-line no-console
-        console.debug("klipo:search_ms", ms, "query.len", currentQuery.length, "hits", count);
+    },
+    [historyLimit],
+  );
+
+  // Read the user's `history_limit` setting once and cap the popup display
+  // at 1000 so the popup-open path stays snappy even when the user picks
+  // a large pruning ceiling (e.g. 10K). Falls back to the default of 500
+  // if the IPC call errors.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const raw = await getSetting("history_limit");
+        if (cancelled) return;
+        const parsed = raw ? Number.parseInt(raw, 10) : 10_000;
+        if (Number.isFinite(parsed) && parsed > 0) {
+          setHistoryLimit(Math.min(parsed, 1000));
+        }
+      } catch {
+        // Keep the default; surfacing the IPC error here would block the
+        // popup on a setting we have a sane fallback for.
       }
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
