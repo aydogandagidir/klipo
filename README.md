@@ -2,8 +2,10 @@
 
 > Cross-platform clipboard manager with end-to-end encrypted sync.
 > Fast, private, keyboard-first — on Windows today, macOS in v0.2.
+>
+> **By [bluedev](https://bluedev.dev)** — software & AI business automation studio.
 
-**Status:** v0.1 shipped. Daily-driver Windows MVP with auto-update wired. Faz C (macOS port) is next.
+**Status:** v0.1.3 released. Daily-driver Windows commercial product, $29 lifetime updates on Gumroad. macOS port (Faz C) is next.
 
 <p align="center">
   <img src="./assets/hero.gif" alt="Klipo demo: clipboard popup with captured clips, sensitive content guard, polished settings UI" width="720">
@@ -16,7 +18,7 @@ Grab the latest signed installer for Windows 10/11 from the [Releases page](http
 - **`Klipo_<version>_x64-setup.exe`** — NSIS installer (recommended, ~3.8 MB). Faster install, smaller download, smoother auto-update path.
 - **`Klipo_<version>_x64_en-US.msi`** — Windows Installer (~5.3 MB). Use this for Group Policy / SCCM / Intune deployment.
 
-> **Note on SmartScreen:** historical builds (v0.1.0 – v0.1.2) were signed only for auto-update integrity (Ed25519) and triggered a "Unknown publisher" SmartScreen warning. Klipo v0.1.3 onward is **Authenticode-signed** (see [release notes](https://github.com/aydogandagidir/klipo/releases)) so SmartScreen accepts it normally. If your installer is unsigned, you are on a historical build — please upgrade.
+> **Note on SmartScreen:** Klipo is currently distributed **without an Authenticode (EV) code-signing certificate** — the cost was deliberately deferred to keep the indie price ($29 lifetime) sustainable. The installer **is** signed for auto-update integrity (Ed25519, public key in `tauri.conf.json`), and the publisher metadata embedded in the NSIS installer reads "bluedev" (right-click installer → Properties → Details to verify). On first install, SmartScreen will show "Unknown publisher" — click **More info** → **Run anyway**. The release notes, public changelog, and the bluedev brand at [bluedev.dev](https://bluedev.dev) are the trust anchors until an EV cert is provisioned in a later release.
 
 After installing, press **`Ctrl+Alt+V`** anywhere to open Klipo. The 4-step onboarding tour walks through summon, paste, pin/delete, and how to quit.
 

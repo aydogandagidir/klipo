@@ -90,7 +90,7 @@ export function Settings() {
           })}
         </nav>
         <div className="mt-auto px-3 pt-4 text-[10px] text-muted-foreground">
-          Klipo v0.1.2 · Esc to close
+          Klipo v0.1.3 · by bluedev · Esc to close
         </div>
       </aside>
 
@@ -123,14 +123,73 @@ function AboutTab() {
       <div>
         <h2 className="text-lg font-semibold">About Klipo</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Cross-platform clipboard manager — fast, private, with opt-in end-to-end encrypted sync.
+          A keyboard-first clipboard manager by{" "}
+          <a
+            href="https://bluedev.dev"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            bluedev
+          </a>{" "}
+          — fast, private, with opt-in end-to-end encrypted sync arriving in v0.3.
         </p>
       </div>
       <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Version</dt>
-        <dd className="font-mono">0.1.2</dd>
+        <dd className="font-mono">0.1.3</dd>
+        <dt className="text-muted-foreground">Publisher</dt>
+        <dd>
+          bluedev (
+          <a
+            href="https://bluedev.dev"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline-offset-2 hover:underline"
+          >
+            bluedev.dev
+          </a>
+          )
+        </dd>
         <dt className="text-muted-foreground">License</dt>
-        <dd>Apache-2.0</dd>
+        <dd>
+          Proprietary —{" "}
+          <a
+            href="https://github.com/aydogandagidir/klipo/blob/main/LEGAL/EULA.md"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline-offset-2 hover:underline"
+          >
+            EULA
+          </a>{" "}
+          ·{" "}
+          <a
+            href="https://github.com/aydogandagidir/klipo/blob/main/LEGAL/PRIVACY.md"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline-offset-2 hover:underline"
+          >
+            Privacy
+          </a>{" "}
+          ·{" "}
+          <a
+            href="https://github.com/aydogandagidir/klipo/blob/main/LEGAL/REFUND.md"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline-offset-2 hover:underline"
+          >
+            Refund
+          </a>
+        </dd>
+        <dt className="text-muted-foreground">Support</dt>
+        <dd>
+          <a
+            href="mailto:support@bluedev.dev"
+            className="text-primary underline-offset-2 hover:underline"
+          >
+            support@bluedev.dev
+          </a>
+        </dd>
         <dt className="text-muted-foreground">Platform</dt>
         <dd className="font-mono">{navigator.platform}</dd>
         <dt className="text-muted-foreground">User agent</dt>
