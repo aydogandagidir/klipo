@@ -5,12 +5,20 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] — 0.1.3 — Commercial pivot + sensitive-content fixes
+## [0.1.3] — 2026-05-10 — Commercial pivot + sensitive-content fixes + popup limit + re-scan history
 
-This is the first commercial release. The licensing model changes from
-Apache-2.0 to a proprietary EULA owned by **bluedev** (Aydoğan Dağıdır).
-v0.1.0–0.1.2 remain available under Apache-2.0; v0.1.3+ is governed by
-[`LEGAL/EULA.md`](./LEGAL/EULA.md).
+First commercial release under **bluedev** brand. Licensing model
+changed from Apache-2.0 to a proprietary EULA owned by Aydoğan Dağıdır
+(trading as bluedev). v0.1.0–0.1.2 remain available under Apache-2.0;
+v0.1.3+ is governed by [`LEGAL/EULA.md`](./LEGAL/EULA.md). Distributed
+on Gumroad at $29 with lifetime v0.x updates.
+
+**Note:** v0.1.3 is **not Authenticode-signed** — EV cert cost was
+deliberately deferred. Installer carries `Publisher: bluedev` metadata
+visible in NSIS Properties → Details. SmartScreen will show "Unknown
+publisher" on first install — see README "Note on SmartScreen" for the
+trust-anchor rationale. Auto-update payload is still Ed25519-signed
+(unchanged from prior releases).
 
 ### Fixed — sensitive content detection
 - **OpenAI project keys (`sk-proj-…`)**, service-account keys
@@ -49,17 +57,25 @@ v0.1.0–0.1.2 remain available under Apache-2.0; v0.1.3+ is governed by
 - README now identifies bluedev as the publisher and points at the
   Gumroad listing (when live).
 
-### Added — pre-launch documentation
-- Gumroad product page copy at [`docs/gumroad-product-page.md`](./docs/gumroad-product-page.md).
-- bluedev.dev landing page copy at [`docs/landing-bluedev.md`](./docs/landing-bluedev.md).
-- Authenticode signing setup walkthrough (Azure Trusted Signing + EV cert)
-  in [`docs/release-signing.md`](./docs/release-signing.md) §6.
+### Fixed — popup display limit
+- Popup was hard-coded to load only the first 50 clips, which made the
+  history feel artificially capped even when `history_limit` was set
+  to 10,000. Now reads `history_limit` at mount and loads up to
+  `min(history_limit, 1000)` per refresh — backend clamp also raised
+  to 10,000. The 1,000 popup ceiling stays sane until `react-virtual`
+  is wired (planned v0.1.4); search (Ctrl+F) covers anything older.
 
-### Required before tagging v0.1.3
-- [ ] Authenticode-sign the installer (see release-signing.md §6).
-- [ ] Decide whether to make the GitHub repository private or
-      source-available under a non-redistribution license.
-- [ ] Set the Gumroad listing price.
+### Added — pre-launch documentation
+- Gumroad product page copy: [`docs/gumroad-product-page.md`](./docs/gumroad-product-page.md) ($29 launch).
+- bluedev.dev landing page copy: [`docs/landing-bluedev.md`](./docs/landing-bluedev.md).
+- Demo video script + shotlist: [`docs/demo-video-script.md`](./docs/demo-video-script.md), [`docs/demo-video-shotlist.md`](./docs/demo-video-shotlist.md).
+- Release-signing walkthrough (Authenticode reference for future):
+  [`docs/release-signing.md` §6](./docs/release-signing.md).
+
+### Branding
+- `tauri.conf.json` `bundle.publisher = "bluedev"`, `bundle.homepage = "https://bluedev.dev"`.
+- README hero, Settings → About, and Settings sidebar footer all mention bluedev.
+- Repository moved to **private** (release artifacts remain public for the auto-update endpoint).
 
 ---
 

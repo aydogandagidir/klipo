@@ -26,7 +26,7 @@
 >
 > Klipo is a keyboard-first clipboard manager that captures every `Ctrl+C` you make and lets you find it again in milliseconds. Local. Private. Fast.
 
-**Primary CTA:** `Buy on Gumroad — $XX`
+**Primary CTA:** `Buy on Gumroad — $29`
 **Secondary CTA:** `Read the docs`
 
 Hero asset: `assets/hero.gif` (already produced).
@@ -80,7 +80,7 @@ Detect API keys, credit cards, JWTs, and 10 more patterns automatically. Sensiti
 
 | Tier | What you get | Price |
 |:---|:---|:---|
-| **Personal** | Klipo for up to 3 devices you own. Lifetime v0.x updates. macOS upgrade free when v0.2 ships. | **$XX** |
+| **Personal** | Klipo for up to 3 devices you own. Lifetime v0.x updates. macOS upgrade free when v0.2 ships. | **$29** |
 | **Team** | Same, on N seats. Centralized license management. Priority email support. | **Contact us** |
 
 > 30-day refund. Per-seat license. [Read the EULA](https://github.com/aydogandagidir/klipo/blob/main/LEGAL/EULA.md).
@@ -120,13 +120,13 @@ bluedev builds software and AI-driven automation tools for productivity-minded d
 
 > **Try it. Refund it within 30 days if it isn't right for you.**
 >
-> [Buy on Gumroad — $XX](https://gumroad.com/l/klipo) · [Docs](https://github.com/aydogandagidir/klipo) · [Support](mailto:support@bluedev.dev)
+> [Buy on Gumroad — $29](https://gumroad.com/l/klipo) · [Docs](https://github.com/aydogandagidir/klipo) · [Support](mailto:support@bluedev.dev)
 
 ---
 
 ## Page-build TODOs (for whoever implements the page)
 
-- [ ] Replace `$XX` with the chosen price (recommend $19–29 for Personal at launch).
+- [ ] Replace `$29` with the chosen price (recommend $19–29 for Personal at launch).
 - [ ] Replace `https://gumroad.com/l/klipo` with the real Gumroad listing URL once published.
 - [ ] Place `assets/hero.gif` above the fold; lazy-load below-fold screenshots.
 - [ ] Add the bluedev navbar/footer for brand consistency.
