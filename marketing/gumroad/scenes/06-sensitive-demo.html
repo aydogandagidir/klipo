@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Scene 06 · Sensitive Auto-Flag · Klipo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
+<link rel="stylesheet" href="../style.css" />
+<style>
+  .s6 {
+    background: linear-gradient(160deg, #0A1628 0%, #1E1B4B 60%, #1F1014 100%);
+    color: #fff;
+    padding: 50px 70px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 36px;
+  }
+  .s6__left {
+    width: 480px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .s6__eyebrow {
+    color: #FCA5A5;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) .1s both;
+  }
+  .s6__h {
+    font-family: var(--font-display);
+    font-size: 50px;
+    font-weight: 800;
+    letter-spacing: -1.6px;
+    line-height: 1.06;
+    animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .3s both;
+  }
+  .s6__h .accent { color: #FFD700; }
+  .s6__lead {
+    font-size: 16px;
+    line-height: 1.55;
+    opacity: 0.85;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) .6s both;
+  }
+  .s6__patterns {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-top: 8px;
+  }
+  .s6__pattern {
+    padding: 8px 12px;
+    background: rgba(239,68,68,0.10);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 8px;
+    font-size: 12px;
+    color: #FCA5A5;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+    animation: fadeInUp .6s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .s6__pattern.s1 { animation-delay: 1.0s; }
+  .s6__pattern.s2 { animation-delay: 1.15s; }
+  .s6__pattern.s3 { animation-delay: 1.30s; }
+  .s6__pattern.s4 { animation-delay: 1.45s; }
+  .s6__pattern.s5 { animation-delay: 1.60s; }
+  .s6__pattern.s6 { animation-delay: 1.75s; }
+  .s6__pattern-mono {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    background: rgba(255,255,255,0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #fff;
+  }
+  .s6__tagline {
+    margin-top: 14px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: #fff;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) 2.4s both;
+  }
+  .s6__tagline .gold { color: #FFD700; }
+
+  .s6__right {
+    width: 460px;
+    animation: scaleIn .9s cubic-bezier(.2,.8,.2,1) .3s both;
+    position: relative;
+  }
+  .s6__copy-event {
+    position: absolute;
+    top: 16px;
+    right: -30px;
+    background: #015AFF;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 8px 24px rgba(1, 90, 255, 0.4);
+    z-index: 10;
+    opacity: 0;
+    display: flex; align-items: center; gap: 6px;
+    animation: copyPing .6s cubic-bezier(.34,1.56,.64,1) 1.4s both,
+               fadeIn .4s ease-in 2.4s reverse both;
+  }
+  .s6__copy-event .key {
+    font-family: var(--font-mono);
+    background: rgba(255,255,255,0.2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+  }
+  .s6__detect-event {
+    position: absolute;
+    top: 70px;
+    right: -30px;
+    background: #EF4444;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+    z-index: 10;
+    opacity: 0;
+    display: flex; align-items: center; gap: 6px;
+    animation: copyPing .6s cubic-bezier(.34,1.56,.64,1) 2.5s both,
+               pulseRed 2s ease-in-out 3.5s infinite;
+  }
+
+  /* The sensitive clip — appears with red border, blurred text */
+  .clip-row--featured {
+    margin: 0 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 2px solid rgba(239, 68, 68, 0.55);
+    display: flex; align-items: center; gap: 12px;
+    animation: scaleIn .6s cubic-bezier(.34,1.56,.64,1) 2.8s both;
+    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25);
+    position: relative;
+  }
+  .clip-row--featured.anim-pulse-red {
+    animation: scaleIn .6s cubic-bezier(.34,1.56,.64,1) 2.8s both,
+               pulseRed 2.4s ease-in-out 3.6s infinite;
+  }
+  .clip-row--featured .clip-row__icon {
+    width: 36px; height: 36px;
+    font-size: 16px;
+    background: rgba(239, 68, 68, 0.22);
+    color: #FCA5A5;
+  }
+  .clip-row--featured .clip-row__body {
+    flex: 1;
+  }
+  .clip-row--featured .clip-row__text {
+    font-size: 14px;
+    filter: blur(5px);
+    user-select: none;
+    transition: filter .3s ease;
+  }
+  .clip-row--featured .clip-row__meta {
+    font-size: 10px;
+    margin-top: 4px;
+  }
+  .clip-row--featured .clip-row__badge {
+    font-size: 10px;
+    padding: 4px 10px;
+    background: rgba(239, 68, 68, 0.30);
+    color: #FCA5A5;
+    border: 1px solid rgba(239, 68, 68, 0.50);
+  }
+
+  .blur-callout {
+    position: absolute;
+    bottom: -16px;
+    right: -10px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(239, 68, 68, 0.40);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+    animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) 4.5s both;
+  }
+  .blur-callout .red-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #EF4444;
+    animation: pulseRed 1.5s ease-in-out infinite;
+  }
+</style>
+</head>
+<body data-stage="video" data-duration="11000">
+  <div class="stage s6">
+    <div class="bg-glow" style="top: -160px; right: -100px; opacity: 0.30; background: #EF4444; width: 480px; height: 480px;"></div>
+    <div class="bg-glow bg-glow--blue" style="bottom: -200px; left: -120px; opacity: 0.25;"></div>
+
+    <div class="s6__left">
+      <div class="s6__eyebrow">🛡️ PROTECT</div>
+      <div class="s6__h">Your secrets stay <span class="accent">secret.</span></div>
+      <div class="s6__lead">
+        Klipo scans every clip locally for 13 sensitive patterns
+        and flags them with a red border + blurred preview, so you
+        don't paste an API key into a Slack channel by accident.
+      </div>
+      <div class="s6__patterns">
+        <div class="s6__pattern s1">🔑 <span>OpenAI</span> <span class="s6__pattern-mono">sk-…</span></div>
+        <div class="s6__pattern s2">☁️ <span>AWS</span> <span class="s6__pattern-mono">AKIA…</span></div>
+        <div class="s6__pattern s3">🎫 <span>JWT</span> <span class="s6__pattern-mono">eyJ…</span></div>
+        <div class="s6__pattern s4">💳 <span>Card</span> <span class="s6__pattern-mono">4242…</span></div>
+        <div class="s6__pattern s5">🐙 <span>GitHub</span> <span class="s6__pattern-mono">ghp_…</span></div>
+        <div class="s6__pattern s6">💼 <span>Stripe</span> <span class="s6__pattern-mono">sk_live_</span></div>
+      </div>
+      <div class="s6__tagline">All <span class="gold">13 patterns</span> scanned locally — never uploaded.</div>
+    </div>
+
+    <div class="s6__right">
+      <div class="s6__copy-event">📋 Copied <span class="key">Ctrl+C</span></div>
+      <div class="s6__detect-event">⚠ Sensitive detected</div>
+
+      <div class="popup-mock">
+        <div class="popup-mock__head">
+          <div class="popup-mock__brand">K</div>
+          <div>
+            <div class="popup-mock__title">Klipo</div>
+            <div class="popup-mock__sub">Sensitive clip flagged</div>
+          </div>
+          <div style="margin-left: auto;">
+            <span class="popup-mock__shortcut">Ctrl+Alt+V</span>
+          </div>
+        </div>
+
+        <div class="popup-mock__body" style="padding: 12px 0;">
+          <div class="clip-row--featured anim-pulse-red">
+            <div class="clip-row__icon">!</div>
+            <div class="clip-row__body">
+              <div class="clip-row__text">sk-proj-aB9k2L7mN8xQ4vR3pT6wY2zE5dF9hJ1kM3...</div>
+              <div class="clip-row__meta">Just now · OpenAI API key · auto-flagged</div>
+            </div>
+            <div class="clip-row__badge">Sensitive</div>
+          </div>
+
+          <!-- Other clips below for context -->
+          <div style="padding: 0 14px; margin-top: 12px; display: flex; flex-direction: column; gap: 4px;">
+            <div class="clip-row" style="opacity: 0.55;">
+              <div class="clip-row__icon clip-row__icon--text">T</div>
+              <div class="clip-row__body">
+                <div class="clip-row__text">Meeting notes — Q2 planning</div>
+                <div class="clip-row__meta">5 min ago</div>
+              </div>
+            </div>
+            <div class="clip-row" style="opacity: 0.55;">
+              <div class="clip-row__icon clip-row__icon--code">{}</div>
+              <div class="clip-row__body">
+                <div class="clip-row__text">stripe.charges.create({ amount: 4900 })</div>
+                <div class="clip-row__meta">12 min ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="blur-callout">
+        <span class="red-dot"></span>
+        <span>Preview blurred · click to reveal</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

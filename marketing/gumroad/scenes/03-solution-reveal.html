@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Scene 03 · Solution Reveal · Klipo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800;900&display=swap" />
+<link rel="stylesheet" href="../style.css" />
+<style>
+  .s3 {
+    background: var(--gradient-hero);
+    color: #fff;
+    flex-direction: column;
+    padding: 50px;
+    gap: 28px;
+    text-align: center;
+  }
+  .s3__brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: center;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) .1s both;
+  }
+  .s3__brand-mark {
+    width: 70px; height: 70px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.25);
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 900; font-size: 38px;
+    letter-spacing: -1.5px;
+  }
+  .s3__h {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .5s both;
+    max-width: 940px;
+    margin: 0 auto;
+  }
+  .s3__h .accent { color: #FFD700; }
+  .s3__pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    width: 100%;
+    max-width: 980px;
+    margin: 8px auto 0;
+  }
+  .s3__pillar {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 18px;
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .s3__pillar.delay-1 { animation-delay: 1.0s; }
+  .s3__pillar.delay-2 { animation-delay: 1.25s; }
+  .s3__pillar.delay-3 { animation-delay: 1.50s; }
+  .s3__pillar-icon {
+    font-size: 38px;
+    line-height: 1;
+  }
+  .s3__pillar-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .s3__pillar-sub {
+    font-size: 13px;
+    opacity: 0.82;
+    line-height: 1.5;
+  }
+  .s3__by {
+    margin-top: 4px;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.65;
+    font-weight: 600;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) 1.9s both;
+  }
+</style>
+</head>
+<body data-stage="video" data-duration="6500">
+  <div class="stage s3">
+    <div class="bg-grid" style="opacity: 0.45;"></div>
+    <div class="bg-glow bg-glow--cyan anim-drift" style="top: -180px; right: -150px;"></div>
+    <div class="bg-glow bg-glow--blue anim-drift" style="bottom: -200px; left: -100px; animation-delay: -2s;"></div>
+
+    <div class="s3__brand">
+      <div class="s3__brand-mark">K</div>
+      <div style="text-align: left;">
+        <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; letter-spacing: -1px;">Klipo</div>
+        <div style="font-size: 12px; opacity: 0.75; letter-spacing: 1.5px; text-transform: uppercase;">3 SUPERPOWERS</div>
+      </div>
+    </div>
+
+    <div class="s3__h">
+      Your clipboard, but it <span class="accent">remembers.</span>
+    </div>
+
+    <div class="s3__pillars">
+      <div class="s3__pillar delay-1">
+        <div class="s3__pillar-icon">🔍</div>
+        <div class="s3__pillar-title">Search</div>
+        <div class="s3__pillar-sub">Ctrl+Alt+V → type → paste. Instant fuzzy search across everything you ever copied.</div>
+      </div>
+      <div class="s3__pillar delay-2">
+        <div class="s3__pillar-icon">🛡️</div>
+        <div class="s3__pillar-title">Protect</div>
+        <div class="s3__pillar-sub">API keys, JWTs, credit cards auto-flagged. Red border, blurred preview, 13 patterns scanned locally.</div>
+      </div>
+      <div class="s3__pillar delay-3">
+        <div class="s3__pillar-icon">⚡</div>
+        <div class="s3__pillar-title">Local</div>
+        <div class="s3__pillar-sub">SQLite under your %APPDATA%. Zero cloud, &lt;50ms search, 3.8 MB installer. Tauri 2 + Rust.</div>
+      </div>
+    </div>
+
+    <div class="s3__by">— a bluedev product —</div>
+  </div>
+</body>
+</html>
