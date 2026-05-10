@@ -8,6 +8,9 @@
 //! include any clipboard content in error strings — that would violate the
 //! "no clipboard content in logs" non-negotiable.
 
+use crate::license::manager::{
+    self as license_manager, LicenseStatus, ReverifyOutcome, TrialStatus,
+};
 use crate::perf::StartTime;
 use crate::storage::clips::{Clip, ExcludedApp, ResensitizeReport};
 use crate::storage::search::SearchHit;
@@ -275,6 +278,12 @@ pub async fn open_settings(app: tauri::AppHandle) -> Result<(), String> {
 /// Read a value from the `settings` k/v table. Returns `null` for missing
 /// keys (frontend treats that as "use default"). Whitelist of permitted keys
 /// is enforced here so a compromised renderer cannot probe arbitrary state.
+///
+/// `license_*` and `trial_*` keys are accepted by the whitelist (so the
+/// backend `license::manager` can read/write them via this same plumbing)
+/// but rejected here — the renderer must go through the dedicated license
+/// commands so we don't hand the raw key to the WebView when the UI only
+/// needs the masked form.
 #[tauri::command]
 pub async fn get_setting(
     storage: State<'_, Storage>,
@@ -282,6 +291,11 @@ pub async fn get_setting(
 ) -> Result<Option<String>, String> {
     if !is_known_setting(&key) {
         return Err(format!("unknown setting key: {key}"));
+    }
+    if is_license_setting(&key) {
+        return Err(format!(
+            "{key} is backend-only; use the license commands"
+        ));
     }
     storage.get_setting(&key).await.map_err(map_err)
 }
@@ -297,12 +311,44 @@ pub async fn set_setting(
     if !is_known_setting(&key) {
         return Err(format!("unknown setting key: {key}"));
     }
+    if is_license_setting(&key) {
+        return Err(format!(
+            "{key} is backend-only; use the license commands"
+        ));
+    }
     validate_setting(&key, &value)?;
     storage.set_setting(&key, &value).await.map_err(map_err)
 }
 
+/// Mark license-related keys that the *renderer* must not read or write
+/// directly. The `manager` module is allowed to touch them via the
+/// `Storage::get_setting`/`set_setting` API (which doesn't pass through
+/// this guard) — the IPC commands `activate_license`, `get_license_status`,
+/// etc. mediate everything the UI is allowed to know.
+fn is_license_setting(key: &str) -> bool {
+    matches!(
+        key,
+        "license_key"
+            | "license_email"
+            | "license_product_name"
+            | "license_purchase_id"
+            | "license_activated_at"
+            | "license_last_verified_at"
+            | "license_grace_until"
+            | "trial_started_at"
+            | "license_product_id_override"
+    )
+}
+
 /// Whitelist of setting keys the renderer may read or write. Anything else
 /// (e.g. `schema_version`) is read-only and managed by migrations.
+///
+/// **License keys note:** `license_key`, `license_email`, etc. are listed
+/// here so the backend's `manager.rs` can read/write them through the same
+/// `Storage::get_setting` / `set_setting` plumbing. The `SettingKey` union
+/// in `src/lib/ipc.ts` does NOT include them — the renderer goes through
+/// the dedicated license commands instead, so a malicious renderer can't
+/// exfiltrate the raw key via `getSetting("license_key")`.
 fn is_known_setting(key: &str) -> bool {
     matches!(
         key,
@@ -319,6 +365,15 @@ fn is_known_setting(key: &str) -> bool {
             | "thumbnail_size_px"
             | "onboarding_done"
             | "autostart"
+            | "license_key"
+            | "license_email"
+            | "license_product_name"
+            | "license_purchase_id"
+            | "license_activated_at"
+            | "license_last_verified_at"
+            | "license_grace_until"
+            | "trial_started_at"
+            | "license_product_id_override"
     )
 }
 
@@ -677,4 +732,76 @@ pub async fn wipe_all_data(
         "user wiped all clips + blobs"
     );
     Ok(wiped)
+}
+
+// ---------------- License + trial (M8) ----------------
+//
+// All five commands round-trip through `crate::license::manager`. The
+// manager owns the storage shape + the Gumroad client; this layer is
+// pure error mapping + logging.
+
+/// Activate a Gumroad license key. Increments the per-key uses counter
+/// (each device = +1) so Gumroad enforces the 3-device limit on the
+/// server side. Returns the resulting `LicenseStatus` so the UI can flip
+/// straight from "Activate" to "Pro — Activated" without a follow-up
+/// `get_license_status` call.
+#[tauri::command]
+pub async fn activate_license(
+    storage: State<'_, Storage>,
+    key: String,
+    email: Option<String>,
+) -> Result<LicenseStatus, String> {
+    let status = license_manager::activate(&storage, &key, email.as_deref())
+        .await
+        .map_err(|e| e.to_string())?;
+    tracing::info!(
+        target: "klipo::license",
+        tier = ?status.tier,
+        reason = %status.reason,
+        "license activated"
+    );
+    Ok(status)
+}
+
+/// Wipe every `license_*` key from settings. Falls back to trial-or-free
+/// posture immediately. Idempotent — calling on a free user is a no-op.
+#[tauri::command]
+pub async fn deactivate_license(storage: State<'_, Storage>) -> Result<(), String> {
+    license_manager::deactivate(&storage)
+        .await
+        .map_err(|e| e.to_string())?;
+    tracing::info!(target: "klipo::license", "license deactivated by user");
+    Ok(())
+}
+
+/// Current status snapshot. Cheap (a handful of SELECTs) — UI may call
+/// this on every render that wants the latest state without going through
+/// a network round-trip.
+#[tauri::command]
+pub async fn get_license_status(
+    storage: State<'_, Storage>,
+) -> Result<LicenseStatus, String> {
+    Ok(license_manager::get_status(&storage).await)
+}
+
+/// Manual "Re-check now" button. Hits Gumroad without incrementing the
+/// uses counter (so power users can re-check freely without burning their
+/// 3-device allowance). On `Invalid` / `Refunded` the license is cleared
+/// — the renderer will see `tier: free, reason: trial-active|trial-expired`
+/// on the next status fetch.
+#[tauri::command]
+pub async fn reverify_license(
+    storage: State<'_, Storage>,
+) -> Result<ReverifyOutcome, String> {
+    Ok(license_manager::reverify(&storage).await)
+}
+
+/// Trial countdown for the popup footer + Settings → License banner.
+/// Initializes `trial_started_at` if absent, so this can safely be the
+/// very first thing the renderer asks the backend.
+#[tauri::command]
+pub async fn get_trial_status(
+    storage: State<'_, Storage>,
+) -> Result<TrialStatus, String> {
+    Ok(license_manager::get_trial_status(&storage).await)
 }

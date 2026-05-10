@@ -1,15 +1,17 @@
 import { listen } from "@tauri-apps/api/event";
-import { ArrowRight, Search, Settings as SettingsIcon } from "lucide-react";
+import { ArrowRight, ExternalLink, KeyRound, Search, Settings as SettingsIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { AlertDialog } from "@/components/AlertDialog";
 import { ClipCard } from "@/components/ClipCard";
 import { OnboardingOverlay } from "@/components/OnboardingOverlay";
-import type { Clip } from "@/lib/ipc";
+import type { Clip, LicenseStatus, TrialStatus } from "@/lib/ipc";
 import {
   deleteClip,
   getLastAppName,
+  getLicenseStatus,
   getSetting,
+  getTrialStatus,
   hidePopup,
   listClips,
   openSettings,
@@ -19,6 +21,10 @@ import {
   searchClips,
   setSetting,
 } from "@/lib/ipc";
+
+/** Where the popup's "Buy Klipo" link sends the user. Mirrors
+ * `PURCHASE_URL` in `src-tauri/src/license/mod.rs` and the LicenseTab. */
+const PURCHASE_URL = "https://bluedev.dev/products/klipo";
 
 /**
  * M5.x popup root.
@@ -44,6 +50,18 @@ export function App() {
    * so users who replay onboarding from Settings → About see it again. */
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [hotkeyLabel, setHotkeyLabel] = useState<string>("Ctrl+Alt+V");
+  /**
+   * License + trial state, used to render either:
+   *   - the normal "Klipo v0.1.3" footer when Pro,
+   *   - a yellow "Trial: N days left" footer + "Buy Klipo" link during trial,
+   *   - or a full-popup "Trial expired" overlay when neither holds.
+   *
+   * Fetched once on mount and re-fetched on focus, so a user who activates
+   * via Settings sees the popup unblock the next time they hit the hotkey
+   * without restarting Klipo.
+   */
+  const [licenseStatus, setLicenseStatus] = useState<LicenseStatus | null>(null);
+  const [trialStatus, setTrialStatus] = useState<TrialStatus | null>(null);
   /**
    * How many clips the popup pulls per refresh. Bound to the user's
    * `history_limit` setting at mount, capped at 1000 so opening the popup
@@ -169,6 +187,18 @@ export function App() {
         } catch {
           // IPC unavailable — never show wizard in dev hot-reload state.
           setShowOnboarding(false);
+        }
+      })();
+      // License + trial are also re-fetched on focus so activating via
+      // Settings while the popup is hidden flips the badge and removes the
+      // overlay on the next hotkey press without a restart.
+      void (async () => {
+        try {
+          const [lic, tr] = await Promise.all([getLicenseStatus(), getTrialStatus()]);
+          setLicenseStatus(lic);
+          setTrialStatus(tr);
+        } catch {
+          /* IPC unavailable — keep last value */
         }
       })();
     };
@@ -400,7 +430,11 @@ export function App() {
           <kbd className="rounded bg-muted/50 px-1">Esc</kbd> close ·{" "}
           <kbd className="rounded bg-muted/50 px-1">Ctrl+Q</kbd> quit
         </span>
-        <span className="shrink-0 font-mono">{isPasting ? "pasting…" : "Klipo v0.1.3"}</span>
+        <FooterStatus
+          isPasting={isPasting}
+          licenseStatus={licenseStatus}
+          trialStatus={trialStatus}
+        />
       </div>
 
       <AlertDialog
@@ -431,8 +465,134 @@ export function App() {
           }}
         />
       ) : null}
+
+      {licenseStatus?.tier === "expired" ? <TrialExpiredOverlay /> : null}
     </div>
   );
+}
+
+// ---------------- Trial-expired overlay ----------------
+//
+// Rendered on top of the popup when the 14-day trial has expired AND no
+// license is on file. The clip list keeps rendering behind it (greyed-out,
+// non-interactive — pointer events are caught by this overlay) so the user
+// can see what they'll get back the moment they activate.
+
+function TrialExpiredOverlay() {
+  const buy = () => {
+    // Tauri exposes `shell.open` for external URLs; we lazy-load it so the
+    // popup bundle stays minimal for the common (Pro / trial) path.
+    // Tauri's WebView2 hooks `window.open` to send the URL to the user's
+    // default browser, so we don't need the shell plugin for a simple
+    // outgoing link. Falls through to a normal browser tab in dev.
+    window.open(PURCHASE_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const goActivate = () => {
+    void (async () => {
+      try {
+        const { openSettings: openSettingsCmd } = await import("@/lib/ipc");
+        await openSettingsCmd();
+      } catch {
+        /* best effort — fall through */
+      }
+    })();
+  };
+
+  return (
+    <div
+      className="absolute inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Klipo trial expired"
+    >
+      <div className="mx-4 max-w-md space-y-4 rounded-xl border border-destructive/40 bg-card p-5 shadow-2xl">
+        <div className="flex items-center gap-2 text-destructive">
+          <KeyRound className="h-5 w-5" aria-hidden="true" />
+          <h2 className="text-base font-semibold">Trial expired</h2>
+        </div>
+        <p className="text-sm text-foreground">
+          Your 14-day Klipo trial has ended. Activate a license to keep using clipboard history,
+          search, and pinning.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          New captures are paused until you activate. Your existing clips are still here — they'll
+          stay with you whether you continue or not.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={goActivate}
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            <KeyRound className="h-4 w-4" aria-hidden="true" />
+            Activate license
+          </button>
+          <button
+            type="button"
+            onClick={buy}
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-accent/40"
+          >
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            Buy Klipo ($29)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Footer status (trial / Pro / paste-busy) ----------------
+
+function FooterStatus({
+  isPasting,
+  licenseStatus,
+  trialStatus,
+}: {
+  isPasting: boolean;
+  licenseStatus: LicenseStatus | null;
+  trialStatus: TrialStatus | null;
+}) {
+  if (isPasting) {
+    return <span className="shrink-0 font-mono">pasting…</span>;
+  }
+  // Trial active → countdown badge + buy link in place of the version text.
+  if (licenseStatus?.tier === "trial") {
+    const days = licenseStatus.trial_days_remaining ?? trialStatus?.days_remaining ?? 0;
+    const urgent = days <= 3;
+    const buy = () => {
+      window.open(PURCHASE_URL, "_blank", "noopener,noreferrer");
+    };
+    return (
+      <span className="flex shrink-0 items-center gap-2">
+        <span
+          className={cnFooter(
+            "rounded px-1.5 py-0.5 font-mono",
+            urgent ? "bg-destructive/30 text-destructive" : "bg-muted/50 text-muted-foreground",
+          )}
+          title={`Free trial — ${days} of 14 days left`}
+        >
+          Trial: {days}d left
+        </span>
+        <button
+          type="button"
+          onClick={buy}
+          className="text-primary underline-offset-2 hover:underline"
+        >
+          Buy Klipo
+        </button>
+      </span>
+    );
+  }
+  // Pro / Free / Expired all keep the version text. The expired-overlay
+  // owns the user-facing message in the expired branch.
+  return <span className="shrink-0 font-mono">Klipo v0.1.3</span>;
+}
+
+/** Local class joiner — the popup file already imports `useCallback` etc.
+ * but not `cn`, and we want to keep this leaf component dependency-free. */
+function cnFooter(...parts: Array<string | false | null | undefined>): string {
+  return parts.filter(Boolean).join(" ");
 }
 
 /** True if focus is currently in an editable text field, so we shouldn't

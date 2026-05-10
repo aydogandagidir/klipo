@@ -1,4 +1,4 @@
-import { Info, Lock, Shield, Sliders } from "lucide-react";
+import { Info, KeyRound, Lock, Shield, Sliders } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -7,6 +7,7 @@ import { Power } from "lucide-react";
 import { quitApp, setSetting } from "@/lib/ipc";
 import { ExcludedAppsTab } from "@/routes/settings/ExcludedAppsTab";
 import { GeneralTab } from "@/routes/settings/GeneralTab";
+import { LicenseTab } from "@/routes/settings/LicenseTab";
 import { PrivacyTab } from "@/routes/settings/PrivacyTab";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +28,7 @@ import { cn } from "@/lib/utils";
  * The remaining tabs land alongside their respective backend features
  * (excluded-apps editor in M6.x, privacy/wipe-all in M6.y).
  */
-type TabId = "general" | "excluded" | "privacy" | "about";
+type TabId = "general" | "excluded" | "privacy" | "license" | "about";
 
 interface TabDef {
   id: TabId;
@@ -39,6 +40,7 @@ const TABS: TabDef[] = [
   { id: "general", label: "General", icon: Sliders },
   { id: "excluded", label: "Excluded apps", icon: Shield },
   { id: "privacy", label: "Privacy", icon: Lock },
+  { id: "license", label: "License", icon: KeyRound },
   { id: "about", label: "About", icon: Info },
 ];
 
@@ -98,6 +100,7 @@ export function Settings() {
         {active === "general" && <GeneralTab />}
         {active === "excluded" && <ExcludedAppsTab />}
         {active === "privacy" && <PrivacyTab />}
+        {active === "license" && <LicenseTab />}
         {active === "about" && <AboutTab />}
       </main>
     </div>

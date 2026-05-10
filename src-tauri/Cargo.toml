@@ -65,6 +65,13 @@ tauri-plugin-drag = "2"
 # M4: popup window styling. Mica (Win 11) / acrylic (Win 10) blur.
 window-vibrancy = "0.6"
 
+# M8: Gumroad license verification (HTTPS POST). We pin reqwest to the same
+# minor (0.13) Tauri 2 already pulls transitively to avoid a duplicate-version
+# rustls graph. The `rustls` feature keeps Klipo free of OpenSSL on Windows
+# so we don't add a system dependency. The `form` feature wires up the
+# `RequestBuilder::form()` URL-encoded helper used by the Gumroad client.
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "json", "form"] }
+
 [target.'cfg(windows)'.dependencies]
 # Match the version Tauri 2.11.x already pulls in (windows-core 0.61) to avoid
 # duplicate-version trait-impl conflicts.
