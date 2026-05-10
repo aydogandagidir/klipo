@@ -52,7 +52,7 @@ export function App() {
   const [hotkeyLabel, setHotkeyLabel] = useState<string>("Ctrl+Alt+V");
   /**
    * License + trial state, used to render either:
-   *   - the normal "Klipo v0.1.3" footer when Pro,
+   *   - the normal "Klipo v0.1.4" footer when Pro,
    *   - a yellow "Trial: N days left" footer + "Buy Klipo" link during trial,
    *   - or a full-popup "Trial expired" overlay when neither holds.
    *
@@ -586,7 +586,7 @@ function FooterStatus({
   }
   // Pro / Free / Expired all keep the version text. The expired-overlay
   // owns the user-facing message in the expired branch.
-  return <span className="shrink-0 font-mono">Klipo v0.1.3</span>;
+  return <span className="shrink-0 font-mono">Klipo v0.1.4</span>;
 }
 
 /** Local class joiner — the popup file already imports `useCallback` etc.
