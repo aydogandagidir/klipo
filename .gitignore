@@ -78,3 +78,6 @@ bench/criterion/
 
 # Placeholder icon source (regenerated locally; real design lands in M7)
 /app-icon.png
+
+# Internal notes — yerel, müşteri görmez, git'e gitmez
+/notes/
