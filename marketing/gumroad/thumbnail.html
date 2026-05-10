@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Thumbnail · Klipo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
+<link rel="stylesheet" href="./style.css" />
+<style>
+  body[data-stage="thumb"] { width: 600px; height: 600px; }
+  .thumb {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #015AFF 0%, #0040C2 50%, #0A1628 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 56px;
+    text-align: center;
+  }
+  .thumb__icon-wrap {
+    width: 144px; height: 144px;
+    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    display: grid; place-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255,255,255,0.18);
+    position: relative;
+  }
+  .thumb__icon-wrap img {
+    width: 96px; height: 96px;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  .thumb__brand-name {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .thumb__sub {
+    font-size: 16px;
+    opacity: 0.85;
+    margin-top: 10px;
+    margin-bottom: 22px;
+    font-weight: 500;
+    line-height: 1.4;
+    max-width: 420px;
+  }
+  .thumb__sub strong { color: #FFD700; font-weight: 800; }
+  .thumb__price-chip {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    padding: 12px 22px;
+    background: var(--gradient-pro);
+    color: #5C3A00;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(255, 165, 0, 0.45);
+    font-weight: 800;
+  }
+  .thumb__price-amount { font-size: 30px; }
+  .thumb__price-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .thumb__icons {
+    display: flex; gap: 10px;
+    margin-top: 22px;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.95;
+  }
+  .thumb__icons span {
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 99px;
+    backdrop-filter: blur(4px);
+  }
+  .thumb__by {
+    position: absolute;
+    bottom: 22px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body data-stage="thumb">
+  <div class="thumb">
+    <div class="bg-glow bg-glow--cyan" style="top: -160px; right: -120px; opacity: 0.55;"></div>
+    <div class="bg-glow bg-glow--blue" style="bottom: -150px; left: -120px; opacity: 0.5;"></div>
+    <div class="bg-grid" style="opacity: 0.5;"></div>
+
+    <div class="thumb__icon-wrap">
+      <!-- Klipo app icon — falls back to a "K" mark if image is missing -->
+      <img src="../../src-tauri/icons/128x128.png" alt="Klipo" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'font-family: var(--font-display); font-weight: 900; font-size: 60px; letter-spacing: -2px; color: #fff;\'>K</div>'" />
+    </div>
+    <div class="thumb__brand-name">Klipo</div>
+    <div class="thumb__sub">Every <strong>Ctrl+C</strong>, searchable forever.</div>
+    <div class="thumb__price-chip">
+      <span class="thumb__price-amount">$29</span>
+      <span class="thumb__price-label">lifetime</span>
+    </div>
+    <div class="thumb__icons">
+      <span>📋 Capture</span>
+      <span>🔍 Search</span>
+      <span>🛡️ Protect</span>
+    </div>
+    <div class="thumb__by">— a bluedev product —</div>
+  </div>
+</body>
+</html>

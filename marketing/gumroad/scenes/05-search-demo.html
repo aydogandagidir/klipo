@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Scene 05 · Search Demo · Klipo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
+<link rel="stylesheet" href="../style.css" />
+<style>
+  .s5 {
+    background: linear-gradient(160deg, #0A1628 0%, #1E293B 60%, #1E1B4B 100%);
+    color: #fff;
+    padding: 50px 70px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    position: relative;
+  }
+  .s5__left {
+    width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .s5__eyebrow {
+    color: #38BDF8;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) .1s both;
+  }
+  .s5__h {
+    font-family: var(--font-display);
+    font-size: 50px;
+    font-weight: 800;
+    letter-spacing: -1.6px;
+    line-height: 1.06;
+    animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .3s both;
+  }
+  .s5__h .accent {
+    color: #FFD700;
+  }
+  .s5__lead {
+    font-size: 16px;
+    line-height: 1.55;
+    opacity: 0.85;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) .6s both;
+  }
+  .s5__shortcut-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 6px;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) 1.0s both;
+  }
+  .s5__kbd {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.20);
+    border-radius: 6px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .s5__shortcut-text {
+    font-size: 14px;
+    opacity: 0.75;
+  }
+  .s5__metrics {
+    display: flex; gap: 14px;
+    margin-top: 10px;
+  }
+  .s5__metric {
+    flex: 1;
+    padding: 10px 14px;
+    background: rgba(74, 139, 255, 0.10);
+    border: 1px solid rgba(74, 139, 255, 0.25);
+    border-radius: 10px;
+    animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .s5__metric.delay-1 { animation-delay: 1.4s; }
+  .s5__metric.delay-2 { animation-delay: 1.6s; }
+  .s5__metric-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #4A8BFF;
+    font-weight: 700;
+  }
+  .s5__metric-value {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-top: 2px;
+  }
+
+  .s5__right {
+    width: 480px;
+    animation: scaleIn .9s cubic-bezier(.2,.8,.2,1) .3s both;
+    position: relative;
+  }
+  .popup-mock--searching .popup-mock__search {
+    border-color: rgba(74, 139, 255, 0.6);
+    box-shadow: 0 0 20px rgba(74, 139, 255, 0.3);
+    background: rgba(74, 139, 255, 0.05);
+  }
+  .typed-query {
+    color: #fff;
+    font-family: var(--font-mono);
+  }
+  .typed-query::after {
+    content: "▎";
+    color: #4A8BFF;
+    margin-left: 1px;
+    animation: blink 1s infinite;
+  }
+  /* Letter-by-letter typing of "stripe" */
+  .typed-query .l { opacity: 0; }
+  .typed-query .l1 { animation: fadeIn .1s ease-out 2.0s both; }
+  .typed-query .l2 { animation: fadeIn .1s ease-out 2.25s both; }
+  .typed-query .l3 { animation: fadeIn .1s ease-out 2.50s both; }
+  .typed-query .l4 { animation: fadeIn .1s ease-out 2.75s both; }
+  .typed-query .l5 { animation: fadeIn .1s ease-out 3.00s both; }
+  .typed-query .l6 { animation: fadeIn .1s ease-out 3.25s both; }
+
+  /* Initial 6-row state, then 3 disappear filter happens at 3.6s */
+  .clip-row.filter-out {
+    animation: fadeOut .5s ease-out 3.7s forwards;
+  }
+  .clip-row.filter-keep {
+    animation: filterHighlight .6s ease-out 3.7s both;
+  }
+  @keyframes fadeOut {
+    0% { opacity: 1; max-height: 80px; transform: scale(1); }
+    100% { opacity: 0; max-height: 0; padding: 0; margin: 0; transform: scale(0.95); border: 0; }
+  }
+  @keyframes filterHighlight {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-4px) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  .clip-row__highlight {
+    color: #4A8BFF;
+    font-weight: 700;
+    background: rgba(74, 139, 255, 0.18);
+    padding: 1px 3px;
+    border-radius: 3px;
+  }
+
+  /* Match counter */
+  .match-counter {
+    position: absolute;
+    top: -14px;
+    right: 16px;
+    background: #38BDF8;
+    color: #0A1628;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+    opacity: 0;
+    animation: fadeInUp .5s cubic-bezier(.2,.8,.2,1) 4.0s both;
+  }
+
+  /* Enter pulse + paste callout */
+  .paste-callout {
+    position: absolute;
+    bottom: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #5C3A00;
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 12px 30px rgba(255, 165, 0, 0.5);
+    display: flex; align-items: center; gap: 8px;
+    opacity: 0;
+    animation: fadeInUp .7s cubic-bezier(.34,1.56,.64,1) 7.0s both,
+               pulseGlow 2s ease-in-out 7.7s infinite;
+  }
+  .paste-callout .kbd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 7px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body data-stage="video" data-duration="11000">
+  <div class="stage s5">
+    <div class="bg-glow bg-glow--cyan" style="top: -180px; right: -120px; opacity: 0.32;"></div>
+    <div class="bg-glow bg-glow--blue" style="bottom: -200px; left: -120px; opacity: 0.30;"></div>
+
+    <div class="s5__left">
+      <div class="s5__eyebrow">🔍 SEARCH</div>
+      <div class="s5__h">Find any clip in <span class="accent">&lt;50ms.</span></div>
+      <div class="s5__lead">
+        Open the popup. Start typing. Klipo fuzzy-matches across
+        every clip you ever copied — text, code, file paths,
+        URLs — and pastes it back where you were.
+      </div>
+      <div class="s5__shortcut-row">
+        <span class="s5__kbd">Ctrl + Alt + V</span>
+        <span class="s5__shortcut-text">opens the popup, anywhere</span>
+      </div>
+      <div class="s5__metrics">
+        <div class="s5__metric delay-1">
+          <div class="s5__metric-label">Search latency</div>
+          <div class="s5__metric-value">27ms</div>
+        </div>
+        <div class="s5__metric delay-2">
+          <div class="s5__metric-label">History size</div>
+          <div class="s5__metric-value">247 clips</div>
+        </div>
+      </div>
+    </div>
+    <div class="s5__right">
+      <div class="match-counter">3 matches · 27ms</div>
+      <div class="popup-mock popup-mock--searching">
+        <div class="popup-mock__head">
+          <div class="popup-mock__brand">K</div>
+          <div>
+            <div class="popup-mock__title">Klipo</div>
+            <div class="popup-mock__sub">Searching 247 clips…</div>
+          </div>
+        </div>
+        <div class="popup-mock__search">
+          <span class="popup-mock__search-icon">🔍</span>
+          <span class="popup-mock__search-input">
+            <span class="typed-query"><span class="l l1">s</span><span class="l l2">t</span><span class="l l3">r</span><span class="l l4">i</span><span class="l l5">p</span><span class="l l6">e</span></span>
+          </span>
+        </div>
+        <div class="popup-mock__body" style="padding-top: 8px;">
+          <!-- Results -->
+          <div class="clip-row clip-row--active filter-keep">
+            <div class="clip-row__icon clip-row__icon--text">T</div>
+            <div class="clip-row__body">
+              <div class="clip-row__text"><span class="clip-row__highlight">stripe</span>_test_pk_•••• key from .env</div>
+              <div class="clip-row__meta">3 min ago · VS Code</div>
+            </div>
+          </div>
+          <div class="clip-row filter-keep">
+            <div class="clip-row__icon clip-row__icon--code">{}</div>
+            <div class="clip-row__body">
+              <div class="clip-row__text"><span class="clip-row__highlight">stripe</span>.charges.create({ amount: 4900 })</div>
+              <div class="clip-row__meta">12 min ago · VS Code</div>
+            </div>
+          </div>
+          <div class="clip-row filter-keep">
+            <div class="clip-row__icon clip-row__icon--text">T</div>
+            <div class="clip-row__body">
+              <div class="clip-row__text">https://dashboard.<span class="clip-row__highlight">stripe</span>.com/payments</div>
+              <div class="clip-row__meta">1 hr ago · Chrome</div>
+            </div>
+          </div>
+          <!-- Filtered out rows -->
+          <div class="clip-row filter-out">
+            <div class="clip-row__icon clip-row__icon--text">T</div>
+            <div class="clip-row__body">
+              <div class="clip-row__text">Q2 planning notes — milestones</div>
+              <div class="clip-row__meta">Just now</div>
+            </div>
+          </div>
+          <div class="clip-row filter-out">
+            <div class="clip-row__icon clip-row__icon--image">🖼</div>
+            <div class="clip-row__body">
+              <div class="clip-row__text">Screenshot 2026-05-09.png</div>
+              <div class="clip-row__meta">5 min ago</div>
+            </div>
+          </div>
+          <div class="clip-row filter-out">
+            <div class="clip-row__icon clip-row__icon--file">📄</div>
+            <div class="clip-row__body">
+              <div class="clip-row__text">invoice-2026-Q1.pdf</div>
+              <div class="clip-row__meta">1 hr ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="paste-callout">
+        <span class="kbd">Enter</span>
+        <span>→ pasted to active window</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

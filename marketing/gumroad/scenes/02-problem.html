@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Scene 02 · Problem · Klipo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
+<link rel="stylesheet" href="../style.css" />
+<style>
+  .s2 {
+    background: linear-gradient(160deg, #1E293B 0%, #0A1628 100%);
+    color: #fff;
+    padding: 60px 80px;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+  .s2__left { width: 540px; display: flex; flex-direction: column; gap: 20px; }
+  .s2__eyebrow {
+    color: #EF4444;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) .2s both;
+  }
+  .s2__h {
+    font-family: var(--font-display);
+    font-size: 50px;
+    font-weight: 800;
+    letter-spacing: -1.8px;
+    line-height: 1.05;
+    animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .5s both;
+  }
+  .s2__h span { color: #FFD700; font-style: italic; }
+  .s2__sub {
+    font-size: 16px;
+    opacity: 0.82;
+    line-height: 1.55;
+    animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .9s both;
+  }
+  .s2__pain-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .s2__pain {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 16px;
+    opacity: 0.85;
+    animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .s2__pain-dot {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.18);
+    color: #EF4444;
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .s2__pain.delay-1 { animation-delay: 1.4s; }
+  .s2__pain.delay-2 { animation-delay: 1.7s; }
+  .s2__pain.delay-3 { animation-delay: 2.0s; }
+
+  /* Right — flying clips representing rapid copy */
+  .s2__right {
+    width: 480px;
+    height: 540px;
+    position: relative;
+    perspective: 800px;
+    animation: scaleIn .9s cubic-bezier(.2,.8,.2,1) .3s both;
+  }
+  .clip-flying {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    opacity: 0;
+    animation: clipFly 6s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes clipFly {
+    0% { opacity: 0; transform: translateY(-30px) translateX(20px) rotate(-2deg); }
+    8% { opacity: 1; transform: translateY(0) translateX(0) rotate(0); }
+    50% { opacity: 0.65; }
+    92% { opacity: 0; transform: translateY(60px) translateX(-30px); }
+    100% { opacity: 0; transform: translateY(80px); }
+  }
+  .clip-flying.f1 { top: 20px;  left: 0;    animation-delay: 1.0s; background: rgba(74, 139, 255, 0.10); }
+  .clip-flying.f2 { top: 80px;  right: 0;   animation-delay: 1.5s; background: rgba(192, 132, 252, 0.10); }
+  .clip-flying.f3 { top: 150px; left: 40px; animation-delay: 2.0s; background: rgba(245, 158, 11, 0.10); }
+  .clip-flying.f4 { top: 220px; right: 20px;animation-delay: 2.5s; background: rgba(16, 185, 129, 0.10); }
+  .clip-flying.f5 { top: 290px; left: 0;    animation-delay: 3.0s; background: rgba(74, 139, 255, 0.10); }
+  .clip-flying.f6 { top: 360px; right: 40px;animation-delay: 3.5s; background: rgba(192, 132, 252, 0.10); }
+  .clip-flying.f7 { top: 430px; left: 60px; animation-delay: 4.0s; background: rgba(245, 158, 11, 0.10); }
+
+  .s2__question {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.85);
+    border: 2px solid #EF4444;
+    color: #fff;
+    border-radius: 14px;
+    padding: 18px 28px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-align: center;
+    animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) 4.8s both,
+               pulseRed 2s ease-in-out 5.4s infinite;
+    box-shadow: 0 16px 40px rgba(239, 68, 68, 0.4);
+    width: 88%;
+  }
+  .s2__question span { color: #FFD700; }
+</style>
+</head>
+<body data-stage="video" data-duration="7000">
+  <div class="stage s2">
+    <div class="s2__left">
+      <div class="s2__eyebrow">⚠ THE PROBLEM</div>
+      <div class="s2__h">Windows clipboard <span>forgets everything.</span></div>
+      <div class="s2__sub">
+        Copy, paste, copy, paste — and the previous clip is gone forever
+        the moment you copy the next one.
+      </div>
+      <div class="s2__pain-list">
+        <div class="s2__pain delay-1"><div class="s2__pain-dot">×</div>Last copy overwrites the previous one</div>
+        <div class="s2__pain delay-2"><div class="s2__pain-dot">×</div>That API key you copied 5 minutes ago? Gone.</div>
+        <div class="s2__pain delay-3"><div class="s2__pain-dot">×</div>Win+V history is shallow, slow, no search</div>
+      </div>
+    </div>
+    <div class="s2__right">
+      <div class="clip-flying f1">"Yarın 14:30 toplantısı..."</div>
+      <div class="clip-flying f2">https://stripe.com/dashboard</div>
+      <div class="clip-flying f3">sk-proj-aB9k2L•••••••</div>
+      <div class="clip-flying f4">const total = items.reduce(…)</div>
+      <div class="clip-flying f5">C:\Users\me\invoice.pdf</div>
+      <div class="clip-flying f6">+90 532 ••• 1234</div>
+      <div class="clip-flying f7">"Q2 planning notes — ..."</div>
+
+      <div class="s2__question">"What did I copy <span>5 minutes</span> ago?"</div>
+    </div>
+  </div>
+</body>
+</html>

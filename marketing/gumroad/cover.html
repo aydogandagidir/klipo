@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cover · Klipo by bluedev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700,800&display=swap" />
+<link rel="stylesheet" href="./style.css" />
+<style>
+  .cover-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    height: 100%;
+    gap: 0;
+  }
+  .cover-left {
+    padding: 60px 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--gradient-hero);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-right {
+    background: linear-gradient(160deg, #0A1628 0%, #1E293B 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .cover-stack { display: flex; flex-direction: column; gap: 22px; max-width: 540px; }
+  .cover-meta { display: flex; align-items: center; gap: 14px; }
+  .cover-headline {
+    font-family: var(--font-display);
+    font-size: 60px;
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -2.4px;
+  }
+  .cover-headline .accent { color: #FFD700; }
+  .cover-sub { font-size: 18px; opacity: 0.92; line-height: 1.5; max-width: 480px; }
+  .cover-features { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cover-features .pill {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(8px);
+    font-size: 12px;
+  }
+  .price-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--gradient-pro);
+    color: #5C3A00;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(255, 165, 0, 0.45);
+    font-weight: 800;
+    width: fit-content;
+  }
+  .price-chip__amount { font-size: 26px; letter-spacing: -0.5px; }
+  .price-chip__label  { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; }
+
+  /* Klipo popup mock — large feature on the right */
+  .popup-display {
+    width: 440px;
+    transform: rotate(-2deg);
+    position: relative;
+    z-index: 2;
+  }
+  .popup-display .popup-mock {
+    width: 100%;
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55), 0 0 80px rgba(1, 90, 255, 0.35);
+  }
+
+  /* Floating capture chips around the popup */
+  .float-chip {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--c-text);
+    border-radius: 99px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    display: flex; align-items: center; gap: 6px;
+    z-index: 3;
+  }
+  .float-chip__dot { width: 8px; height: 8px; border-radius: 50%; }
+  .float-chip--1 { top: 90px;  left: 56px;  }
+  .float-chip--2 { top: 174px; right: 60px; }
+  .float-chip--3 { bottom: 138px; left: 36px; }
+  .float-chip--4 { bottom: 92px; right: 80px; }
+
+  .shortcut-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #fff;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body data-stage="cover">
+  <div class="stage stage--white">
+    <div class="cover-grid">
+      <!-- Left: pitch -->
+      <div class="cover-left">
+        <div class="bg-glow bg-glow--pink anim-drift" style="top: -120px; left: -100px; opacity: 0.4;"></div>
+        <div class="bg-grid"></div>
+
+        <div class="cover-meta">
+          <div class="brand-mark brand-mark--lg" style="background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);">K</div>
+          <div>
+            <div class="klipo-wordmark" style="font-size: 28px; letter-spacing: -1.2px;">Klipo</div>
+            <div style="font-size: 13px; opacity: 0.8;">a bluedev product · Windows clipboard manager</div>
+          </div>
+        </div>
+
+        <div class="cover-stack">
+          <div class="eyebrow">⚡ LIFETIME · 14-DAY FREE TRIAL</div>
+          <div class="cover-headline">
+            Every <span class="accent">Ctrl+C</span>,<br/>
+            searchable forever.
+          </div>
+          <div class="cover-sub">
+            A clipboard that <strong>remembers everything</strong> you copy —
+            text, code, files, images — and finds it in milliseconds.
+          </div>
+          <div class="cover-features">
+            <div class="pill">📋 Captures every Ctrl+C</div>
+            <div class="pill">🔍 &lt;50ms search</div>
+            <div class="pill">🛡️ Sensitive auto-flag</div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center; opacity: 0.9; margin-top: -8px;">
+            <span class="shortcut-pill">Ctrl + Alt + V</span>
+            <span style="font-size: 13px; opacity: 0.75;">opens the popup, anywhere</span>
+          </div>
+        </div>
+
+        <div class="price-chip">
+          <span class="price-chip__amount">$29</span>
+          <span class="price-chip__label">one-time · lifetime</span>
+        </div>
+      </div>
+
+      <!-- Right: device mockup -->
+      <div class="cover-right">
+        <div class="bg-glow bg-glow--blue" style="top: -80px; right: -60px;"></div>
+        <div class="bg-glow bg-glow--cyan" style="bottom: -100px; left: -80px; opacity: 0.4;"></div>
+
+        <div class="float-chip float-chip--1">
+          <span class="float-chip__dot" style="background:#4A8BFF"></span>
+          Ctrl+C captured
+        </div>
+        <div class="float-chip float-chip--2">
+          <span class="float-chip__dot" style="background:#10B981"></span>
+          Local SQLite
+        </div>
+        <div class="float-chip float-chip--3">
+          <span class="float-chip__dot" style="background:#EF4444"></span>
+          API key flagged
+        </div>
+        <div class="float-chip float-chip--4">
+          <span class="float-chip__dot" style="background:#F59E0B"></span>
+          Tauri 2 · 3.8 MB
+        </div>
+
+        <div class="popup-display">
+          <div class="popup-mock">
+            <div class="popup-mock__head">
+              <div class="popup-mock__brand">K</div>
+              <div>
+                <div class="popup-mock__title">Klipo</div>
+                <div class="popup-mock__sub">Clipboard history · 247 items</div>
+              </div>
+              <div style="margin-left: auto;">
+                <span class="popup-mock__shortcut">Ctrl+Alt+V</span>
+              </div>
+            </div>
+            <div class="popup-mock__search">
+              <span class="popup-mock__search-icon">🔍</span>
+              <span class="popup-mock__search-input">Search clipboard…</span>
+            </div>
+            <div class="popup-mock__body">
+              <div class="clip-row clip-row--active">
+                <div class="clip-row__icon clip-row__icon--text">T</div>
+                <div class="clip-row__body">
+                  <div class="clip-row__text">Meeting notes — Q2 planning summary</div>
+                  <div class="clip-row__meta">Just now · Notion</div>
+                </div>
+              </div>
+              <div class="clip-row clip-row--sensitive">
+                <div class="clip-row__icon clip-row__icon--sensitive">!</div>
+                <div class="clip-row__body">
+                  <div class="clip-row__text">sk-proj-•••••••••••••••••••••••••</div>
+                  <div class="clip-row__meta">2 min ago · auto-flagged</div>
+                </div>
+                <div class="clip-row__badge clip-row__badge--sensitive">Sensitive</div>
+              </div>
+              <div class="clip-row">
+                <div class="clip-row__icon clip-row__icon--code">{}</div>
+                <div class="clip-row__body">
+                  <div class="clip-row__text">const result = await fetch('/api/v2/cli…</div>
+                  <div class="clip-row__meta">5 min ago · VS Code</div>
+                </div>
+              </div>
+              <div class="clip-row">
+                <div class="clip-row__icon clip-row__icon--image">🖼</div>
+                <div class="clip-row__body">
+                  <div class="clip-row__text">Screenshot 2026-05-09 at 14.32.png</div>
+                  <div class="clip-row__meta">12 min ago · 1.2 MB</div>
+                </div>
+              </div>
+              <div class="clip-row">
+                <div class="clip-row__icon clip-row__icon--file">📄</div>
+                <div class="clip-row__body">
+                  <div class="clip-row__text">invoice-2026-Q1-final.pdf</div>
+                  <div class="clip-row__meta">1 hr ago · File path</div>
+                </div>
+              </div>
+              <div class="clip-row">
+                <div class="clip-row__icon clip-row__icon--text">T</div>
+                <div class="clip-row__body">
+                  <div class="clip-row__text">https://github.com/bluedev/klipo</div>
+                  <div class="clip-row__meta">2 hr ago · URL</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

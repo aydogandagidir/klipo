@@ -1,0 +1,435 @@
+/* Shared brand system for Gumroad cover, thumbnails, and video scenes.
+ * Used by every HTML scene. Keep dimensions exact — Playwright captures
+ * a viewport sized 1280×720 (or 600×600 for thumb).
+ *
+ * Brand: bluedev — same parent brand as wa-contacts-exporter, so colors
+ * and type stay aligned across products. Klipo-specific helpers added
+ * at the bottom (popup-mock, sensitive-mock, etc.). */
+
+:root {
+  --c-primary:        #015AFF;
+  --c-primary-deep:   #0040C2;
+  --c-primary-hover:  #004BE6;
+  --c-primary-soft:   #E6F0FF;
+  --c-navy:           #0A1628;
+  --c-navy-soft:      #1E293B;
+  --c-accent:         #4A8BFF;        /* Lighter blue for accents on dark bg */
+  --c-text:           #0F172A;
+  --c-fg:             #0F172A;
+  --c-muted:          #64748B;
+  --c-light:          #F8FAFC;
+  --c-border:         #E2E8F0;
+  --c-bg:             #FFFFFF;
+  --c-success:        #10B981;
+  --c-warn:           #F59E0B;
+  --c-warning:        #F59E0B;
+  --c-danger:         #EF4444;
+  --c-pro:            #FFD700;
+  --c-pro-deep:       #B8860B;
+  --gradient-hero:    linear-gradient(135deg, #015AFF 0%, #0040C2 50%, #0A1628 100%);
+  --gradient-pro:     linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  --gradient-soft:    linear-gradient(180deg, #F8FAFC 0%, #E2E8F0 100%);
+  --gradient-dark:    linear-gradient(160deg, #0A1628 0%, #1E293B 100%);
+  --shadow-card:      0 20px 60px -10px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-glow:      0 0 80px rgba(1, 90, 255, 0.45);
+  --font-sans:        "Inter", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display:     "General Sans", "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:        "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font-sans);
+  color: var(--c-text);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fixed-stage utility — every scene sets data-stage="cover" / "thumb" / "video".
+ * The body becomes a precisely sized canvas the camera (Playwright) captures. */
+body[data-stage="cover"], body[data-stage="video"] { width: 1280px; height: 720px; }
+body[data-stage="thumb"] { width: 600px; height: 600px; }
+
+/* Common layout helpers ------------------------------------------------- */
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stage--hero {
+  background: var(--gradient-hero);
+  color: #fff;
+}
+.stage--white { background: var(--c-bg); }
+.stage--soft { background: var(--gradient-soft); }
+.stage--dark { background: var(--c-navy); color: #fff; }
+
+/* Decorative backgrounds */
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.bg-glow--blue  { width: 560px; height: 560px; background: #4A8BFF; }
+.bg-glow--cyan  { width: 420px; height: 420px; background: #38BDF8; }
+.bg-glow--pink  { width: 480px; height: 480px; background: #C084FC; }
+.bg-glow--green { width: 420px; height: 420px; background: #10B981; }
+
+/* Brand mark + logotype ------------------------------------------------- */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-mark {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #015AFF 0%, #0040C2 100%);
+  color: #fff;
+  font-weight: 900;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  letter-spacing: -1px;
+  box-shadow: 0 12px 32px rgba(1, 90, 255, 0.4);
+}
+.brand-mark--lg {
+  width: 96px; height: 96px; border-radius: 22px;
+  font-size: 36px;
+}
+.brand-text { display: flex; flex-direction: column; gap: 2px; line-height: 1.05; }
+.brand-name { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; font-family: var(--font-display); }
+.brand-sub { font-size: 13px; opacity: 0.75; font-weight: 500; }
+
+/* Type --------------------------------------------------------------- */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 99px;
+  backdrop-filter: blur(8px);
+}
+.h1 {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  font-family: var(--font-display);
+}
+.h1--xl { font-size: 84px; line-height: 1.0; letter-spacing: -2.5px; }
+.h2 {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  font-family: var(--font-display);
+}
+.h3 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+  font-family: var(--font-display);
+}
+.lead {
+  font-size: 22px;
+  line-height: 1.45;
+  font-weight: 500;
+  opacity: 0.9;
+}
+.muted { color: var(--c-muted); }
+.highlight {
+  background: linear-gradient(120deg, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0.4) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 30%;
+  background-position: 0 88%;
+  padding: 0 4px;
+}
+.gradient-text {
+  background: linear-gradient(135deg, #FFD700 0%, #FF6B6B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gradient-text--blue {
+  background: linear-gradient(135deg, #4A8BFF 0%, #015AFF 60%, #6E00FF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Pills + badges ----------------------------------------------------- */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--c-light);
+  color: var(--c-text);
+}
+.pill--pro {
+  background: var(--gradient-pro);
+  color: #5C3A00;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 18px rgba(255, 165, 0, 0.4);
+}
+.pill--free {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.pill--success {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+.pill--danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #B91C1C;
+}
+.pill--ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Klipo popup mockup — replicates the actual Klipo popup chrome
+ * (dark navy bg, accent blue, monospace clip rows). Used in scenes
+ * where we need to show the in-app UI without screenshotting. */
+.popup-mock {
+  width: 420px;
+  border-radius: 16px;
+  background: var(--c-navy);
+  color: #E6F0FF;
+  box-shadow: var(--shadow-card), 0 0 60px rgba(1, 90, 255, 0.25);
+  overflow: hidden;
+  font-size: 13px;
+  border: 1px solid rgba(74, 139, 255, 0.18);
+}
+.popup-mock__head {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex; align-items: center; gap: 10px;
+}
+.popup-mock__brand {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg, #015AFF, #0040C2); color: #fff;
+  font-weight: 800; font-size: 12px;
+  display: grid; place-items: center;
+  box-shadow: 0 4px 12px rgba(1, 90, 255, 0.4);
+}
+.popup-mock__title { font-weight: 700; font-size: 14px; letter-spacing: -0.2px; }
+.popup-mock__sub { font-size: 10px; color: rgba(230, 240, 255, 0.55); }
+.popup-mock__search {
+  margin: 10px 14px 6px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  font-size: 12px;
+  color: rgba(230, 240, 255, 0.5);
+  display: flex; align-items: center; gap: 8px;
+}
+.popup-mock__search-icon { opacity: 0.5; }
+.popup-mock__search-input { flex: 1; }
+.popup-mock__shortcut {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: rgba(230, 240, 255, 0.6);
+}
+.popup-mock__body {
+  padding: 4px 14px 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 360px; overflow: hidden;
+}
+.clip-row {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px;
+}
+.clip-row--active {
+  background: rgba(1, 90, 255, 0.18);
+  border-color: rgba(1, 90, 255, 0.45);
+}
+.clip-row--sensitive {
+  background: rgba(239, 68, 68, 0.10);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+}
+.clip-row__icon {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: rgba(74, 139, 255, 0.18);
+  color: #4A8BFF;
+  display: grid; place-items: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.clip-row__icon--sensitive {
+  background: rgba(239, 68, 68, 0.22);
+  color: #FCA5A5;
+}
+.clip-row__icon--text { background: rgba(74, 139, 255, 0.18); color: #4A8BFF; }
+.clip-row__icon--image { background: rgba(192, 132, 252, 0.18); color: #C084FC; }
+.clip-row__icon--file { background: rgba(245, 158, 11, 0.18); color: #FBBF24; }
+.clip-row__icon--code { background: rgba(16, 185, 129, 0.18); color: #34D399; }
+.clip-row__body { flex: 1; min-width: 0; }
+.clip-row__text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #E6F0FF;
+}
+.clip-row__meta {
+  font-size: 9px;
+  color: rgba(230, 240, 255, 0.5);
+  margin-top: 2px;
+}
+.clip-row__badge {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.clip-row__badge--sensitive {
+  background: rgba(239, 68, 68, 0.20);
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+/* Animations ---------------------------------------------------------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideUpStaggered {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.5); }
+  50%      { box-shadow: 0 0 24px 8px rgba(255, 215, 0, 0.5); }
+}
+@keyframes pulseRed {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  50%      { box-shadow: 0 0 24px 8px rgba(239, 68, 68, 0.4); }
+}
+@keyframes typing {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(20px, -16px); }
+}
+@keyframes checkPop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes flyAcross {
+  0%   { opacity: 0; transform: translateX(-100px); }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(120px); }
+}
+@keyframes copyPing {
+  0%   { transform: scale(0.85); opacity: 0; }
+  20%  { opacity: 1; }
+  60%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.anim-fade-in     { animation: fadeIn .8s ease-out both; }
+.anim-fade-up     { animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) both; }
+.anim-scale-in    { animation: scaleIn .9s cubic-bezier(.2,.8,.2,1) both; }
+.anim-slide-right { animation: slideInRight .9s cubic-bezier(.2,.8,.2,1) both; }
+.anim-slide-left  { animation: slideInLeft .9s cubic-bezier(.2,.8,.2,1) both; }
+.anim-pulse       { animation: pulseGlow 2.4s ease-in-out infinite; }
+.anim-pulse-red   { animation: pulseRed 2s ease-in-out infinite; }
+.anim-drift       { animation: drift 8s ease-in-out infinite; }
+.anim-check       { animation: checkPop .6s cubic-bezier(.34,1.56,.64,1) both; }
+
+.delay-1 { animation-delay: 0.15s; }
+.delay-2 { animation-delay: 0.30s; }
+.delay-3 { animation-delay: 0.45s; }
+.delay-4 { animation-delay: 0.60s; }
+.delay-5 { animation-delay: 0.75s; }
+.delay-6 { animation-delay: 0.90s; }
+.delay-7 { animation-delay: 1.10s; }
+.delay-8 { animation-delay: 1.30s; }
+
+/* Footer brand watermark for video scenes */
+.scene-watermark {
+  position: absolute;
+  bottom: 22px;
+  right: 28px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+}
+.scene-watermark--light { color: rgba(255, 255, 255, 0.7); }
+.scene-watermark--dark  { color: var(--c-muted); }
+
+/* Klipo wordmark — used in cover/thumb/scenes for brand display */
+.klipo-wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+}
