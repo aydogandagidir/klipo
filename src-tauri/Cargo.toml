@@ -1,6 +1,6 @@
 [package]
 name = "klipo"
-version = "0.1.2"
+version = "0.1.4"
 description = "Klipo — cross-platform clipboard manager."
 authors = ["Aydoğan Dağıdır"]
 license = "Apache-2.0"

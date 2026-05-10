@@ -5,6 +5,46 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] — 2026-05-10 — Version-sync hotfix + trial-then-license activation
+
+**Skipping v0.1.3 forward.** The v0.1.3 release shipped with `Cargo.toml`
+still pinned at `0.1.2` (only `package.json` and `tauri.conf.json` were
+bumped). Tauri's `getVersion()` reads from `Cargo.toml`'s
+`CARGO_PKG_VERSION` at compile time, so the v0.1.3 binary self-reported
+as `"0.1.2"` while the manifest advertised `"0.1.3"`. The auto-updater
+thus saw a same-or-older comparison and refused to offer the upgrade,
+leaving installed Klipo instances stuck on `0.1.2`. v0.1.4 corrects all
+four version sources (`Cargo.toml`, `package.json`, `tauri.conf.json`,
+hardcoded UI strings) so they advance together. v0.1.3 published
+artifacts remain on GitHub Releases for the historical record but are
+not the recommended download.
+
+### Added — 14-day trial + Gumroad license activation
+- **Trial-then-license model.** First launch records `trial_started_at`;
+  full features for 14 days. Footer shows `Trial: N days left` countdown
+  (yellow when ≤3 days). Trial expired + no license → clipboard capture
+  pauses, popup overlays an "Activate license" prompt (history is preserved).
+- **Gumroad license activation.** Settings → License: enter email + key,
+  Klipo posts to `api.gumroad.com/v2/licenses/verify` with
+  `increment_uses_count=true`, persists state, flips to Pro mode. Refund
+  / chargeback / disputed → license cleared automatically (refund-loop
+  closure). 30-day offline grace from last verify, periodic re-verify
+  every 7 days. Mirrors the WA contacts exporter model
+  (`license-manager.js`) ported from chrome.storage to Tauri/SQLite.
+- **Pre-live TODO:** replace `KLIPO_PRODUCT_ID_DEFAULT` in
+  `src-tauri/src/license/mod.rs` once the Gumroad listing is live.
+  Activation calls fail with a friendly error until then.
+- 13 new unit tests (3 in `gumroad.rs`, 10 in `manager.rs`) — total
+  64 → 77, all passing.
+
+### Branding (continued from v0.1.3)
+- All v0.1.3 changes carry forward: bluedev publisher metadata, Settings
+  → About bluedev links, README hero "by bluedev" badge, honest
+  SmartScreen note, $29 Gumroad pricing copy, demo video script +
+  shotlist.
+
+---
+
 ## [0.1.3] — 2026-05-10 — Commercial pivot + sensitive-content fixes + popup limit + re-scan history
 
 First commercial release under **bluedev** brand. Licensing model
