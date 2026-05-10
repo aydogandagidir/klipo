@@ -52,6 +52,20 @@ async fn process_one(storage: &Storage, app: &AppHandle, event: ClipboardEvent) 
         }
     }
 
+    // 1b. License / trial gate. Honest-user deterrent (M8): if the user has
+    //     no license AND the 14-day trial has expired, drop the event before
+    //     we pay the cost of the sensitive-content scan or any disk I/O. The
+    //     popup overlay tells the user what to do; the watcher keeps running
+    //     so capture resumes the moment they activate or re-enter trial via
+    //     a fresh install.
+    if !crate::license::manager::capture_allowed(storage).await {
+        tracing::debug!(
+            target: "klipo::pipeline",
+            "capture dropped — trial expired and no license"
+        );
+        return;
+    }
+
     // 2. Sensitive scan (text-bearing payloads only).
     let sensitive_flag = match event.text.as_deref() {
         Some(text) => {

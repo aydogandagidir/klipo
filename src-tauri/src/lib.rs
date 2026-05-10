@@ -3,6 +3,7 @@
 mod autostart;
 pub mod clipboard;
 mod commands;
+pub mod license;
 mod perf;
 pub mod storage;
 
@@ -166,6 +167,19 @@ pub fn run() {
                 }
             };
             app.manage(storage.clone());
+
+            // ---- License: ensure trial_started_at exists + maybe re-verify ----
+            // Best-effort startup task. Must NOT block the rest of setup —
+            // Klipo should still launch if the network is down or Gumroad
+            // is having a bad day. The trial-stamp call is essentially free
+            // (one SELECT, one optional INSERT); the re-verify only fires
+            // when the user has a license AND it's been > 7 days since the
+            // last successful check.
+            let storage_for_license = storage.clone();
+            tauri::async_runtime::spawn(async move {
+                let _ = license::manager::get_trial_status(&storage_for_license).await;
+                license::manager::maybe_reverify_on_startup(&storage_for_license).await;
+            });
 
             // ---- Clipboard watcher + pipeline ----
             if let Err(e) = clipboard::start(storage, app.handle().clone()) {
@@ -348,6 +362,11 @@ pub fn run() {
             commands::register_hotkey,
             commands::get_autostart,
             commands::set_autostart,
+            commands::activate_license,
+            commands::deactivate_license,
+            commands::get_license_status,
+            commands::reverify_license,
+            commands::get_trial_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running klipo desktop app");

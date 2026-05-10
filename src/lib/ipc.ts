@@ -358,6 +358,93 @@ export async function downloadAndInstallUpdate(): Promise<void> {
   await update.downloadAndInstall();
 }
 
+// ---------- License + trial (M8) ----------
+
+/** Free / Trial / Pro / Expired tier mirroring `LicenseTier` in
+ * `src-tauri/src/license/manager.rs`. */
+export type LicenseTier = "free" | "pro" | "trial" | "expired";
+
+/** Status snapshot rendered by Settings → License + the popup overlay.
+ *
+ * `key_masked` is the only piece of the raw license key the renderer ever
+ * sees ("ABCD…WXYZ"). The full key never crosses the IPC boundary on the
+ * read path — even the renderer's localStorage / IndexedDB cannot exfiltrate
+ * it because the backend's `get_setting` rejects `license_key`.
+ */
+export interface LicenseStatus {
+  tier: LicenseTier;
+  /** Stable string discriminant. One of `no-license`, `verified`, `grace`,
+   *  `expired-grace`, `trial-active`, `trial-expired`. */
+  reason: string;
+  email: string | null;
+  product_name: string | null;
+  /** Unix milliseconds. */
+  activated_at: number | null;
+  /** Unix milliseconds. */
+  last_verified_at: number | null;
+  /** Unix milliseconds. */
+  grace_until: number | null;
+  /** Masked license key, e.g. `ABCD…WXYZ`. `null` when no license is on file. */
+  key_masked: string | null;
+  /** Days until trial expiry. Set only when `tier === "trial"`. */
+  trial_days_remaining: number | null;
+}
+
+export interface TrialStatus {
+  /** Whole days until trial expiry; clamped to 0 once expired. */
+  days_remaining: number;
+  expired: boolean;
+  /** Unix milliseconds when the trial began (first launch). */
+  started_at: number;
+}
+
+/** Result of `reverifyLicense()`. Mirrors the Rust enum
+ * `ReverifyOutcome` (kebab-case `kind` discriminant). */
+export type ReverifyOutcome =
+  | { kind: "verified"; status: LicenseStatus }
+  | { kind: "invalid"; message: string }
+  | { kind: "refunded"; message: string }
+  | { kind: "network"; message: string }
+  | { kind: "server"; message: string }
+  | { kind: "no-license" };
+
+/**
+ * Activate a Gumroad license key. The first call from a new device counts
+ * against the user's 3-device allowance (Gumroad enforces this server-side).
+ *
+ * Errors thrown by the backend are formatted strings — the Settings UI
+ * surfaces them in a red banner under the form.
+ */
+export async function activateLicense(key: string, email?: string): Promise<LicenseStatus> {
+  return invoke<LicenseStatus>("activate_license", { key, email });
+}
+
+/** Wipe the local license state. Falls back to trial / free posture
+ * immediately. Idempotent — calling on a free user is a no-op. */
+export async function deactivateLicense(): Promise<void> {
+  return invoke<void>("deactivate_license");
+}
+
+/** Cheap status snapshot. Settings + popup overlay both call this on mount. */
+export async function getLicenseStatus(): Promise<LicenseStatus> {
+  return invoke<LicenseStatus>("get_license_status");
+}
+
+/**
+ * Manual "Re-check now" button. Hits Gumroad without incrementing the uses
+ * counter. On `invalid` / `refunded` the license is cleared — caller should
+ * re-fetch `getLicenseStatus()` afterwards (or read `outcome.status` for
+ * the `verified` branch).
+ */
+export async function reverifyLicense(): Promise<ReverifyOutcome> {
+  return invoke<ReverifyOutcome>("reverify_license");
+}
+
+/** Trial countdown for the popup footer + Settings → License banner. */
+export async function getTrialStatus(): Promise<TrialStatus> {
+  return invoke<TrialStatus>("get_trial_status");
+}
+
 // ---------- Re-export bundle ----------
 
 export const ipc = {
@@ -392,4 +479,9 @@ export const ipc = {
   setAutostart,
   checkForUpdates,
   downloadAndInstallUpdate,
+  activateLicense,
+  deactivateLicense,
+  getLicenseStatus,
+  reverifyLicense,
+  getTrialStatus,
 } as const;
