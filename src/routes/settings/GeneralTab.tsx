@@ -211,7 +211,7 @@ function AutostartRow() {
   return (
     <Row
       label="Run at login"
-      description="Start Klipo automatically when you sign in. Stored in HKCU on Windows; macOS arrives in v0.2."
+      description="Start Klipo automatically when you sign in. Stored under HKCU on Windows."
     >
       <ToggleSwitch
         checked={value === true}

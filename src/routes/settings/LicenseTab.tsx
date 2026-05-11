@@ -119,7 +119,7 @@ function StatusPill({
       label: `Free trial — ${days} day${days === 1 ? "" : "s"} left`,
       tone: days <= 3 ? "amber" : "neutral",
     };
-    summary = `Free trial — ${days} day${days === 1 ? "" : "s"} left of 14. Activate now to lock in the $29 price.`;
+    summary = `Free trial — ${days} day${days === 1 ? "" : "s"} left of 14. Activate to unlock the full lifetime license.`;
   } else if (status.tier === "expired") {
     pill = { label: "Trial expired", tone: "red" };
     summary = "Trial expired. Activate a license to continue using Klipo.";
@@ -331,7 +331,7 @@ function ActivateRow({
         )}
       >
         Free trial — {trial.days_remaining} day{trial.days_remaining === 1 ? "" : "s"} left of 14.
-        Activate now to lock in the $29 price.
+        Activate to unlock the full lifetime license.
       </div>
     );
   } else if (status?.tier === "expired") {
@@ -398,9 +398,9 @@ function ActivateRow({
             rel="noreferrer"
             className="text-primary underline-offset-2 hover:underline"
           >
-            Buy Klipo for $29
-          </a>{" "}
-          at bluedev.dev/products/klipo.
+            Get one at bluedev.dev/products/klipo
+          </a>
+          .
         </p>
       </form>
     </Row>
@@ -422,7 +422,7 @@ function BuyLinkRow() {
         className="inline-flex w-fit items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-accent/40"
       >
         <ExternalLink className="h-4 w-4" aria-hidden="true" />
-        bluedev.dev/products/klipo · $29
+        bluedev.dev/products/klipo
       </a>
     </Row>
   );

@@ -534,7 +534,7 @@ function TrialExpiredOverlay() {
             className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-accent/40"
           >
             <ExternalLink className="h-4 w-4" aria-hidden="true" />
-            Buy Klipo ($29)
+            Buy Klipo
           </button>
         </div>
       </div>

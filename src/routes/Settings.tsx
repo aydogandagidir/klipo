@@ -111,6 +111,29 @@ export function Settings() {
 
 function AboutTab() {
   const [replayState, setReplayState] = useState<"idle" | "armed" | "error">("idle");
+  /** Klipo version as reported by the running binary. Read from
+   * `getVersion()` (Tauri) so it always reflects `CARGO_PKG_VERSION` and
+   * never drifts from `Cargo.toml` — a hardcoded string here was the root
+   * cause of the v0.1.3 / v0.1.4 mismatch confusion (see CHANGELOG).
+   * `null` while loading, otherwise e.g. `"0.1.5"`. */
+  const [version, setVersion] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { getVersion } = await import("@tauri-apps/api/app");
+        const v = await getVersion();
+        if (!cancelled) setVersion(v);
+      } catch {
+        // If Tauri's app module isn't reachable (e.g. dev-time browser preview),
+        // leave version null rather than crash the About tab.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const replay = async () => {
     try {
@@ -134,13 +157,13 @@ function AboutTab() {
             className="font-medium text-primary underline-offset-2 hover:underline"
           >
             bluedev
-          </a>{" "}
-          — fast, private, with opt-in end-to-end encrypted sync arriving in v0.3.
+          </a>
+          {" "}— fast, private, local-first. Every clip stays on this machine.
         </p>
       </div>
       <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Version</dt>
-        <dd className="font-mono">0.1.3</dd>
+        <dd className="font-mono">{version ?? "—"}</dd>
         <dt className="text-muted-foreground">Publisher</dt>
         <dd>
           bluedev (
@@ -173,15 +196,6 @@ function AboutTab() {
             className="text-primary underline-offset-2 hover:underline"
           >
             Privacy
-          </a>{" "}
-          ·{" "}
-          <a
-            href="https://github.com/aydogandagidir/klipo/blob/main/LEGAL/REFUND.md"
-            target="_blank"
-            rel="noreferrer"
-            className="text-primary underline-offset-2 hover:underline"
-          >
-            Refund
           </a>
         </dd>
         <dt className="text-muted-foreground">Support</dt>
@@ -194,9 +208,7 @@ function AboutTab() {
           </a>
         </dd>
         <dt className="text-muted-foreground">Platform</dt>
-        <dd className="font-mono">{navigator.platform}</dd>
-        <dt className="text-muted-foreground">User agent</dt>
-        <dd className="break-all font-mono text-xs">{navigator.userAgent}</dd>
+        <dd>Windows 10 (1809+) / Windows 11</dd>
       </dl>
       <div className="space-y-2 border-t border-border/40 pt-4">
         <h3 className="text-sm font-medium">Replay welcome tour</h3>

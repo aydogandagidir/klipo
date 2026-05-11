@@ -106,13 +106,10 @@ function SyncRow() {
   return (
     <Row
       label="Cloud sync"
-      description="End-to-end encrypted sync across devices. Arrives in v0.3 (Faz D); the toggle will appear here when the server-side pieces ship."
+      description="End-to-end encrypted sync across devices is on the roadmap but not committed to a release. Until it ships, every Klipo install keeps its own local history."
     >
       <div className="flex items-center gap-2">
-        <ToggleSwitch checked={false} disabled label="Sync (coming soon)" />
-        <span className="rounded bg-muted/40 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-          v0.3
-        </span>
+        <ToggleSwitch checked={false} disabled label="Sync (not yet available)" />
       </div>
     </Row>
   );
