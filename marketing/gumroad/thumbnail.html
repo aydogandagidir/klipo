@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <title>Thumbnail · Klipo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=Instrument+Sans:wght@500;600;700&display=swap" />
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
 <link rel="stylesheet" href="./style.css" />
 <style>
   body[data-stage="thumb"] { width: 600px; height: 600px; }
   .thumb {
     width: 100%; height: 100%;
-    background: linear-gradient(160deg, #015AFF 0%, #0040C2 50%, #0A1628 100%);
-    color: #fff;
+    background: var(--c-bg);
+    color: var(--c-text);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -20,98 +20,134 @@
     justify-content: center;
     padding: 48px 56px;
     text-align: center;
+    gap: 18px;
   }
-  .thumb__icon-wrap {
-    width: 144px; height: 144px;
-    border-radius: 32px;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    display: grid; place-items: center;
-    margin-bottom: 24px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45),
-                inset 0 1px 0 rgba(255,255,255,0.18);
-    position: relative;
+  /* Soft brand-tinted accent glow, behind everything */
+  .thumb__glow {
+    position: absolute;
+    width: 480px; height: 480px;
+    border-radius: 50%;
+    filter: blur(120px);
+    background: var(--c-accent);
+    opacity: 0.10;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
   }
-  .thumb__icon-wrap img {
-    width: 96px; height: 96px;
-    image-rendering: -webkit-optimize-contrast;
+
+  .thumb__mark {
+    width: 220px;
+    height: auto;
+    margin-bottom: 4px;
   }
-  .thumb__brand-name {
-    font-family: var(--font-display);
-    font-size: 56px;
-    font-weight: 800;
-    letter-spacing: -2px;
-    line-height: 1;
+  /* Klipo wordmark — rendered as inline SVG text so we get exactly the
+     "Klipo" word (the assets/klipo-wordmark-*.svg files include the K-mark
+     glyph too, which would duplicate the large mark above; here we want
+     mark-on-top + the word "Klipo" below). */
+  .thumb__wordmark {
+    width: 260px;
+    height: auto;
+    margin-top: -8px;
+    display: block;
   }
+
   .thumb__sub {
     font-size: 16px;
-    opacity: 0.85;
-    margin-top: 10px;
-    margin-bottom: 22px;
+    margin-top: 4px;
+    color: var(--c-text-2);
     font-weight: 500;
     line-height: 1.4;
     max-width: 420px;
   }
-  .thumb__sub strong { color: #FFD700; font-weight: 800; }
+  .thumb__sub strong { color: var(--c-accent); font-weight: 800; }
+
   .thumb__price-chip {
     display: inline-flex; align-items: baseline; gap: 8px;
-    padding: 12px 22px;
-    background: var(--gradient-pro);
-    color: #5C3A00;
+    padding: 12px 24px;
+    background: var(--c-accent);
+    color: #FFFFFF;
     border-radius: 14px;
-    box-shadow: 0 12px 32px rgba(255, 165, 0, 0.45);
+    box-shadow: 0 16px 36px rgba(1, 90, 255, 0.30);
     font-weight: 800;
+    margin-top: 6px;
   }
-  .thumb__price-amount { font-size: 30px; }
+  .thumb__price-amount { font-size: 30px; letter-spacing: -0.5px; }
   .thumb__price-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
   .thumb__icons {
-    display: flex; gap: 10px;
-    margin-top: 22px;
+    display: flex; gap: 8px;
+    margin-top: 12px;
     font-size: 11px;
     font-weight: 700;
-    opacity: 0.95;
   }
   .thumb__icons span {
     padding: 6px 12px;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.22);
+    background: var(--c-accent-soft);
+    color: var(--c-accent);
     border-radius: 99px;
-    backdrop-filter: blur(4px);
   }
+
   .thumb__by {
     position: absolute;
-    bottom: 22px;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 8px;
     font-size: 11px;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    opacity: 0.6;
+    color: var(--c-text-3);
     font-weight: 600;
   }
+  .thumb__by img { height: 18px; width: auto; opacity: 0.8; }
 </style>
 </head>
 <body data-stage="thumb">
   <div class="thumb">
-    <div class="bg-glow bg-glow--cyan" style="top: -160px; right: -120px; opacity: 0.55;"></div>
-    <div class="bg-glow bg-glow--blue" style="bottom: -150px; left: -120px; opacity: 0.5;"></div>
-    <div class="bg-grid" style="opacity: 0.5;"></div>
+    <div class="thumb__glow"></div>
 
-    <div class="thumb__icon-wrap">
-      <!-- Klipo app icon — falls back to a "K" mark if image is missing -->
-      <img src="../../src-tauri/icons/128x128.png" alt="Klipo" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'font-family: var(--font-display); font-weight: 900; font-size: 60px; letter-spacing: -2px; color: #fff;\'>K</div>'" />
-    </div>
-    <div class="thumb__brand-name">Klipo</div>
+    <!-- Klipo mark (K + clipboard glyph) — inlined so currentColor resolves to brand blue -->
+    <svg class="thumb__mark" viewBox="0 0 56 80" xmlns="http://www.w3.org/2000/svg"
+         fill="none" stroke="#015AFF" stroke-width="4"
+         stroke-linecap="round" stroke-linejoin="round"
+         role="img" aria-label="Klipo mark">
+      <title>Klipo</title>
+      <rect x="18" y="0" width="20" height="10" rx="3" fill="#015AFF" stroke="none"/>
+      <rect x="2" y="6" width="52" height="74" rx="6"/>
+      <path d="M16 26 L16 66"/>
+      <path d="M16 46 L40 26"/>
+      <path d="M16 46 L40 66"/>
+    </svg>
+
+    <!-- "Klipo" wordmark text rendered as inline SVG so it matches the
+         exact letterforms used in assets/klipo-wordmark-*.svg
+         (Instrument Sans 800, -2.5 letter-spacing, #015AFF). -->
+    <svg class="thumb__wordmark" viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="Klipo">
+      <title>Klipo</title>
+      <text x="0" y="64"
+            font-family="Instrument Sans, Inter, system-ui, sans-serif"
+            font-size="80" font-weight="800" letter-spacing="-2.5"
+            fill="#015AFF">Klipo</text>
+    </svg>
+
     <div class="thumb__sub">Every <strong>Ctrl+C</strong>, searchable forever.</div>
+
     <div class="thumb__price-chip">
       <span class="thumb__price-amount">$29</span>
       <span class="thumb__price-label">lifetime</span>
     </div>
+
     <div class="thumb__icons">
-      <span>📋 Capture</span>
-      <span>🔍 Search</span>
-      <span>🛡️ Protect</span>
+      <span>Capture</span>
+      <span>Search</span>
+      <span>Protect</span>
     </div>
-    <div class="thumb__by">— a bluedev product —</div>
+
+    <div class="thumb__by">
+      <span>by</span>
+      <img src="brand/bluedev-wordmark-blueTransparent.svg" alt="bluedev" />
+    </div>
   </div>
 </body>
 </html>

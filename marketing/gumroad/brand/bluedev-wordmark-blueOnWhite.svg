@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  bluedev wordmark — white background, two-color:
+    "blue" → brand accent #015AFF
+    "dev"  → dark navy   #0A1628
+  Official two-color brand wordmark. Use on white surfaces.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="380" height="100" viewBox="0 0 380 100"
+     role="img" aria-label="bluedev">
+  <title>bluedev</title>
+  <rect width="380" height="100" fill="#FFFFFF"/>
+  <text x="0" y="78"
+        font-family="Instrument Sans, Inter, system-ui, sans-serif"
+        font-size="84" font-weight="800" letter-spacing="-3">
+    <tspan fill="#015AFF">blue</tspan><tspan fill="#0A1628">dev</tspan>
+  </text>
+</svg>

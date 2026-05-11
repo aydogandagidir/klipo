@@ -81,3 +81,8 @@ bench/criterion/
 
 # Internal notes — yerel, müşteri görmez, git'e gitmez
 /notes/
+
+# Marketing pipeline runtime artifacts
+marketing/gumroad/node_modules/
+marketing/gumroad/package-lock.json
+marketing/gumroad/out/_scenes/

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Klipo brand mark — single-color glyph, parallels Bluedev's "B" mark style.
+  Concept: stylized K letter inside a clipboard form.
+  - Top: rounded clipboard clip (solid)
+  - Body: rounded clipboard outline (stroke)
+  - Interior: stylized K letter (Klipo's first character)
+
+  Uses currentColor where possible so the icon can be re-tinted by parent CSS;
+  the solid clip falls back to brand accent #015AFF when no color is set.
+
+  Dimensions match Bluedev B-mark aspect (56×80) so the two icons sit
+  visually balanced when placed side by side ("bluedev — Klipo").
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="56" height="80" viewBox="0 0 56 80"
+     fill="none" stroke="currentColor" stroke-width="4"
+     stroke-linecap="round" stroke-linejoin="round"
+     role="img" aria-label="Klipo">
+  <title>Klipo</title>
+
+  <!-- Top clipboard clip (solid accent) -->
+  <rect x="18" y="0" width="20" height="10" rx="3"
+        fill="currentColor" stroke="none"/>
+
+  <!-- Clipboard body outline -->
+  <rect x="2" y="6" width="52" height="74" rx="6"/>
+
+  <!-- Stylized K (Klipo): vertical bar + two diagonals meeting at the
+       midpoint. Geometry intentionally mirrors a clipboard's content
+       lines so the K reads as both letter and clipboard "marks". -->
+  <path d="M16 26 L16 66"/>
+  <path d="M16 46 L40 26"/>
+  <path d="M16 46 L40 66"/>
+</svg>

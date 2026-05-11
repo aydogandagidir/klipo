@@ -91,13 +91,13 @@ your time and your data."
 ## 1:50–2:00 — CTA close
 
 > *(Klipo logo + bluedev wordmark center frame; text overlay: "$29 — lifetime
-> v0.x updates · macOS coming in v0.2"; mouse cursor moves to a "Buy on
+> v0.x updates · 14-day free trial"; mouse cursor moves to a "Buy on
 > Gumroad" button)*
 
 **Voice-over:**
 "Klipo. By bluedev. Twenty-nine dollars, with lifetime updates in the
-0.x series. macOS arrives in v0.2 — included free. Get it at
-bluedev.dev/products/klipo."
+0.x series. Try the full Pro experience free for fourteen days before you pay.
+Get it at bluedev.dev/products/klipo."
 
 > *(fade to bluedev.dev landing page hero)*
 

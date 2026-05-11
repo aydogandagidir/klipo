@@ -3,60 +3,80 @@
 <head>
 <meta charset="utf-8" />
 <title>Scene 06 · Sensitive Auto-Flag · Klipo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" />
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
 <link rel="stylesheet" href="../style.css" />
 <style>
   .s6 {
-    background: linear-gradient(160deg, #0A1628 0%, #1E1B4B 60%, #1F1014 100%);
-    color: #fff;
-    padding: 50px 70px;
+    background: var(--c-bg);
+    color: var(--c-text);
+    padding: 56px 80px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 36px;
+    gap: 44px;
+    position: relative;
   }
+  .s6__glow {
+    position: absolute;
+    width: 620px; height: 620px;
+    border-radius: 50%;
+    filter: blur(140px);
+    background: var(--c-accent);
+    opacity: 0.06;
+    top: -200px; left: -150px;
+    pointer-events: none;
+  }
+
   .s6__left {
-    width: 480px;
-    display: flex; flex-direction: column; gap: 14px;
+    width: 520px;
+    display: flex; flex-direction: column; gap: 16px;
+    position: relative; z-index: 1;
   }
   .s6__eyebrow {
-    color: #FCA5A5;
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--c-accent);
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 3px;
     text-transform: uppercase;
+    padding: 6px 12px;
+    background: var(--c-accent-soft);
+    border-radius: 99px;
+    width: fit-content;
     animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) .1s both;
   }
   .s6__h {
     font-family: var(--font-display);
-    font-size: 50px;
+    font-size: 52px;
     font-weight: 800;
-    letter-spacing: -1.6px;
-    line-height: 1.06;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
+    color: var(--c-text);
     animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .3s both;
   }
-  .s6__h .accent { color: #FFD700; }
+  .s6__h .accent { color: var(--c-accent); }
   .s6__lead {
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.55;
-    opacity: 0.85;
+    color: var(--c-text-2);
     animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) .6s both;
   }
   .s6__patterns {
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    margin-top: 8px;
+    margin-top: 10px;
   }
   .s6__pattern {
-    padding: 8px 12px;
-    background: rgba(239,68,68,0.10);
-    border: 1px solid rgba(239,68,68,0.25);
-    border-radius: 8px;
+    padding: 10px 12px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
     font-size: 12px;
-    color: #FCA5A5;
+    color: var(--c-text);
     font-weight: 700;
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; gap: 8px;
     animation: fadeInUp .6s cubic-bezier(.2,.8,.2,1) both;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
   }
   .s6__pattern.s1 { animation-delay: 1.0s; }
   .s6__pattern.s2 { animation-delay: 1.15s; }
@@ -64,41 +84,53 @@
   .s6__pattern.s4 { animation-delay: 1.45s; }
   .s6__pattern.s5 { animation-delay: 1.60s; }
   .s6__pattern.s6 { animation-delay: 1.75s; }
+  .s6__pattern-tag {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: var(--c-accent-soft);
+    color: var(--c-accent);
+    display: grid; place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
   .s6__pattern-mono {
     font-family: var(--font-mono);
     font-size: 10px;
-    background: rgba(255,255,255,0.06);
-    padding: 1px 4px;
+    background: var(--c-bg-muted);
+    padding: 2px 5px;
     border-radius: 3px;
-    color: #fff;
+    color: var(--c-text-2);
+    margin-left: auto;
   }
   .s6__tagline {
     margin-top: 14px;
     font-family: var(--font-display);
     font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.4px;
-    color: #fff;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--c-text);
     animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) 2.4s both;
   }
-  .s6__tagline .gold { color: #FFD700; }
+  .s6__tagline .em { color: var(--c-accent); font-weight: 800; }
 
   .s6__right {
     width: 460px;
     animation: scaleIn .9s cubic-bezier(.2,.8,.2,1) .3s both;
     position: relative;
+    z-index: 1;
   }
   .s6__copy-event {
     position: absolute;
     top: 16px;
     right: -30px;
-    background: #015AFF;
+    background: var(--c-accent);
     color: #fff;
     padding: 8px 14px;
     border-radius: 99px;
     font-size: 11px;
     font-weight: 800;
-    box-shadow: 0 8px 24px rgba(1, 90, 255, 0.4);
+    box-shadow: 0 10px 24px rgba(1, 90, 255, 0.35);
     z-index: 10;
     opacity: 0;
     display: flex; align-items: center; gap: 6px;
@@ -107,22 +139,23 @@
   }
   .s6__copy-event .key {
     font-family: var(--font-mono);
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.20);
     padding: 1px 6px;
     border-radius: 4px;
     font-size: 10px;
   }
+  /* Sensitive detection chip — red is correct here (Klipo's actual danger UI) */
   .s6__detect-event {
     position: absolute;
     top: 70px;
     right: -30px;
-    background: #EF4444;
+    background: var(--c-danger);
     color: #fff;
     padding: 8px 14px;
     border-radius: 99px;
     font-size: 11px;
     font-weight: 800;
-    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 10px 24px rgba(239, 68, 68, 0.40);
     z-index: 10;
     opacity: 0;
     display: flex; align-items: center; gap: 6px;
@@ -130,7 +163,7 @@
                pulseRed 2s ease-in-out 3.5s infinite;
   }
 
-  /* The sensitive clip — appears with red border, blurred text */
+  /* The sensitive clip — red border (Klipo's actual product UI) */
   .clip-row--featured {
     margin: 0 14px;
     padding: 14px 16px;
@@ -152,9 +185,7 @@
     background: rgba(239, 68, 68, 0.22);
     color: #FCA5A5;
   }
-  .clip-row--featured .clip-row__body {
-    flex: 1;
-  }
+  .clip-row--featured .clip-row__body { flex: 1; }
   .clip-row--featured .clip-row__text {
     font-size: 14px;
     filter: blur(5px);
@@ -177,31 +208,31 @@
     position: absolute;
     bottom: -16px;
     right: -10px;
-    background: rgba(15, 23, 42, 0.95);
-    border: 1px solid rgba(239, 68, 68, 0.40);
-    color: #fff;
+    background: #FFFFFF;
+    border: 1px solid var(--c-border);
+    color: var(--c-text);
     padding: 8px 14px;
     border-radius: 10px;
     font-size: 11px;
     font-weight: 700;
     display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
     animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) 4.5s both;
+    z-index: 10;
   }
   .blur-callout .red-dot {
     width: 8px; height: 8px; border-radius: 50%;
-    background: #EF4444;
+    background: var(--c-danger);
     animation: pulseRed 1.5s ease-in-out infinite;
   }
 </style>
 </head>
 <body data-stage="video" data-duration="11000">
   <div class="stage s6">
-    <div class="bg-glow" style="top: -160px; right: -100px; opacity: 0.30; background: #EF4444; width: 480px; height: 480px;"></div>
-    <div class="bg-glow bg-glow--blue" style="bottom: -200px; left: -120px; opacity: 0.25;"></div>
+    <div class="s6__glow"></div>
 
     <div class="s6__left">
-      <div class="s6__eyebrow">🛡️ PROTECT</div>
+      <div class="s6__eyebrow">Protect</div>
       <div class="s6__h">Your secrets stay <span class="accent">secret.</span></div>
       <div class="s6__lead">
         Klipo scans every clip locally for 13 sensitive patterns
@@ -209,19 +240,19 @@
         don't paste an API key into a Slack channel by accident.
       </div>
       <div class="s6__patterns">
-        <div class="s6__pattern s1">🔑 <span>OpenAI</span> <span class="s6__pattern-mono">sk-…</span></div>
-        <div class="s6__pattern s2">☁️ <span>AWS</span> <span class="s6__pattern-mono">AKIA…</span></div>
-        <div class="s6__pattern s3">🎫 <span>JWT</span> <span class="s6__pattern-mono">eyJ…</span></div>
-        <div class="s6__pattern s4">💳 <span>Card</span> <span class="s6__pattern-mono">4242…</span></div>
-        <div class="s6__pattern s5">🐙 <span>GitHub</span> <span class="s6__pattern-mono">ghp_…</span></div>
-        <div class="s6__pattern s6">💼 <span>Stripe</span> <span class="s6__pattern-mono">sk_live_</span></div>
+        <div class="s6__pattern s1"><span class="s6__pattern-tag">K</span> OpenAI <span class="s6__pattern-mono">sk-…</span></div>
+        <div class="s6__pattern s2"><span class="s6__pattern-tag">A</span> AWS <span class="s6__pattern-mono">AKIA…</span></div>
+        <div class="s6__pattern s3"><span class="s6__pattern-tag">J</span> JWT <span class="s6__pattern-mono">eyJ…</span></div>
+        <div class="s6__pattern s4"><span class="s6__pattern-tag">#</span> Card <span class="s6__pattern-mono">4242…</span></div>
+        <div class="s6__pattern s5"><span class="s6__pattern-tag">G</span> GitHub <span class="s6__pattern-mono">ghp_…</span></div>
+        <div class="s6__pattern s6"><span class="s6__pattern-tag">S</span> Stripe <span class="s6__pattern-mono">sk_live_</span></div>
       </div>
-      <div class="s6__tagline">All <span class="gold">13 patterns</span> scanned locally — never uploaded.</div>
+      <div class="s6__tagline">All <span class="em">13 patterns</span> scanned locally — never uploaded.</div>
     </div>
 
     <div class="s6__right">
-      <div class="s6__copy-event">📋 Copied <span class="key">Ctrl+C</span></div>
-      <div class="s6__detect-event">⚠ Sensitive detected</div>
+      <div class="s6__copy-event">Copied <span class="key">Ctrl+C</span></div>
+      <div class="s6__detect-event">Sensitive detected</div>
 
       <div class="popup-mock">
         <div class="popup-mock__head">

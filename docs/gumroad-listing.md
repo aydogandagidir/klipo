@@ -63,7 +63,8 @@ Lifetime license: every Ctrl+C is captured locally, searchable in milliseconds, 
 
 ## Refund policy
 
-- **30 days, no questions asked** (Gumroad default)
+- **No refunds.** 14-day free trial gives buyers full access to evaluate before paying.
+- Statutory consumer rights (EU 14-day right of withdrawal etc.) still apply where required by law.
 - LEGAL/REFUND.md ile uyumlu
 
 ---
@@ -86,7 +87,7 @@ Klipo bir başka şey daha yapıyor: kopyaladığın bir API key veya kredi kart
 
 14 günlük tam-özellik trial sonrasında license key girip Pro'ya geçersin. Tek fark: trial sayacı kalkar, capture limitsiz devam eder. Aynı binary, sadece anahtar Pro'yu açar. License doğrulama Klipo'dan doğrudan api.gumroad.com'a gider — hiçbir bluedev sunucusuna proxy yok, sadece anahtarın transmission edilir, hiç clipboard içeriği yok. 30 günlük offline grace; internet kopuk olsa bile Pro çalışır.
 
-$29 öder, lifetime kullanırsın. Tüm v0.x güncellemeleri dahil; macOS portu (v0.2'de geliyor) free upgrade. Aynı key 3 kişisel cihaza kadar aktive olur. Refund 30 gün, sorgusuz.
+$29 öder, lifetime kullanırsın. Tüm v0.x güncellemeleri dahil. Aynı key 3 kişisel cihaza kadar aktive olur. 14 günlük ücretsiz trial ile satın almadan önce tam Pro deneyimini değerlendirebilirsin.
 
 
 Birkaç sıkça gelen soru.
@@ -99,7 +100,7 @@ Bluedev kapanırsa Klipo çalışmaya devam eder mi? License doğrulama doğruda
 
 Bluedev clipboard içeriğimi görüyor mu? Hayır. Tüm capture, dedup, search, sensitive-detection işlemi senin makinendeki SQLite veritabanında. Tek network call'um Gumroad'a license verify; o request sadece anahtarını içerir, hiçbir clipboard verisi yok.
 
-Mac kullanıyorum, alabilir miyim? Şu an sadece Windows. macOS portu v0.2'de planlandı (yaklaşık 2-3 ay içinde). Şimdi alırsan v0.2 free upgrade — ama v0.1.x kullanmak için Windows gerek.
+Mac kullanıyorum, alabilir miyim? Klipo şu an sadece Windows (Windows 10 1809+ / Windows 11). macOS ve Linux desteklenmiyor. Mac kullanıcıysan bu turn'de alma — Klipo Windows binary'si sende çalışmaz.
 
 
 Klipo'nun kaynak kodu açık değil (v0.1.3'ten itibaren proprietary EULA). Ama mimarinin nasıl çalıştığı, hangi pattern'lerin sensitive olarak işlendiği, performans bütçesi — hepsi bluedev'in public docs'undan görülebilir. Şeffaflık için dökümantasyon paylaşılır, source code ticari ürün olarak korunur.
@@ -136,7 +137,7 @@ gönderir.
 - [ ] Price: **$29 USD**
 - [ ] Currency: USD
 - [ ] **Generate license keys: ON** ⚠️
-- [ ] Refund policy: 30 days, no questions asked
+- [ ] Refund policy: No refunds. 14-day free trial gives buyers full access to evaluate before paying.
 - [ ] Tags: `clipboard-manager`, `productivity`, `windows`, `developer-tools`, `tauri`, `rust`, `bluedev`, `clipboard`, `local-first`, `privacy`
 - [ ] "Pay what you want": OFF
 - [ ] Status: **Unlisted** (description boyunca; tamamlanınca "Public")

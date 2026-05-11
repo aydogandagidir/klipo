@@ -32,9 +32,9 @@ What makes it different:
 - **Keyboard-first.** Every action has a shortcut. Mouse is optional. Type to filter, ↑/↓ to navigate, Enter to paste back into your previous app.
 - **Native.** Built on Tauri 2 + Rust. ~3.8 MB installer. No Electron bloat, no background memory leak, no Chromium tab tax.
 
-**$29 — lifetime updates in the v0.x series.** A 30-day refund window applies if Klipo isn't a fit. See [the EULA](https://github.com/aydogandagidir/klipo/blob/main/LEGAL/EULA.md).
+**$29 — lifetime updates in the v0.x series.** Use the 14-day free trial to decide before you pay. See [the EULA](https://github.com/aydogandagidir/klipo/blob/main/LEGAL/EULA.md).
 
-> Heads-up: Klipo is **Windows 10 / 11 only** today. macOS arrives in v0.2; if you buy now, that upgrade is included free.
+> Heads-up: Klipo is **Windows 10 (1809+) / Windows 11 — Windows-only at this time. macOS and Linux are not currently supported.**
 
 ---
 
@@ -42,10 +42,9 @@ What makes it different:
 
 - ✅ Klipo for Windows 10 / 11 (NSIS installer, ~3.8 MB; publisher metadata: bluedev)
 - ✅ All updates in the v0.x series (currently v0.1.3) at no extra cost — auto-update built-in
-- ✅ macOS build when v0.2 ships — included free
 - ✅ Per-seat license — install on up to 3 of your own devices
 - ✅ Email support: support@bluedev.dev
-- ✅ 30-day money-back guarantee — no questions asked
+- ✅ 14-day free trial — use it to decide before you pay
 
 ---
 
@@ -67,7 +66,7 @@ What makes it different:
 ## FAQ
 
 **Is Klipo really only for Windows?**
-Today, yes — Windows 10 (1809+) and Windows 11. macOS support is the very next milestone (v0.2). Linux follows later. Buying now includes the macOS upgrade free.
+Yes — Windows 10 (1809+) and Windows 11 only. macOS and Linux are not currently supported. If we ever ship them, that will be announced separately on bluedev.dev/products/klipo — there is no buying claim attached today.
 
 **Where is my clipboard history stored?**
 Locally, in an encrypted SQLite database at `%APPDATA%\Klipo\`. Nothing leaves your machine. Even crash reports require explicit opt-in in Settings → Privacy.
@@ -79,19 +78,19 @@ Personal license = up to 3 devices that you personally own. Team licenses are av
 The historical v0.1.0–0.1.2 versions are freely available under Apache-2.0. From v0.1.3 onward, Klipo is a commercial product under a proprietary EULA, but bluedev publishes detailed architecture docs and changelogs for transparency.
 
 **What if I don't like it?**
-30-day refund window, no questions asked. Email support@bluedev.dev or click the refund link in your Gumroad receipt.
+That's exactly what the 14-day free trial is for — install Klipo, use it for two weeks with every Pro feature unlocked, then decide if it's worth $29. If you do pay and Klipo isn't a fit, email support@bluedev.dev and we'll talk it through. Statutory consumer rights (e.g. the EU 14-day right of withdrawal) still apply where required by law.
 
 **Why does Windows show "Unknown publisher" on first install?**
 Klipo is currently distributed without an Authenticode (EV) code-signing certificate. Acquiring one costs $200–400/yr and requires hardware tokens or cloud HSM — that overhead would push the indie price ($29 lifetime) out of reach. Instead, the installer carries `Publisher: bluedev` metadata (right-click installer → Properties → Details to verify), the auto-update payload itself **is** Ed25519-signed (so all future updates verify against a public key embedded in your installed copy), and the trust anchors are bluedev's public release notes + the brand at [bluedev.dev](https://bluedev.dev). On first install: click **More info** → **Run anyway**. We'll add Authenticode in a future release once the brand is established.
 
 **Why $29 and not $9?**
-Klipo is built on Tauri 2 + Rust + SQLite FTS5 — engineering you can verify in the public release notes and architecture docs. The 13-pattern sensitive-content guard, the per-app exclusion list, the encrypted local store, the keyboard-first UX, the auto-update plumbing — they're not weekend-project work. $29 buys you the engineered version *plus* every v0.x update including the macOS port (v0.2) and the E2E sync (v0.3) at no extra cost. Compare to clipboard managers that charge $4-8/month subscription — $29 lifetime is cheaper after 4-6 months.
+Klipo is built on Tauri 2 + Rust + SQLite FTS5 — engineering you can verify in the public release notes and architecture docs. The 13-pattern sensitive-content guard, the per-app exclusion list, the encrypted local store, the keyboard-first UX, the auto-update plumbing — they're not weekend-project work. $29 buys you the engineered version *plus* every v0.x update at no extra cost. Compare to clipboard managers that charge $4-8/month subscription — $29 lifetime is cheaper after 4-6 months.
 
 **Is it worth it for me?**
 If you copy code, links, snippets, or anything you might want again later — yes. The pivot moment is the first time Klipo saves you 20 minutes by remembering something you'd otherwise have to re-find. That moment usually happens on day 1.
 
 **Will my clipboard sync across devices?**
-Not yet. End-to-end encrypted sync is on the v0.3 roadmap (free upgrade for buyers). Until then, each device has its own local history.
+Not today. End-to-end encrypted sync is being explored for a future release, but it isn't built yet — there is no buying claim or timeline attached. Until then, each device has its own local history.
 
 **Can I see the source code before buying?**
 v0.1.0–v0.1.2 are still public on GitHub under Apache-2.0 — you can audit the architecture, sensitive-content patterns, and storage schema there. v0.1.3+ is private commercial source, but the architecture/security/perf-budget docs are linked in every release.

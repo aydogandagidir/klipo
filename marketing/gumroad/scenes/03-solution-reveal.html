@@ -3,107 +3,133 @@
 <head>
 <meta charset="utf-8" />
 <title>Scene 03 · Solution Reveal · Klipo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Sans:wght@500;600;700&display=swap" />
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800;900&display=swap" />
 <link rel="stylesheet" href="../style.css" />
 <style>
   .s3 {
-    background: var(--gradient-hero);
-    color: #fff;
+    background: var(--c-bg);
+    color: var(--c-text);
     flex-direction: column;
-    padding: 50px;
+    padding: 56px 64px;
     gap: 28px;
     text-align: center;
+    position: relative;
   }
+  .s3__glow {
+    position: absolute;
+    width: 720px; height: 720px;
+    border-radius: 50%;
+    filter: blur(160px);
+    background: var(--c-accent);
+    opacity: 0.08;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
   .s3__brand {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     justify-content: center;
     animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) .1s both;
+    position: relative; z-index: 1;
   }
-  .s3__brand-mark {
-    width: 70px; height: 70px;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.25);
-    display: grid; place-items: center;
-    font-family: var(--font-display);
-    font-weight: 900; font-size: 38px;
-    letter-spacing: -1.5px;
+  .s3__brand-wordmark { height: 56px; width: auto; }
+  .s3__brand-tag {
+    font-size: 12px;
+    color: var(--c-text-3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding-left: 12px;
+    border-left: 1px solid var(--c-border);
   }
+
   .s3__h {
     font-family: var(--font-display);
-    font-size: 52px;
+    font-size: 54px;
     font-weight: 800;
-    letter-spacing: -2px;
-    line-height: 1.05;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
+    color: var(--c-text);
     animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .5s both;
     max-width: 940px;
     margin: 0 auto;
+    position: relative; z-index: 1;
   }
-  .s3__h .accent { color: #FFD700; }
+  .s3__h .accent { color: var(--c-accent); }
+
   .s3__pillars {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 18px;
     width: 100%;
-    max-width: 980px;
+    max-width: 1020px;
     margin: 8px auto 0;
+    position: relative; z-index: 1;
   }
   .s3__pillar {
-    background: rgba(255,255,255,0.10);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.18);
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
     border-radius: 18px;
-    padding: 26px 22px;
+    padding: 28px 24px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     text-align: left;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
     animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) both;
   }
   .s3__pillar.delay-1 { animation-delay: 1.0s; }
   .s3__pillar.delay-2 { animation-delay: 1.25s; }
   .s3__pillar.delay-3 { animation-delay: 1.50s; }
   .s3__pillar-icon {
-    font-size: 38px;
-    line-height: 1;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--c-accent);
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: 22px;
+    margin-bottom: 4px;
+    box-shadow: 0 10px 22px rgba(1, 90, 255, 0.28);
   }
   .s3__pillar-title {
     font-family: var(--font-display);
     font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--c-text);
   }
   .s3__pillar-sub {
-    font-size: 13px;
-    opacity: 0.82;
+    font-size: 14px;
+    color: var(--c-text-2);
     line-height: 1.5;
   }
+
   .s3__by {
-    margin-top: 4px;
+    margin-top: 6px;
+    display: flex; align-items: center; gap: 10px;
+    justify-content: center;
     font-size: 13px;
-    letter-spacing: 4px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    opacity: 0.65;
+    color: var(--c-text-3);
     font-weight: 600;
     animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) 1.9s both;
+    position: relative; z-index: 1;
   }
+  .s3__by img { height: 18px; width: auto; opacity: 0.85; }
 </style>
 </head>
 <body data-stage="video" data-duration="6500">
   <div class="stage s3">
-    <div class="bg-grid" style="opacity: 0.45;"></div>
-    <div class="bg-glow bg-glow--cyan anim-drift" style="top: -180px; right: -150px;"></div>
-    <div class="bg-glow bg-glow--blue anim-drift" style="bottom: -200px; left: -100px; animation-delay: -2s;"></div>
+    <div class="s3__glow"></div>
 
     <div class="s3__brand">
-      <div class="s3__brand-mark">K</div>
-      <div style="text-align: left;">
-        <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; letter-spacing: -1px;">Klipo</div>
-        <div style="font-size: 12px; opacity: 0.75; letter-spacing: 1.5px; text-transform: uppercase;">3 SUPERPOWERS</div>
-      </div>
+      <img class="s3__brand-wordmark" src="../../../assets/klipo-wordmark-blueTransparent.svg" alt="Klipo" />
+      <div class="s3__brand-tag">3 superpowers</div>
     </div>
 
     <div class="s3__h">
@@ -112,12 +138,12 @@
 
     <div class="s3__pillars">
       <div class="s3__pillar delay-1">
-        <div class="s3__pillar-icon">🔍</div>
+        <div class="s3__pillar-icon">⌕</div>
         <div class="s3__pillar-title">Search</div>
         <div class="s3__pillar-sub">Ctrl+Alt+V → type → paste. Instant fuzzy search across everything you ever copied.</div>
       </div>
       <div class="s3__pillar delay-2">
-        <div class="s3__pillar-icon">🛡️</div>
+        <div class="s3__pillar-icon">◈</div>
         <div class="s3__pillar-title">Protect</div>
         <div class="s3__pillar-sub">API keys, JWTs, credit cards auto-flagged. Red border, blurred preview, 13 patterns scanned locally.</div>
       </div>
@@ -128,7 +154,11 @@
       </div>
     </div>
 
-    <div class="s3__by">— a bluedev product —</div>
+    <div class="s3__by">
+      <span>a</span>
+      <img src="../brand/bluedev-wordmark-blueTransparent.svg" alt="bluedev" />
+      <span>product</span>
+    </div>
   </div>
 </body>
 </html>

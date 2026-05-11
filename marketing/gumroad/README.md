@@ -62,7 +62,7 @@ Output lands in `marketing/gumroad/out/`. Total runtime ≈ 100 seconds
 | 04 | Capture demo — text · image · file · code piling up | 11.0 s |
 | 05 | Search demo — type "stripe", filter, paste back | 11.0 s |
 | 06 | Sensitive demo — sk-proj key flagged with red border | 11.0 s |
-| 07 | Pricing — $29 lifetime + 14-day trial + macOS bonus | 11.0 s |
+| 07 | Pricing — $29 lifetime + 14-day trial | 11.0 s |
 | 08 | CTA — bluedev.dev/products/klipo + Gumroad button | 6.5 s |
 | **Total** | | **~78.5 s** |
 

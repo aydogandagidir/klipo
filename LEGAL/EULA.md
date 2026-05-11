@@ -54,7 +54,7 @@ bluedev provides best-effort email support at **support@bluedev.dev** during the
 
 ## 7. Refunds
 
-A 30-day refund window applies to most purchases. See [REFUND.md](./REFUND.md) for details and exceptions.
+Klipo is sold with a **14-day free trial in lieu of a money-back guarantee**: buyers evaluate every Pro feature for two weeks before paying, and paid licenses are non-refundable by default. Statutory consumer rights (such as the EU 14-day right of withdrawal) continue to apply where required by law. See [REFUND.md](./REFUND.md) for the full policy.
 
 ## 8. Termination
 

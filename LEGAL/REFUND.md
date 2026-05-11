@@ -1,61 +1,91 @@
 # Klipo Refund Policy
 
 **Effective from Klipo version 0.1.3.**
-**Last updated: 2026-05-08.**
+**Last updated: 2026-05-11.**
 
-bluedev (Aydoğan Dağıdır) wants you to be happy with Klipo. If it isn't the right tool for you, the following refund policy applies.
+bluedev (Aydoğan Dağıdır) wants you to be confident in Klipo before you pay
+for it. The policy below replaces a money-back guarantee with something we
+think serves buyers better: a real, fully-featured trial.
 
 ---
 
-## 1. 30-day money-back guarantee
+## 1. No-refunds policy, with a 14-day free trial in lieu
 
-You may request a **full refund** within **30 calendar days** of your purchase, for **any reason**. No questions asked.
+Klipo ships with a **14-day free trial** that unlocks every Pro feature from
+the moment you install it. The trial is the way you evaluate the Software:
+install Klipo, use it for two weeks with capture, search, sensitive
+auto-flagging, drag-and-drop, and every other Pro feature on, and decide
+*before* you pay whether it fits your workflow.
 
-To request a refund:
+Because the trial provides full pre-purchase evaluation, **paid Klipo licenses
+are non-refundable by default**.
 
-1. Go to the Gumroad receipt email you received at purchase, **or**
-2. Email **support@bluedev.dev** with your order ID or the email address used at purchase.
+If you bought without trialling and discover Klipo isn't a fit, write to
+**support@bluedev.dev** and describe the situation. We will respond in good
+faith, but a refund is at bluedev's discretion and is not promised.
 
-Refunds are processed by Gumroad within 5–10 business days back to the original payment method.
+## 2. Statutory consumer rights
 
-## 2. Refunds after 30 days
+Nothing in this policy limits any statutory consumer rights you have under
+applicable law. In particular:
 
-Refunds beyond the 30-day window are at bluedev's discretion. We will consider, in good faith:
+- **EU / EEA consumers** may have a 14-day right of withdrawal for digital
+  goods under the Consumer Rights Directive, subject to its exceptions
+  (e.g. consent to immediate performance).
+- **UK consumers** have parallel rights under the Consumer Contracts
+  Regulations.
+- Other jurisdictions may grant similar rights.
 
-- substantial undocumented bugs that prevent the Software from functioning on a supported OS version;
-- platform compatibility issues caused by an OS update we have not yet patched;
-- accidental duplicate purchases.
+Where a statutory right applies and is stronger than the no-refunds default
+in this policy, the **statutory right governs**.
 
-We will **not** refund:
+## 3. Bug-related goodwill refunds
 
-- changes of mind beyond 30 days;
-- purchases where the license has been actively used on more devices than the tier permits;
-- purchases where evidence of license-key sharing or distribution has been found.
+Even outside statutory rights, bluedev will consider, in good faith:
 
-## 3. Effect of refund
+- substantial, undocumented bugs that prevent the Software from functioning
+  on a supported OS version (Windows 10 1809+ / Windows 11);
+- platform compatibility issues caused by an OS update we have not yet
+  patched;
+- accidental duplicate purchases of the same license.
 
-Once a refund is issued, your license is revoked. You must:
+These are handled case-by-case at bluedev's discretion. Email
+**support@bluedev.dev** with your order ID and a description of the issue.
+
+## 4. What is never refunded
+
+bluedev will not refund:
+
+- changes of mind by a buyer who skipped the trial;
+- purchases where the license has been actively used on more devices than
+  the tier permits;
+- purchases where evidence of license-key sharing or distribution has been
+  found;
+- promotional or free licenses (giveaways, beta programs).
+
+## 5. Effect of refund
+
+If a refund is issued (under statutory rights, goodwill, or otherwise), your
+license is revoked. You must:
 
 - uninstall the Software from all devices,
 - destroy or delete any local copies you have stored,
 - cease using Klipo.
 
-Locally captured clipboard history stored by Klipo on your devices is **yours** and is not affected by license revocation; you may export or delete it yourself before uninstalling.
+Locally captured clipboard history stored by Klipo on your devices is
+**yours** and is not affected by license revocation; you may export or
+delete it yourself before uninstalling.
 
-## 4. Subscription / recurring billing
+## 6. Subscription / recurring billing
 
-Klipo v0.1.x is sold as a one-time purchase per license tier. There is no recurring subscription. If a future version (v1.0+) introduces a subscription option, separate terms will apply and will be presented at the time of purchase.
-
-## 5. Free / promotional licenses
-
-Promo or free licenses (e.g. issued via giveaways or beta programs) are non-refundable, since no payment was made.
-
-## 6. Statutory rights
-
-Nothing in this policy limits any statutory consumer rights you have under applicable law (such as the EU 14-day right of withdrawal, where applicable). Where statutory rights exceed the protections in this policy, the statutory rights apply.
+Klipo v0.1.x is sold as a one-time purchase per license tier. There is no
+recurring subscription. If a future version (v1.0+) introduces a
+subscription option, separate terms will apply and will be presented at the
+time of purchase.
 
 ---
 
 ## 7. Contact
 
-For any refund question, email **support@bluedev.dev** with your order ID. We aim to respond within 2 business days.
+For any refund question, email **support@bluedev.dev** with your order ID.
+We aim to respond within 2 business days.

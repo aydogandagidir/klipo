@@ -80,10 +80,10 @@ Detect API keys, credit cards, JWTs, and 10 more patterns automatically. Sensiti
 
 | Tier | What you get | Price |
 |:---|:---|:---|
-| **Personal** | Klipo for up to 3 devices you own. Lifetime v0.x updates. macOS upgrade free when v0.2 ships. | **$29** |
+| **Personal** | Klipo for up to 3 devices you own. Lifetime v0.x updates. 14-day free trial. | **$29** |
 | **Team** | Same, on N seats. Centralized license management. Priority email support. | **Contact us** |
 
-> 30-day refund. Per-seat license. [Read the EULA](https://github.com/aydogandagidir/klipo/blob/main/LEGAL/EULA.md).
+> 14-day free trial — use it to decide before you pay. Per-seat license. [Read the EULA](https://github.com/aydogandagidir/klipo/blob/main/LEGAL/EULA.md).
 
 **Buy on Gumroad →** `https://gumroad.com/l/klipo` _(TODO: link once listed)_
 
@@ -92,7 +92,7 @@ Detect API keys, credit cards, JWTs, and 10 more patterns automatically. Sensiti
 ## FAQ
 
 **Is Klipo really only Windows today?**
-Yes — Windows 10 (1809+) and Windows 11. macOS is the next milestone (v0.2); your purchase includes that upgrade free.
+Yes — Windows 10 (1809+) and Windows 11. macOS and Linux are not currently supported. Future roadmap: macOS and Linux support are being explored, but there is no buying claim or timeline attached.
 
 **Does it phone home?**
 Only if you opt into anonymous usage telemetry in Settings → Privacy. Off by default. Clipboard contents are **never** transmitted.
@@ -101,7 +101,7 @@ Only if you opt into anonymous usage telemetry in Settings → Privacy. Off by d
 Yes. Settings → Data → Export to JSON / Markdown.
 
 **Will it sync across devices?**
-End-to-end encrypted sync is on the v0.3 roadmap. Today, each device has its own local history.
+Not today — each device has its own local history. End-to-end encrypted sync is being explored as a future option, but there is no timeline or buying claim attached.
 
 **Is the source open?**
 v0.1.0–0.1.2 are Apache-2.0 (historical). v0.1.3+ is a commercial product under a proprietary EULA. Architecture and changelog docs remain public for transparency.
@@ -118,7 +118,7 @@ bluedev builds software and AI-driven automation tools for productivity-minded d
 
 ## CTA footer
 
-> **Try it. Refund it within 30 days if it isn't right for you.**
+> **Try it free for 14 days. Decide before you pay.**
 >
 > [Buy on Gumroad — $29](https://gumroad.com/l/klipo) · [Docs](https://github.com/aydogandagidir/klipo) · [Support](mailto:support@bluedev.dev)
 
