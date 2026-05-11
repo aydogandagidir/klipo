@@ -3,45 +3,64 @@
 <head>
 <meta charset="utf-8" />
 <title>Scene 04 · Capture Demo · Klipo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" />
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
 <link rel="stylesheet" href="../style.css" />
 <style>
   .s4 {
-    background: linear-gradient(160deg, #F8FAFC 0%, #E2E8F0 100%);
-    padding: 50px 70px;
+    background: var(--c-bg);
+    color: var(--c-text);
+    padding: 56px 80px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 40px;
+    gap: 48px;
+    position: relative;
   }
+  .s4__glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(140px);
+    background: var(--c-accent);
+    opacity: 0.07;
+    top: -150px; right: -150px;
+    pointer-events: none;
+  }
+
   .s4__left {
-    width: 480px;
+    width: 520px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
+    position: relative; z-index: 1;
   }
   .s4__eyebrow {
-    color: var(--c-primary);
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--c-accent);
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 3px;
     text-transform: uppercase;
+    padding: 6px 12px;
+    background: var(--c-accent-soft);
+    border-radius: 99px;
+    width: fit-content;
     animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) .1s both;
   }
   .s4__h {
     font-family: var(--font-display);
-    font-size: 50px;
+    font-size: 52px;
     font-weight: 800;
-    letter-spacing: -1.6px;
-    line-height: 1.06;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
     color: var(--c-text);
     animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) .3s both;
   }
-  .s4__h .accent { color: var(--c-primary); }
+  .s4__h .accent { color: var(--c-accent); }
   .s4__lead {
-    font-size: 16px;
-    color: var(--c-muted);
+    font-size: 17px;
+    color: var(--c-text-2);
     line-height: 1.55;
     animation: fadeInUp .8s cubic-bezier(.2,.8,.2,1) .6s both;
   }
@@ -53,13 +72,13 @@
   .s4__fmt {
     padding: 10px 14px;
     border-radius: 10px;
-    background: #fff;
+    background: var(--c-bg);
     border: 1px solid var(--c-border);
     font-weight: 700;
     font-size: 12px;
     color: var(--c-text);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    display: flex; align-items: center; gap: 8px;
     animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) both;
   }
   .s4__fmt.delay-1 { animation-delay: 1.0s; }
@@ -67,26 +86,33 @@
   .s4__fmt.delay-3 { animation-delay: 1.30s; }
   .s4__fmt.delay-4 { animation-delay: 1.45s; }
   .s4__fmt-icon {
-    font-size: 16px;
+    width: 22px; height: 22px; border-radius: 6px;
+    background: var(--c-accent-soft);
+    color: var(--c-accent);
+    display: grid; place-items: center;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    font-weight: 700;
   }
 
-  /* Right — popup mock that grows row by row */
+  /* Right — dark popup mock that grows row by row */
   .s4__right {
     width: 480px;
     animation: scaleIn .9s cubic-bezier(.2,.8,.2,1) .3s both;
     position: relative;
+    z-index: 1;
   }
   .s4__copy-ping {
     position: absolute;
     top: 30px;
     right: -20px;
-    background: #015AFF;
+    background: var(--c-accent);
     color: #fff;
     padding: 8px 14px;
     border-radius: 99px;
     font-size: 12px;
     font-weight: 800;
-    box-shadow: 0 8px 24px rgba(1, 90, 255, 0.4);
+    box-shadow: 0 12px 28px rgba(1, 90, 255, 0.35);
     z-index: 10;
     opacity: 0;
     display: flex; align-items: center; gap: 6px;
@@ -121,15 +147,17 @@
     border-radius: 99px;
     font-size: 12px;
     font-weight: 800;
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.30);
     animation: fadeInUp .7s cubic-bezier(.2,.8,.2,1) 7.5s both;
   }
 </style>
 </head>
 <body data-stage="video" data-duration="11000">
   <div class="stage s4">
+    <div class="s4__glow"></div>
+
     <div class="s4__left">
-      <div class="s4__eyebrow">📋 CAPTURE</div>
+      <div class="s4__eyebrow">Capture</div>
       <div class="s4__h">Every <span class="accent">Ctrl+C</span><br/>silently logged.</div>
       <div class="s4__lead">
         Klipo runs in the background. Every copy you make — text, code,
@@ -138,24 +166,25 @@
       </div>
       <div class="s4__formats">
         <div class="s4__fmt delay-1">
-          <span class="s4__fmt-icon">📝</span> Text
+          <span class="s4__fmt-icon">T</span> Text
         </div>
         <div class="s4__fmt delay-2">
-          <span class="s4__fmt-icon">{ }</span> Code
+          <span class="s4__fmt-icon">{}</span> Code
         </div>
         <div class="s4__fmt delay-3">
-          <span class="s4__fmt-icon">🖼️</span> Images
+          <span class="s4__fmt-icon">▣</span> Images
         </div>
         <div class="s4__fmt delay-4">
-          <span class="s4__fmt-icon">📄</span> Files
+          <span class="s4__fmt-icon">▤</span> Files
         </div>
       </div>
     </div>
+
     <div class="s4__right">
-      <div class="s4__copy-ping p1">📋 Copied <span class="key">Ctrl+C</span></div>
-      <div class="s4__copy-ping p2">📋 Copied <span class="key">Ctrl+C</span></div>
-      <div class="s4__copy-ping p3">📋 Copied <span class="key">Ctrl+C</span></div>
-      <div class="s4__copy-ping p4">📋 Copied <span class="key">Ctrl+C</span></div>
+      <div class="s4__copy-ping p1">Copied <span class="key">Ctrl+C</span></div>
+      <div class="s4__copy-ping p2">Copied <span class="key">Ctrl+C</span></div>
+      <div class="s4__copy-ping p3">Copied <span class="key">Ctrl+C</span></div>
+      <div class="s4__copy-ping p4">Copied <span class="key">Ctrl+C</span></div>
 
       <div class="popup-mock">
         <div class="popup-mock__head">
@@ -177,14 +206,14 @@
             </div>
           </div>
           <div class="clip-row appearing r2">
-            <div class="clip-row__icon clip-row__icon--image">🖼</div>
+            <div class="clip-row__icon clip-row__icon--image">▣</div>
             <div class="clip-row__body">
               <div class="clip-row__text">Screenshot 2026-05-09 at 14.32.png</div>
               <div class="clip-row__meta">Just now · 1.2 MB · Snipping Tool</div>
             </div>
           </div>
           <div class="clip-row appearing r3">
-            <div class="clip-row__icon clip-row__icon--file">📄</div>
+            <div class="clip-row__icon clip-row__icon--file">▤</div>
             <div class="clip-row__body">
               <div class="clip-row__text">C:\Users\adagidir\invoices\Q1.pdf</div>
               <div class="clip-row__meta">Just now · File path · Explorer</div>

@@ -3,103 +3,111 @@
 <head>
 <meta charset="utf-8" />
 <title>Scene 01 · Brand Intro · Klipo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Sans:wght@500;600;700&display=swap" />
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800,900&display=swap" />
 <link rel="stylesheet" href="../style.css" />
 <style>
   .s1 {
-    background: var(--gradient-hero);
-    color: #fff;
+    background: var(--c-bg);
+    color: var(--c-text);
     flex-direction: column;
     text-align: center;
     gap: 18px;
     position: relative;
   }
+  /* Soft accent glow behind brand mark */
+  .s1__glow {
+    position: absolute;
+    width: 720px; height: 720px;
+    border-radius: 50%;
+    filter: blur(140px);
+    background: var(--c-accent);
+    opacity: 0.10;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: s1Glow 5s ease-in-out infinite;
+  }
+  @keyframes s1Glow {
+    0%, 100% { opacity: 0.10; transform: translate(-50%, -50%) scale(1); }
+    50%      { opacity: 0.14; transform: translate(-50%, -50%) scale(1.05); }
+  }
+
+  /* Bluedev wordmark — opens, holds, fades out */
   .s1__bluedev {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: var(--font-display);
-    font-size: 64px;
-    font-weight: 700;
-    letter-spacing: -2px;
+    width: 380px;
+    height: auto;
     opacity: 0;
     animation: bluedevIn 1.5s cubic-bezier(.2,.8,.2,1) .2s both,
                bluedevOut .7s ease-in 1.7s both;
   }
   @keyframes bluedevIn {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); letter-spacing: 4px; }
-    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); letter-spacing: -2px; }
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
   @keyframes bluedevOut {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.15); filter: blur(8px); }
+    0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); filter: blur(6px); }
   }
-  .s1__bluedev .dev { color: #FFD700; }
 
+  /* Klipo lockup fades in after */
   .s1__klipo-wrap {
-    display: flex; flex-direction: column; align-items: center; gap: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
     opacity: 0;
     animation: klipoIn 1s cubic-bezier(.34,1.56,.64,1) 2.4s both;
+    position: relative; z-index: 1;
   }
   @keyframes klipoIn {
-    0% { opacity: 0; transform: scale(0.85); }
+    0%   { opacity: 0; transform: scale(0.88); }
     100% { opacity: 1; transform: scale(1); }
   }
 
-  .s1__brand-mark {
-    width: 140px; height: 140px;
-    border-radius: 30px;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.28);
-    display: grid; place-items: center;
-    font-family: var(--font-display);
-    font-weight: 900; font-size: 72px;
-    letter-spacing: -3px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.2);
+  .s1__klipo-wordmark {
+    width: 460px;
+    height: auto;
   }
-  .s1__name {
+  .s1__tagline {
     font-family: var(--font-display);
-    font-size: 76px;
-    font-weight: 800;
-    letter-spacing: -2.5px;
-    line-height: 1;
-  }
-  .s1__sub {
-    font-size: 22px;
-    opacity: 0.88;
-    font-weight: 500;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--c-text);
+    margin-top: 6px;
     animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) 3.0s both;
   }
   .s1__by {
-    margin-top: 12px;
-    font-size: 12px;
-    letter-spacing: 4px;
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 6px;
+    font-size: 13px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    opacity: 0.6;
-    animation: fadeIn 1s ease-out 3.5s both;
+    color: var(--c-text-3);
     font-weight: 600;
+    animation: fadeIn 1s ease-out 3.5s both;
   }
+  .s1__by img { height: 22px; width: auto; opacity: 0.9; }
 </style>
 </head>
 <body data-stage="video" data-duration="4500">
   <div class="stage s1">
-    <div class="bg-glow bg-glow--cyan anim-drift" style="top: -200px; left: -160px;"></div>
-    <div class="bg-glow bg-glow--blue anim-drift" style="bottom: -200px; right: -120px; animation-delay: -3s;"></div>
-    <div class="bg-grid" style="opacity: 0.4;"></div>
+    <div class="s1__glow"></div>
 
-    <!-- Bluedev wordmark fades in first, then transitions out -->
-    <div class="s1__bluedev">blue<span class="dev">dev</span></div>
+    <!-- Bluedev wordmark fades in first -->
+    <img class="s1__bluedev" src="../brand/bluedev-wordmark-blueTransparent.svg" alt="bluedev" />
 
-    <!-- Klipo logo replaces it -->
+    <!-- Klipo lockup follows -->
     <div class="s1__klipo-wrap">
-      <div class="s1__brand-mark">K</div>
-      <div class="s1__name">Klipo</div>
-      <div class="s1__sub">Every Ctrl+C, searchable forever.</div>
-      <div class="s1__by">— a bluedev product —</div>
+      <img class="s1__klipo-wordmark" src="../../../assets/klipo-wordmark-blueTransparent.svg" alt="Klipo" />
+      <div class="s1__tagline">Every Ctrl+C, searchable forever.</div>
+      <div class="s1__by">
+        <span>a</span>
+        <img src="../brand/bluedev-wordmark-blueTransparent.svg" alt="bluedev" />
+        <span>product</span>
+      </div>
     </div>
   </div>
 </body>

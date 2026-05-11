@@ -78,3 +78,8 @@ bench/criterion/
 
 # Placeholder icon source (regenerated locally; real design lands in M7)
 /app-icon.png
+
+# Marketing pipeline runtime artifacts
+marketing/gumroad/node_modules/
+marketing/gumroad/package-lock.json
+marketing/gumroad/out/_scenes/

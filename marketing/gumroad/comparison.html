@@ -3,191 +3,214 @@
 <head>
 <meta charset="utf-8" />
 <title>Comparison · Trial vs Pro · Klipo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Sans:wght@500;600;700&display=swap" />
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800;900&display=swap" />
 <link rel="stylesheet" href="./style.css" />
 <style>
-  .cmp-stage {
-    background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
-    padding: 44px 64px;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-  }
-  .cmp-head {
-    text-align: center;
-  }
-  .cmp-head h1 {
-    font-family: var(--font-display);
-    font-size: 42px;
-    font-weight: 800;
-    letter-spacing: -1.5px;
+  .cmp {
+    width: 100%; height: 100%;
+    background: var(--c-bg);
     color: var(--c-text);
-    margin-bottom: 6px;
-  }
-  .cmp-head p {
-    color: var(--c-muted);
-    font-size: 16px;
-    font-weight: 500;
-  }
-  .cmp-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    flex: 1;
-  }
-  .cmp-card {
-    border-radius: 18px;
-    padding: 26px 28px;
+    padding: 48px 72px;
     display: flex;
     flex-direction: column;
-    background: #fff;
-    border: 1px solid var(--c-border);
+    gap: 28px;
     position: relative;
     overflow: hidden;
   }
-  .cmp-card--pro {
-    background: linear-gradient(160deg, #1E293B 0%, #0A1628 100%);
-    color: #fff;
-    border-color: var(--c-primary);
-    box-shadow: 0 24px 60px rgba(1, 90, 255, 0.30);
-  }
-  .cmp-card--pro::before {
-    content: "";
+  .cmp__glow {
     position: absolute;
-    top: -2px; left: -2px; right: -2px; bottom: -2px;
-    background: linear-gradient(135deg, #015AFF, #4A8BFF, #FFD700);
-    border-radius: 19px;
-    z-index: -1;
-    opacity: 0.6;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(140px);
+    background: var(--c-accent);
+    opacity: 0.07;
+    bottom: -250px; right: -200px;
+    pointer-events: none;
   }
-  .cmp-card__badge {
+
+  .cmp__head { text-align: center; position: relative; z-index: 1; }
+  .cmp__klipo-wordmark {
+    height: 36px;
+    width: auto;
+    display: block;
+    margin: 0 auto 12px;
+  }
+  .cmp__head h1 {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: var(--c-text);
+    margin-bottom: 8px;
+  }
+  .cmp__head h1 .accent { color: var(--c-accent); }
+  .cmp__head p {
+    color: var(--c-text-2);
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .cmp__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    flex: 1;
+    position: relative; z-index: 1;
+  }
+  .cmp__card {
+    border-radius: 20px;
+    padding: 30px 32px;
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    color: #0F172A;
+    border: 1px solid #E6F0FF;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.05);
+  }
+  .cmp__card--pro {
+    background: #FFFFFF;
+    color: #0F172A;
+    border: 2px solid #015AFF;
+    box-shadow: 0 30px 70px -10px rgba(1, 90, 255, 0.22), 0 6px 20px rgba(15, 23, 42, 0.06);
+  }
+  .cmp__card-badge {
     position: absolute;
-    top: 14px; right: 14px;
-    padding: 4px 12px;
-    background: var(--gradient-pro);
-    color: #5C3A00;
+    top: 18px; right: 18px;
+    padding: 5px 12px;
+    background: var(--c-accent);
+    color: #FFFFFF;
     border-radius: 99px;
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 1px;
     text-transform: uppercase;
-    box-shadow: 0 6px 18px rgba(255, 165, 0, 0.5);
+    box-shadow: 0 8px 18px rgba(1, 90, 255, 0.35);
   }
-  .cmp-card__title {
+  .cmp__card-title {
     font-family: var(--font-display);
     font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.8px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--c-text);
     margin-bottom: 4px;
   }
-  .cmp-card__sub {
+  .cmp__card-sub {
     font-size: 13px;
-    color: var(--c-muted);
+    color: var(--c-text-2);
     margin-bottom: 18px;
   }
-  .cmp-card--pro .cmp-card__sub { color: rgba(255, 255, 255, 0.7); }
-  .cmp-card__price {
+  .cmp__card-price {
     font-family: var(--font-display);
-    font-size: 44px;
-    font-weight: 900;
-    letter-spacing: -2px;
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.045em;
     line-height: 1;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    color: var(--c-text);
   }
-  .cmp-card--pro .cmp-card__price {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  .cmp__card--pro .cmp__card-price {
+    background: var(--gradient-text);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  .cmp-card__price-sub {
-    font-size: 13px;
+  .cmp__card-price-sub {
+    font-size: 14px;
     font-weight: 600;
-    color: var(--c-muted);
+    color: var(--c-text-2);
   }
-  .cmp-card--pro .cmp-card__price-sub { color: rgba(255, 215, 0, 0.85); }
-  .cmp-list {
+  .cmp__list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 10px;
     flex: 1;
     padding: 0;
-    margin: 18px 0 0;
+    margin: 16px 0 0;
   }
-  .cmp-list li {
+  .cmp__list li {
     display: flex;
     align-items: flex-start;
     gap: 10px;
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 1.45;
+    color: var(--c-text);
   }
-  .cmp-list .icon {
-    width: 20px; height: 20px; border-radius: 50%;
+  .cmp__list .icon {
+    width: 22px; height: 22px; border-radius: 50%;
     display: grid; place-items: center;
     flex-shrink: 0;
     font-size: 12px; font-weight: 800;
     margin-top: 1px;
   }
-  .icon--check { background: rgba(16, 185, 129, 0.15); color: #10B981; }
-  .icon--x     { background: rgba(239, 68, 68, 0.12);  color: #EF4444; }
-  .icon--star  { background: var(--gradient-pro); color: #5C3A00; }
-  .icon--clock { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
-  .cmp-card--pro .icon--check { background: rgba(16, 185, 129, 0.25); }
-  .cmp-list .feature-strong { font-weight: 700; }
-  .cmp-list .feature-muted { color: var(--c-muted); }
-  .cmp-card--pro .feature-muted { color: rgba(255,255,255,0.65); }
-  .cmp-bonus {
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: rgba(74, 139, 255, 0.10);
-    border: 1px solid rgba(74, 139, 255, 0.30);
-    border-radius: 10px;
+  .icon--check { background: rgba(1, 90, 255, 0.12); color: #015AFF; }
+  .icon--x     { background: #F1F5F9; color: #94A3B8; }
+  .icon--star  { background: #015AFF; color: #FFFFFF; }
+  .icon--clock { background: #F1F5F9; color: #94A3B8; }
+  .cmp__list .feature-strong { font-weight: 700; }
+  .cmp__list .feature-muted { color: var(--c-text-3); }
+
+  .cmp__bonus {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--c-accent-soft);
+    border: 1px solid rgba(1, 90, 255, 0.20);
+    border-radius: 12px;
     display: flex; align-items: center; gap: 8px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
-    color: rgba(255,255,255,0.92);
+    color: var(--c-text);
   }
+  .cmp__bonus strong { color: var(--c-accent); font-weight: 800; }
 </style>
 </head>
 <body data-stage="cover">
-  <div class="stage cmp-stage">
-    <div class="cmp-head">
-      <h1>Free trial <span style="color: var(--c-muted);">vs</span> <span class="gradient-text">Pro</span></h1>
+  <div class="cmp">
+    <div class="cmp__glow"></div>
+
+    <div class="cmp__head">
+      <img class="cmp__klipo-wordmark" src="../../assets/klipo-wordmark-blueTransparent.svg" alt="Klipo" />
+      <h1>Free trial <span style="color: var(--c-text-3);">vs</span> <span class="accent">Pro</span></h1>
       <p>Same Klipo. Activate your key — Pro unlocks forever, on every device you own.</p>
     </div>
-    <div class="cmp-cards">
-      <div class="cmp-card">
-        <div class="cmp-card__title">Free trial</div>
-        <div class="cmp-card__sub">Full Pro features for 14 days</div>
-        <div class="cmp-card__price">$0<span style="font-size: 18px; font-weight: 600; color: var(--c-muted);"> · 14 days</span></div>
-        <ul class="cmp-list">
+
+    <div class="cmp__cards">
+      <!-- Trial card -->
+      <div class="cmp__card">
+        <div class="cmp__card-title">Free trial</div>
+        <div class="cmp__card-sub">Full Pro features for 14 days</div>
+        <div class="cmp__card-price">$0<span class="cmp__card-price-sub" style="font-size: 18px;"> · 14 days</span></div>
+        <ul class="cmp__list">
           <li><span class="icon icon--check">✓</span><span class="feature-strong">Captures every Ctrl+C</span></li>
           <li><span class="icon icon--check">✓</span>Ctrl+Alt+V popup &amp; instant search</li>
           <li><span class="icon icon--check">✓</span>Sensitive content auto-detection (13 patterns)</li>
           <li><span class="icon icon--check">✓</span>Drag-and-drop, file paths, images</li>
           <li><span class="icon icon--check">✓</span>Local SQLite — nothing leaves your PC</li>
-          <li><span class="icon icon--clock">⏱</span><span class="feature-muted">Locks after 14 days</span></li>
-          <li><span class="icon icon--x">✕</span><span class="feature-muted">No license key required to start</span></li>
+          <li><span class="icon icon--clock">⧗</span><span class="feature-muted">Locks after 14 days</span></li>
+          <li><span class="icon icon--x">×</span><span class="feature-muted">No license key required to start</span></li>
         </ul>
       </div>
-      <div class="cmp-card cmp-card--pro">
-        <div class="cmp-card__badge">★ Best value</div>
-        <div class="cmp-card__title">Klipo Pro</div>
-        <div class="cmp-card__sub">Lifetime license · all v0.x updates included</div>
-        <div class="cmp-card__price">$29<span class="cmp-card__price-sub"> · one-time</span></div>
-        <ul class="cmp-list">
+
+      <!-- Pro card -->
+      <div class="cmp__card cmp__card--pro">
+        <div class="cmp__card-badge">★ Best value</div>
+        <div class="cmp__card-title">Klipo Pro</div>
+        <div class="cmp__card-sub">Lifetime license · all v0.x updates included</div>
+        <div class="cmp__card-price">$29<span class="cmp__card-price-sub" style="font-size: 18px;"> · one-time</span></div>
+        <ul class="cmp__list">
           <li><span class="icon icon--star">★</span><span class="feature-strong">Everything in trial — forever</span></li>
           <li><span class="icon icon--check">✓</span>Captures every Ctrl+C, no time limit</li>
           <li><span class="icon icon--check">✓</span>&lt;50ms search across all history</li>
           <li><span class="icon icon--check">✓</span>Sensitive auto-flagging (API keys, JWTs, cards)</li>
           <li><span class="icon icon--check">✓</span>Install on up to 3 personal devices</li>
-          <li><span class="icon icon--check">✓</span>Priority support · 30-day refund</li>
+          <li><span class="icon icon--check">✓</span>All v0.x updates included · priority support</li>
         </ul>
-        <div class="cmp-bonus">
-          <span style="font-size: 14px;">🎁</span>
-          <span><strong style="color:#FFD700;">Bonus:</strong> macOS build coming free in v0.2 — included in your license</span>
+        <div class="cmp__bonus">
+          <span style="color: var(--c-accent); font-size: 16px;">◆</span>
+          <span>Lifetime license &middot; <strong>built for power users</strong> who copy hundreds of things a day</span>
         </div>
       </div>
     </div>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Klipo wordmark — transparent background variant, tight viewBox.
+  Same paths as the blueOnWhite variant but viewBox cropped to artwork
+  bounds so the wordmark renders crisp at any size (small badge or large
+  hero) without huge transparent padding.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="380" height="140" viewBox="80 195 380 140"
+     fill="none"
+     role="img" aria-label="Klipo">
+  <title>Klipo</title>
+
+  <!-- Mark, scaled and positioned to sit visually-centered with wordmark -->
+  <g transform="translate(96, 200) scale(1.6)" stroke="#015AFF"
+     stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <rect x="18" y="0" width="20" height="10" rx="3" fill="#015AFF" stroke="none"/>
+    <rect x="2" y="6" width="52" height="74" rx="6"/>
+    <path d="M16 26 L16 66"/>
+    <path d="M16 46 L40 26"/>
+    <path d="M16 46 L40 66"/>
+  </g>
+
+  <!-- Wordmark "Klipo" — Instrument Sans / Inter fallback, tight letter-spacing -->
+  <text x="220" y="305"
+        font-family="Instrument Sans, Inter, system-ui, sans-serif"
+        font-size="92" font-weight="800" fill="#015AFF"
+        letter-spacing="-2.5">Klipo</text>
+</svg>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  bluedev wordmark — transparent background, two-color:
+    "blue" → brand accent #015AFF
+    "dev"  → dark navy   #0A1628
+  Use over white or light surfaces only (the dark "dev" half needs a light
+  background to read).
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="380" height="100" viewBox="0 0 380 100"
+     fill="none"
+     role="img" aria-label="bluedev">
+  <title>bluedev</title>
+  <text x="0" y="78"
+        font-family="Instrument Sans, Inter, system-ui, sans-serif"
+        font-size="84" font-weight="800" letter-spacing="-3">
+    <tspan fill="#015AFF">blue</tspan><tspan fill="#0A1628">dev</tspan>
+  </text>
+</svg>

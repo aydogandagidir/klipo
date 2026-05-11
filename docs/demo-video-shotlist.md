@@ -106,7 +106,7 @@ hero of the 0:50–1:10 segment.
 | Shot | Duration | Visual | Notes |
 |------|----------|--------|-------|
 | 23 | 1:50–1:54 | **Center-frame**: Klipo logo (left) + "by bluedev" wordmark (right). Off-white background, no other clutter. | Clean brand close. |
-| 24 | 1:54–1:58 | **Text overlay** appears below logo: "$29 — lifetime v0.x updates · macOS in v0.2" | Big enough to read mobile. |
+| 24 | 1:54–1:58 | **Text overlay** appears below logo: "$29 — lifetime v0.x updates · 14-day free trial" | Big enough to read mobile. |
 | 25 | 1:58–2:00 | Mouse cursor enters frame, hovers over a stylized "Buy on Gumroad" button (the actual button styling matches the bluedev.dev landing page). Cuts to bluedev.dev hero on click. | Soft handoff to the landing page. |
 
 ---

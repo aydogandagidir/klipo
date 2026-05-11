@@ -115,12 +115,16 @@ weekly in the background. If you go offline, Pro stays active
 for 30 days from the last successful check, so traveling or
 patchy wifi won't lock you out.
 
-macOS build is coming in v0.2 (target Q3 2026). Your license
-covers it — same key, no extra payment. You'll get an email
-when the macOS build ships.
+Klipo is Windows-only right now (Windows 10 1809+ and Windows
+11). macOS and Linux are not currently supported. If we ever
+ship them, the roadmap and timing will be announced on
+bluedev.dev/products/klipo — there is no buying claim attached.
 
-Refunds within 30 days, no questions, through Gumroad's normal
-flow.
+If Klipo isn't a fit, you can let us know via support@bluedev.dev
+— but we encourage you to use the 14-day free trial first to make
+sure it suits you before purchasing. Statutory consumer rights
+(e.g. the EU 14-day right of withdrawal) still apply where
+required by law.
 
 
 Help

@@ -3,86 +3,114 @@
 <head>
 <meta charset="utf-8" />
 <title>Hero · 3-Up Feature Showcase · Klipo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" />
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@600,700,800&display=swap" />
 <link rel="stylesheet" href="./style.css" />
 <style>
-  .hero-stage {
-    background: linear-gradient(160deg, #0A1628 0%, #1E293B 50%, #0A1628 100%);
-    color: #fff;
+  .hero {
+    width: 100%;
+    height: 100%;
+    background: var(--c-bg);
+    color: var(--c-text);
     padding: 44px 56px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 22px;
     overflow: hidden;
     position: relative;
   }
-  .hero-head {
-    display: flex; align-items: center; justify-content: space-between;
+  .hero__glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    background: var(--c-accent);
+    opacity: 0.06;
+    top: -200px; right: -200px;
+    pointer-events: none;
   }
-  .hero-head h1 {
+
+  .hero__head {
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 1;
+  }
+  .hero__head-left { display: flex; flex-direction: column; gap: 10px; }
+  .hero__klipo-wordmark { height: 36px; width: auto; display: block; }
+  .hero__title {
     font-family: var(--font-display);
     font-size: 38px;
     font-weight: 800;
-    letter-spacing: -1.2px;
+    letter-spacing: -0.035em;
+    color: var(--c-text);
   }
-  .hero-head .accent { color: #FFD700; }
-  .hero-head .pill {
-    background: var(--gradient-pro);
-    color: #5C3A00;
-    font-weight: 800;
-  }
-  .hero-grid {
+  .hero__title .accent { color: var(--c-accent); }
+
+  .hero__grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+    gap: 18px;
     flex: 1;
+    position: relative; z-index: 1;
   }
-  .hero-card {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 22px;
+  .hero__card {
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 18px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
   }
-  .hero-card__icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
+  .hero__card-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--c-accent);
+    color: #fff;
     display: grid; place-items: center;
     font-size: 24px;
     flex-shrink: 0;
+    box-shadow: 0 12px 28px rgba(1, 90, 255, 0.30);
   }
-  .icon-bg-1 { background: linear-gradient(135deg, #015AFF, #4A8BFF); }
-  .icon-bg-2 { background: linear-gradient(135deg, #38BDF8, #015AFF); }
-  .icon-bg-3 { background: linear-gradient(135deg, #F59E0B, #EF4444); }
-  .hero-card h3 {
+  .hero__card h3 {
     font-family: var(--font-display);
-    font-size: 19px;
-    font-weight: 800;
-    letter-spacing: -0.4px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--c-text);
   }
-  .hero-card p {
+  .hero__card p {
     font-size: 13px;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.55;
+    color: var(--c-text-2);
   }
-  .hero-card__demo {
+  .hero__card strong { color: var(--c-text); font-weight: 700; }
+
+  /* Mini popup snippet — dark theme inside white card (it's a screenshot) */
+  .hero__card-demo {
     margin-top: auto;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 10px;
+    border-radius: 12px;
+    background: var(--popup-bg);
+    border: 1px solid var(--popup-border);
+    padding: 12px;
     font-size: 11px;
     line-height: 1.5;
     font-family: var(--font-mono);
-    color: rgba(255, 255, 255, 0.85);
-    min-height: 220px;
+    color: rgba(230, 240, 255, 0.85);
+    min-height: 210px;
     display: flex; flex-direction: column; gap: 6px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+  .demo-label {
+    font-size: 9px;
+    color: rgba(230, 240, 255, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 2px;
+    font-family: var(--font-sans);
+    font-weight: 600;
   }
   .demo-row {
     display: flex; align-items: center; gap: 6px;
@@ -92,11 +120,11 @@
     font-size: 10px;
   }
   .demo-row--match {
-    background: rgba(1, 90, 255, 0.18);
-    border: 1px solid rgba(1, 90, 255, 0.35);
+    background: rgba(1, 90, 255, 0.20);
+    border: 1px solid rgba(1, 90, 255, 0.40);
   }
   .demo-row--sensitive {
-    background: rgba(239, 68, 68, 0.10);
+    background: rgba(239, 68, 68, 0.12);
     border: 1px solid rgba(239, 68, 68, 0.40);
   }
   .demo-row__dot {
@@ -108,6 +136,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: rgba(230, 240, 255, 0.92);
   }
   .demo-row__badge {
     font-size: 8px;
@@ -125,7 +154,7 @@
     border-radius: 6px;
     padding: 7px 10px;
     font-size: 11px;
-    color: rgba(255,255,255,0.95);
+    color: rgba(230, 240, 255, 0.95);
     display: flex; align-items: center; gap: 6px;
   }
   .demo-cursor::after {
@@ -134,56 +163,76 @@
     margin-left: 1px;
     animation: blink 1s infinite;
   }
-
-  .hero-foot {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  .demo-foot {
+    margin-top: auto;
+    font-size: 9px;
+    color: rgba(230, 240, 255, 0.55);
+    font-family: var(--font-sans);
+    font-weight: 600;
   }
-  .hero-foot__providers {
+
+  .hero__foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--c-border);
+    position: relative; z-index: 1;
+  }
+  .hero__foot-pills {
     display: flex; gap: 8px;
     flex-wrap: wrap;
   }
-  .hero-foot__cta {
+  .hero__foot-cta {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 22px;
-    background: var(--gradient-pro);
-    color: #5C3A00;
+    padding: 12px 22px;
+    background: var(--c-accent);
+    color: #FFFFFF;
     border-radius: 99px;
     font-size: 14px;
     font-weight: 800;
-    letter-spacing: 0.4px;
-    box-shadow: 0 12px 30px rgba(255, 165, 0, 0.4);
+    letter-spacing: 0.2px;
+    box-shadow: 0 14px 32px rgba(1, 90, 255, 0.32);
   }
   .feature-pill {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 12px;
     border-radius: 99px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--c-accent-soft);
+    color: var(--c-accent);
     font-size: 12px;
     font-weight: 600;
   }
+
+  .hero__brand-foot {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px;
+    color: var(--c-text-3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .hero__brand-foot img { height: 18px; width: auto; opacity: 0.85; }
 </style>
 </head>
 <body data-stage="cover">
-  <div class="stage hero-stage">
-    <div class="bg-glow bg-glow--blue" style="top: -160px; left: -100px; opacity: 0.32;"></div>
-    <div class="bg-glow bg-glow--cyan" style="bottom: -200px; right: -120px; opacity: 0.28;"></div>
+  <div class="hero">
+    <div class="hero__glow"></div>
 
-    <div class="hero-head">
-      <h1>Three <span class="accent">superpowers</span> in one popup</h1>
-      <div class="pill">$29 · LIFETIME</div>
+    <div class="hero__head">
+      <div class="hero__head-left">
+        <img class="hero__klipo-wordmark" src="../../assets/klipo-wordmark-blueTransparent.svg" alt="Klipo" />
+        <h1 class="hero__title">Three <span class="accent">superpowers</span> in one popup</h1>
+      </div>
+      <div class="pill pill--solid" style="padding: 8px 16px; font-size: 13px;">$29 · LIFETIME</div>
     </div>
 
-    <div class="hero-grid">
+    <div class="hero__grid">
       <!-- Card 1: Capture -->
-      <div class="hero-card">
-        <div class="hero-card__icon icon-bg-1">📋</div>
+      <div class="hero__card">
+        <div class="hero__card-icon">▣</div>
         <h3>Capture every Ctrl+C</h3>
         <p>Klipo silently logs <strong>everything you copy</strong> — text, code, file paths, URLs, images. Never lose a clip again.</p>
-        <div class="hero-card__demo">
-          <div style="font-size: 9px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Recent — captured automatically</div>
+        <div class="hero__card-demo">
+          <div class="demo-label">Recent — captured automatically</div>
           <div class="demo-row">
             <span class="demo-row__dot" style="background:#4A8BFF"></span>
             <span class="demo-row__text">Q2 planning notes</span>
@@ -193,11 +242,11 @@
             <span class="demo-row__text">const result = await fetch(…)</span>
           </div>
           <div class="demo-row">
-            <span class="demo-row__dot" style="background:#C084FC"></span>
+            <span class="demo-row__dot" style="background:#4A8BFF"></span>
             <span class="demo-row__text">Screenshot 14.32.png</span>
           </div>
           <div class="demo-row">
-            <span class="demo-row__dot" style="background:#FBBF24"></span>
+            <span class="demo-row__dot" style="background:#4A8BFF"></span>
             <span class="demo-row__text">invoice-2026-Q1.pdf</span>
           </div>
           <div class="demo-row">
@@ -208,16 +257,16 @@
       </div>
 
       <!-- Card 2: Search -->
-      <div class="hero-card">
-        <div class="hero-card__icon icon-bg-2">🔍</div>
+      <div class="hero__card">
+        <div class="hero__card-icon">⌕</div>
         <h3>Find any clip in &lt;50ms</h3>
         <p>Hit <strong>Ctrl+Alt+V</strong>. Type. Hit Enter. Klipo pastes it back where you were. Local SQLite — no cloud, no lag.</p>
-        <div class="hero-card__demo">
+        <div class="hero__card-demo">
           <div class="demo-input">
-            <span style="opacity:0.6;">🔍</span>
+            <span style="opacity:0.6;">⌕</span>
             <span>stripe<span class="demo-cursor"></span></span>
           </div>
-          <div style="font-size: 9px; color: rgba(255,255,255,0.5); margin-top: 4px;">3 matches · 27ms</div>
+          <div class="demo-label" style="margin-top: 4px;">3 matches · 27ms</div>
           <div class="demo-row demo-row--match">
             <span class="demo-row__dot" style="background:#4A8BFF"></span>
             <span class="demo-row__text">stripe_test_•••• key from .env</span>
@@ -230,16 +279,16 @@
             <span class="demo-row__dot" style="background:#4A8BFF"></span>
             <span class="demo-row__text">https://dashboard.stripe.com/…</span>
           </div>
-          <div style="margin-top:auto; font-size: 9px; color: rgba(255,255,255,0.6);">Enter → paste back</div>
+          <div class="demo-foot">Enter → paste back</div>
         </div>
       </div>
 
       <!-- Card 3: Protect -->
-      <div class="hero-card">
-        <div class="hero-card__icon icon-bg-3">🛡️</div>
+      <div class="hero__card">
+        <div class="hero__card-icon">◈</div>
         <h3>API keys auto-flagged</h3>
         <p>13 patterns scanned: API keys, JWTs, credit cards, AWS secrets. Sensitive clips get a <strong>red border</strong> and blurred preview.</p>
-        <div class="hero-card__demo">
+        <div class="hero__card-demo">
           <div class="demo-row demo-row--sensitive">
             <span class="demo-row__dot" style="background:#EF4444"></span>
             <span class="demo-row__text">sk-proj-•••••••••••••</span>
@@ -260,20 +309,23 @@
             <span class="demo-row__text">4242 4242 •••• ••••</span>
             <span class="demo-row__badge">Card</span>
           </div>
-          <div style="margin-top:auto; font-size: 9px; color: rgba(255,255,255,0.6);">All processed locally · never uploaded</div>
+          <div class="demo-foot">All processed locally · never uploaded</div>
         </div>
       </div>
     </div>
 
-    <div class="hero-foot">
-      <div class="hero-foot__providers">
-        <div class="feature-pill">⚡ &lt;50ms search</div>
-        <div class="feature-pill">📦 3.8 MB installer</div>
-        <div class="feature-pill">🦀 Tauri 2 + Rust</div>
-        <div class="feature-pill">🔌 Local SQLite</div>
-        <div class="feature-pill">🪟 Windows 10/11</div>
+    <div class="hero__foot">
+      <div class="hero__foot-pills">
+        <div class="feature-pill">&lt;50ms search</div>
+        <div class="feature-pill">3.8 MB installer</div>
+        <div class="feature-pill">Tauri 2 + Rust</div>
+        <div class="feature-pill">Local SQLite</div>
+        <div class="feature-pill">Windows 10/11</div>
       </div>
-      <div class="hero-foot__cta">Get Klipo on Gumroad →</div>
+      <div class="hero__brand-foot">
+        <span>Klipo · by</span>
+        <img src="brand/bluedev-wordmark-blueTransparent.svg" alt="bluedev" />
+      </div>
     </div>
   </div>
 </body>
