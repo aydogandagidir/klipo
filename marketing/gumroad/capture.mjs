@@ -146,7 +146,10 @@ async function buildFinalMp4(sceneFiles) {
       "-y",
       "-i", webmPath,
       "-t", (duration / 1000).toFixed(3),
-      "-vf", `fps=30,scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:color=0x0A1628,setsar=1`,
+      // White letterbox if a scene is ever shorter than 1280×720 — matches our
+      // white-first canvas. (Was 0x0A1628 navy, which leaked navy edges on
+      // scenes whose Playwright recording didn't perfectly fill the frame.)
+      "-vf", `fps=30,scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:color=0xFFFFFF,setsar=1`,
       "-c:v", "libx264",
       "-preset", "medium",
       "-crf", "20",

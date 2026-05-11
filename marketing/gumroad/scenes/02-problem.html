@@ -118,24 +118,29 @@
   .clip-flying.f7 { top: 430px; left: 60px; animation-delay: 4.0s; }
 
   .s2__question {
+    /* Stretch the entire right column so the question text never crops.
+     * Width 100% with negative side margin extends slightly past the
+     * 500px flying-clips column for breathing room. Smaller font-size
+     * and tighter horizontal padding earn the headroom for the longer
+     * sentence "What did I copy 5 minutes ago?" to render in full. */
     position: absolute;
     bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: -10px;
+    right: -10px;
     background: #FFFFFF;
     border: 2px solid var(--c-accent);
     color: var(--c-text);
     border-radius: 14px;
-    padding: 18px 28px;
+    padding: 16px 18px;
     font-family: var(--font-display);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
     text-align: center;
+    white-space: nowrap;
     animation: fadeInUp .9s cubic-bezier(.2,.8,.2,1) 4.8s both,
                pulseGlowBlue 2.4s ease-in-out 5.4s infinite;
     box-shadow: 0 16px 40px rgba(1, 90, 255, 0.18);
-    width: 88%;
   }
   .s2__question span { color: var(--c-accent); }
 </style>

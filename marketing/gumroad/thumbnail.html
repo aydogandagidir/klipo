@@ -36,18 +36,19 @@
   }
 
   .thumb__mark {
-    width: 220px;
+    width: 110px;
     height: auto;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
   /* Klipo wordmark — rendered as inline SVG text so we get exactly the
      "Klipo" word (the assets/klipo-wordmark-*.svg files include the K-mark
      glyph too, which would duplicate the large mark above; here we want
-     mark-on-top + the word "Klipo" below). */
+     mark-on-top + the word "Klipo" below). Sized proportionally to the
+     mark above — never wider than ~30% of the 600px square. */
   .thumb__wordmark {
-    width: 260px;
+    width: 180px;
     height: auto;
-    margin-top: -8px;
+    margin-top: -4px;
     display: block;
   }
 
@@ -122,12 +123,12 @@
     <!-- "Klipo" wordmark text rendered as inline SVG so it matches the
          exact letterforms used in assets/klipo-wordmark-*.svg
          (Instrument Sans 800, -2.5 letter-spacing, #015AFF). -->
-    <svg class="thumb__wordmark" viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg"
+    <svg class="thumb__wordmark" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg"
          role="img" aria-label="Klipo">
       <title>Klipo</title>
-      <text x="0" y="64"
+      <text x="0" y="48"
             font-family="Instrument Sans, Inter, system-ui, sans-serif"
-            font-size="80" font-weight="800" letter-spacing="-2.5"
+            font-size="60" font-weight="800" letter-spacing="-2"
             fill="#015AFF">Klipo</text>
     </svg>
 

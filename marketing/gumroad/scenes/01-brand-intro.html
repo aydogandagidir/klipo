@@ -33,7 +33,10 @@
     50%      { opacity: 0.14; transform: translate(-50%, -50%) scale(1.05); }
   }
 
-  /* Bluedev wordmark — opens, holds, fades out */
+  /* Bluedev wordmark — VISIBLE at frame 0 so the video's poster/first-frame
+   * is never blank. A short scale-in still plays (0–.8s) for polish, but the
+   * mark is already fully painted in the very first paint pixel, so any
+   * player that lifts its thumbnail from t=0 lands on the brand, not white. */
   .s1__bluedev {
     position: absolute;
     top: 50%;
@@ -41,12 +44,14 @@
     transform: translate(-50%, -50%);
     width: 380px;
     height: auto;
-    opacity: 0;
-    animation: bluedevIn 1.5s cubic-bezier(.2,.8,.2,1) .2s both,
+    opacity: 1;
+    animation: bluedevIn .8s cubic-bezier(.2,.8,.2,1) 0s both,
                bluedevOut .7s ease-in 1.7s both;
   }
   @keyframes bluedevIn {
-    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+    /* Starts already at full opacity so frame 0 shows the wordmark; only the
+     * scale animates from 0.94 → 1 for a subtle "land" feel. */
+    0%   { opacity: 1; transform: translate(-50%, -50%) scale(0.94); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
   @keyframes bluedevOut {
@@ -67,7 +72,8 @@
   }
 
   .s1__klipo-wordmark {
-    width: 460px;
+    /* Proportioned to the 1280-wide frame — never wider than ~25%. */
+    width: 320px;
     height: auto;
   }
   .s1__tagline {

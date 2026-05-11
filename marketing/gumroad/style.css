@@ -37,11 +37,10 @@
   --c-success:        #10B981;       /* rare — Pro Activated check marks */
   --c-danger:         #EF4444;       /* rare — sensitive clip border only */
 
-  /* Compat: kept for the file-icon dot inside .clip-row__icon--file only,
-   * which mirrors Klipo's actual product UI amber file icon. Do not use
-   * elsewhere. */
-  --c-warn:           #F59E0B;
-  --c-warning:        #F59E0B;
+  /* No warm accents. The previous --c-warn / --c-warning (amber #F59E0B)
+   * were removed to stay strictly aligned with the bluedev palette. The
+   * file-icon dot inside .clip-row__icon--file is now brand blue too —
+   * mirroring Klipo's product UI re-skinned for brand consistency. */
 
   /* Gradients — all brand-aligned. No gold. */
   --gradient-pro:     linear-gradient(135deg, #015AFF 0%, #004BE6 100%);
@@ -96,7 +95,9 @@ body[data-stage="thumb"] { width: 600px; height: 600px; }
 .stage--white { background: var(--c-bg); }
 .stage--soft  { background: var(--gradient-soft); }
 .stage--hero  { background: var(--gradient-hero); color: #fff; }
-.stage--dark  { background: var(--c-navy); color: #fff; }
+/* .stage--dark removed — every scene is white-first. The only navy surface
+ * in this system is the popup mock interior, which is opted into per-scene
+ * via the .popup-mock component, not via a stage-level class. */
 
 /* Decorative — a soft accent glow over white. Subtle, no neon. */
 .bg-grid-light {
@@ -387,10 +388,10 @@ body[data-stage="thumb"] { width: 600px; height: 600px; }
 }
 .clip-row__icon--text  { background: rgba(74, 139, 255, 0.18); color: #4A8BFF; }
 .clip-row__icon--image { background: rgba(74, 139, 255, 0.10); color: #4A8BFF; }
-/* The ONE place amber is intentional: Klipo's actual UI uses amber
- * for the file-kind icon dot. Brand-strict carve-out. */
-.clip-row__icon--file  { background: rgba(245, 158, 11, 0.18); color: #FBBF24; }
-.clip-row__icon--code  { background: rgba(16, 185, 129, 0.18); color: #34D399; }
+/* Brand-strict: file + code icons unified with brand blue (no amber, no green).
+ * Distinction comes from the glyph, not the hue. */
+.clip-row__icon--file  { background: rgba(74, 139, 255, 0.10); color: #4A8BFF; }
+.clip-row__icon--code  { background: rgba(74, 139, 255, 0.18); color: #4A8BFF; }
 .clip-row__body { flex: 1; min-width: 0; }
 .clip-row__text {
   font-family: var(--font-mono);
