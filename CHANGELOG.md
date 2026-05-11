@@ -5,6 +5,39 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] — 2026-05-11 — App icon refresh + brand-strict UI accents
+
+### Changed — app icon
+- All `src-tauri/icons/` PNG/ICO/ICNS variants regenerated from
+  [`assets/klipo-mark.svg`](./assets/klipo-mark.svg) — the K-clipboard
+  combination that mirrors the bluedev B-mark. The previous placeholder
+  icon (generated locally in M7) is now replaced with the production
+  Klipo mark across Windows tray, executable, NSIS installer, and any
+  future macOS/iOS/Android bundle artifacts.
+
+### Fixed — brand-strict UI accents
+- Popup "hint" toast (file → browser path-copy notice) was rendered in
+  `yellow-500` background + `yellow-200` text — off-brand under the
+  bluedev palette (no warm accents allowed; see
+  [`shared/marketing-asset-pipeline.md`](../../.claude/skills/gumroad-launch/shared/marketing-asset-pipeline.md)
+  in the gumroad-launch skill). Switched to `primary` (brand blue) for
+  consistency. Companion to v0.1.3's marketing-side amber sweep.
+
+### Notes
+- Settings → License tab's amber pills for "Offline grace" and "Trial
+  countdown (≤ 3 days)" intentionally remain — those communicate
+  product state ("approaching cutoff") and brand audit treats them as
+  carve-outs alongside `clip-row--featured`'s red border for sensitive
+  clips. Will be revisited if user feedback flags them.
+
+### Pre-live TODO (still pending)
+- Replace `KLIPO_PRODUCT_ID_DEFAULT` in
+  [`src-tauri/src/license/mod.rs`](./src-tauri/src/license/mod.rs)
+  once the Gumroad listing is published and the real product_id is
+  known. Activation calls fail with a friendly error until then.
+
+---
+
 ## [0.1.4] — 2026-05-10 — Version-sync hotfix + trial-then-license activation
 
 **Skipping v0.1.3 forward.** The v0.1.3 release shipped with `Cargo.toml`
