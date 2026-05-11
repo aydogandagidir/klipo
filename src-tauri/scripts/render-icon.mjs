@@ -26,9 +26,21 @@ const PLAYWRIGHT_ENTRY = url.pathToFileURL(
 const { chromium } = await import(PLAYWRIGHT_ENTRY);
 
 const SIZE = 1024;
-// 12% inner padding so the mark doesn't bleed to the canvas edges; matches
-// macOS/iOS rounded-rect icon mask insets.
-const PAD_RATIO = 0.12;
+// Inner padding for the mark inside the colored squircle background. We keep
+// roughly 22% inset (per side) so the glyph still reads clearly inside the
+// Windows / macOS / iOS icon mask, which trims a few percent off the edges
+// of the canvas. With a solid brand-blue background filling the canvas,
+// the mark sits in the center as the high-contrast element.
+const PAD_RATIO = 0.22;
+// Corner radius (as a fraction of the full canvas) for the brand-blue
+// "squircle" backplate. ~22% matches Windows 11's rounded-icon visual
+// language without going full-circle. Per-OS icon masks override this in
+// practice (Android adaptive, macOS squircle, iOS rounded square) but a
+// neutral 22% reads correctly under all of them.
+const CORNER_RATIO = 0.22;
+// Brand tokens — keep in lockstep with marketing/gumroad/style.css.
+const BRAND_BLUE = "#015AFF";
+const GLYPH_COLOR = "#FFFFFF";
 
 const svgRaw = await fs.readFile(SVG_PATH, "utf8");
 
@@ -39,6 +51,13 @@ const svgInner = svgRaw
   .replace(/<!--[\s\S]*?-->\s*/g, "")
   .trim();
 
+// Composition strategy: a solid bluedev-blue squircle fills the entire
+// canvas, then the Klipo mark sits centered in white. This gives the icon
+// a guaranteed-high-contrast read on every taskbar / dock background a
+// user might have (dark Windows 11, light macOS, OS-themed Linux). The
+// previous transparent-bg + brand-blue-glyph approach was readable on
+// light surfaces but vanished into dark Windows taskbars — confirmed by
+// user feedback on v0.1.5.
 const html = `<!doctype html>
 <html>
 <head>
@@ -47,19 +66,34 @@ const html = `<!doctype html>
   html, body { margin: 0; padding: 0; width: ${SIZE}px; height: ${SIZE}px; background: transparent; }
   body {
     display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .icon-bg {
+    position: absolute;
+    inset: 0;
+    background: ${BRAND_BLUE};
+    border-radius: ${SIZE * CORNER_RATIO}px;
   }
   .icon-wrap {
+    position: relative;
+    z-index: 1;
     width: ${SIZE - 2 * SIZE * PAD_RATIO}px;
     height: ${SIZE - 2 * SIZE * PAD_RATIO}px;
-    color: #015AFF;
+    color: ${GLYPH_COLOR};
     display: flex; align-items: center; justify-content: center;
   }
   .icon-wrap svg {
     width: 100%; height: 100%;
   }
+  /* Force the SVG's filled clip rect (the clipboard "clip" rectangle at the
+     top of the mark, which the source SVG paints with currentColor by
+     setting fill="currentColor") to inherit white instead of the brand
+     accent it falls back to when no parent color is set. */
+  .icon-wrap svg [fill="currentColor"] { fill: ${GLYPH_COLOR}; }
 </style>
 </head>
 <body>
+  <div class="icon-bg"></div>
   <div class="icon-wrap">${svgInner}</div>
 </body>
 </html>`;
@@ -75,8 +109,11 @@ try {
   const page = await ctx.newPage();
   await page.setContent(html, { waitUntil: "load" });
   await page.waitForTimeout(120); // settle paint
+  // omitBackground:true so the rounded-corner edges of the squircle stay
+  // transparent (no white halo around the bluedev-blue tile). The fill of
+  // the squircle itself is opaque BRAND_BLUE, painted in CSS above.
   await page.screenshot({ path: OUT_PATH, omitBackground: true, type: "png" });
-  console.log(`✓ wrote ${OUT_PATH} (${SIZE}×${SIZE}, transparent bg)`);
+  console.log(`✓ wrote ${OUT_PATH} (${SIZE}×${SIZE}, ${BRAND_BLUE} squircle + white glyph)`);
 } finally {
   await browser.close();
 }

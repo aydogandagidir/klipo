@@ -5,6 +5,33 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] — 2026-05-11 — Icon contrast hotfix (white-on-blue squircle)
+
+### Fixed — app icon legibility on dark taskbars
+- v0.1.5 shipped the new Klipo K-clipboard glyph as **brand blue on
+  transparent background**. On Windows 11's default dark taskbar, the
+  blue glyph competed with the dark surface for contrast and read as
+  faint / illegible at standard taskbar sizes. User-reported regression.
+- v0.1.6 wraps the same K-clipboard glyph in a **solid
+  bluedev-blue squircle** (`#015AFF` background, ~22% corner radius
+  matching Windows 11 / iOS / macOS adaptive masks) with the glyph
+  itself painted **white**. The composition mirrors the well-trodden
+  Discord / Slack / VS Code icon pattern: a brand-colored backplate
+  guarantees high contrast on every surface (dark/light/themed
+  taskbars and docks alike), while the white glyph carries the
+  identity. No glyph geometry changed — only the rendering shell.
+- `src-tauri/scripts/render-icon.mjs` updated to emit the squircle +
+  white glyph composition. Re-run before each release for a refresh.
+
+### Notes
+- All `src-tauri/icons/*` PNG/ICO/ICNS/Android/iOS variants regenerated
+  with the new composition.
+- KLIPO_PRODUCT_ID_DEFAULT still placeholder — license activation
+  will be wired in the next release after the Gumroad listing saves
+  and the real product_id is known.
+
+---
+
 ## [0.1.5] — 2026-05-11 — App icon refresh + brand-strict UI accents
 
 ### Changed — app icon
