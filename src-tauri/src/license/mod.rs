@@ -29,9 +29,15 @@ pub use manager::{
     LicenseStatus, LicenseTier, ManagerError, ReverifyOutcome, TrialStatus,
 };
 
-/// Klipo's Gumroad product id. **TODO: replace after Gumroad listing is live.**
-/// User can override at runtime via Settings → License → Advanced (dev only).
-pub const KLIPO_PRODUCT_ID_DEFAULT: &str = "TODO_REPLACE_AFTER_GUMROAD_LISTING";
+/// Klipo's Gumroad product id (`hvdaw`). Hardcoded so every release binary
+/// activates against the same product without per-build configuration. The
+/// runtime override (`license_product_id_override` setting) stays around for
+/// dev-environment testing against staging products.
+///
+/// Source: Gumroad edit URL `https://gumroad.com/products/<id>/edit`,
+/// captured 2026-05-12 when the bluedev seller dashboard saved the Klipo
+/// listing for the first time.
+pub const KLIPO_PRODUCT_ID_DEFAULT: &str = "hvdaw";
 
 /// Trial length in days.
 pub const TRIAL_DAYS: i64 = 14;

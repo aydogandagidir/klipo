@@ -92,7 +92,7 @@ export function Settings() {
           })}
         </nav>
         <div className="mt-auto px-3 pt-4 text-[10px] text-muted-foreground">
-          Klipo v0.1.6 · by bluedev · Esc to close
+          Klipo v0.1.7 · by bluedev · Esc to close
         </div>
       </aside>
 

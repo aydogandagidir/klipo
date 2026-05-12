@@ -5,6 +5,34 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7] — 2026-05-12 — Gumroad product_id wired ✅
+
+### Wired — license activation now functional
+- `KLIPO_PRODUCT_ID_DEFAULT` in
+  [`src-tauri/src/license/mod.rs`](./src-tauri/src/license/mod.rs)
+  was the last placeholder gating commercial activation. It now carries
+  the real value `"hvdaw"` — the product id Gumroad assigned to the
+  bluedev seller dashboard's Klipo listing on 2026-05-12.
+- Effect: every purchase made on `https://bluedev.gumroad.com/l/klipo`
+  now lands a license key the buyer can paste into Klipo Settings →
+  License → Activate, and the verify call to
+  `api.gumroad.com/v2/licenses/verify` succeeds.
+- The `license_product_id_override` setting still exists for dev /
+  staging verification against a different product id.
+
+### No other behavioural changes
+- All previous v0.1.6 behaviour is preserved (icon, brand-strict
+  accents, dynamic version readback).
+- This is a single-purpose hot-patch — please don't piggyback unrelated
+  changes onto it. Future feature work resumes on v0.2.x.
+
+### Pre-publish gate cleared
+- The "Pre-live TODO" line that lived in every CHANGELOG entry since
+  v0.1.3 ("replace KLIPO_PRODUCT_ID_DEFAULT once the Gumroad listing
+  is live") is now resolved. Future releases drop that note.
+
+---
+
 ## [0.1.6] — 2026-05-11 — Icon contrast hotfix (white-on-blue squircle)
 
 ### Fixed — app icon legibility on dark taskbars
