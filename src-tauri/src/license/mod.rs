@@ -29,15 +29,38 @@ pub use manager::{
     LicenseStatus, LicenseTier, ManagerError, ReverifyOutcome, TrialStatus,
 };
 
-/// Klipo's Gumroad product id (`hvdaw`). Hardcoded so every release binary
-/// activates against the same product without per-build configuration. The
-/// runtime override (`license_product_id_override` setting) stays around for
-/// dev-environment testing against staging products.
+/// Klipo's Gumroad product id, **as accepted by the `/v2/licenses/verify`
+/// API** — a base64-encoded long form, not the short hash that appears in
+/// the seller dashboard edit URL.
 ///
-/// Source: Gumroad edit URL `https://gumroad.com/products/<id>/edit`,
-/// captured 2026-05-12 when the bluedev seller dashboard saved the Klipo
-/// listing for the first time.
-pub const KLIPO_PRODUCT_ID_DEFAULT: &str = "hvdaw";
+/// **Critical trap:** Gumroad exposes two distinct identifiers per product:
+///
+///   1. `short_product_id` — a 5-character hash like `hvdaw`. Shows up in
+///      the edit URL (`gumroad.com/products/hvdaw/edit`). Tempting to copy
+///      from the address bar. Used by Gumroad's own admin UI.
+///   2. `product_id` — a base64-style long form like `kOmaM0_GJEzx5brZfBzHXA==`
+///      (~24 chars, ends with `==` padding). **This** is what the licensing
+///      API expects.
+///
+/// Sending the short form to `/v2/licenses/verify` is the default failure
+/// mode (`{"success":false,"message":"That license does not exist for the
+/// provided product."}`). Sending the wrong parameter name also fails, but
+/// helpfully — Gumroad's response then leaks the correct long form:
+///
+///   $ curl -X POST https://api.gumroad.com/v2/licenses/verify \
+///       -d "product_permalink=klipo&license_key=…"
+///   {"success":false,"message":"The 'product_id' parameter is required
+///    to verify the license for this product. Please set 'product_id' to
+///    'kOmaM0_GJEzx5brZfBzHXA==' in the request."}
+///
+/// That's the diagnostic recipe — verify against the live product with
+/// `product_permalink` instead of `product_id` and Gumroad will print the
+/// canonical id back at you. Captured here on 2026-05-13 after the v0.1.7
+/// hot-patch shipped with the wrong (short-hash) value.
+///
+/// The runtime override (`license_product_id_override` setting) stays
+/// available for dev / staging verification against a different product.
+pub const KLIPO_PRODUCT_ID_DEFAULT: &str = "kOmaM0_GJEzx5brZfBzHXA==";
 
 /// Trial length in days.
 pub const TRIAL_DAYS: i64 = 14;

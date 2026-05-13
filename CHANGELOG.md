@@ -5,6 +5,50 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] — 2026-05-13 — Gumroad product_id corrected to long form
+
+### Fixed — license activation actually works now
+- v0.1.7 wired `KLIPO_PRODUCT_ID_DEFAULT` to `"hvdaw"` — the short hash
+  shown in Gumroad's seller-dashboard edit URL
+  (`gumroad.com/products/hvdaw/edit`). That value is the
+  `short_product_id` Gumroad uses internally for admin UI, **not** the
+  identifier its licensing API accepts. Verify calls against the live
+  product responded with:
+  ```
+  {"success":false,
+   "message":"That license does not exist for the provided product."}
+  ```
+  even though the key, the product, and the email were all valid.
+- The licensing API expects the base64 long form `product_id`
+  (`kOmaM0_GJEzx5brZfBzHXA==` for Klipo). The two ids coexist on every
+  product:
+  ```
+  product_id         = "kOmaM0_GJEzx5brZfBzHXA=="   ← API parameter (this)
+  short_product_id   = "hvdaw"                       ← UI / edit-URL hash
+  ```
+- v0.1.8 swaps the constant to the long form. License activation now
+  succeeds end-to-end against the live Gumroad listing.
+
+### How the long form was recovered
+- Gumroad's verify endpoint leaks the canonical `product_id` when you
+  call it with the wrong parameter name. Sending `product_permalink`
+  instead of `product_id` returns:
+  ```
+  {"success":false,
+   "message":"The 'product_id' parameter is required to verify the
+              license for this product. Please set 'product_id' to
+              'kOmaM0_GJEzx5brZfBzHXA==' in the request."}
+  ```
+- This is now the documented diagnostic recipe in the
+  `gumroad-launch` skill's `shared/pitfalls.md` (see #15).
+
+### No other behavioural changes
+- v0.1.7's icon, brand-strict UI accents, and version-readback discipline
+  all carry over unchanged. Single-purpose hot-patch; please don't
+  piggyback unrelated changes.
+
+---
+
 ## [0.1.7] — 2026-05-12 — Gumroad product_id wired ✅
 
 ### Wired — license activation now functional
