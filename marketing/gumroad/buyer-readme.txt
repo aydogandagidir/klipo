@@ -17,10 +17,16 @@ Activation
 
 Step 1 — Download Klipo
 
-Grab the latest installer from your Gumroad library, or from
-bluedev.dev/products/klipo (the GitHub Releases mirror is also
-linked there for archival download). The file is called
-something like Klipo_0.1.3_x64-setup.exe and it's ~3.8 MB.
+The Windows installer is attached to this purchase. Open your
+Gumroad library at gumroad.com/library, click "Klipo", and
+download the file — it's called Klipo_<version>_x64-setup.exe
+and it's ~4.5 MB. If you ever lose your local copy, the same
+installer mirror is public at:
+
+  github.com/aydogandagidir/klipo/releases/latest
+
+Both points download the same NSIS installer; pick whichever's
+faster on your network.
 
 Step 2 — Install it
 
@@ -97,8 +103,9 @@ file under %APPDATA%\Klipo\ on Windows.
 
 You can verify all of this by watching network traffic during
 activation, or by reading the source — license.rs is ~140 lines
-and self-contained. The repo's at github.com/bluedev/klipo
-(or bluedev.dev/products/klipo for the linked mirror).
+and self-contained. The public repository is at:
+
+  github.com/aydogandagidir/klipo
 
 
 License terms in plain language
@@ -117,8 +124,8 @@ patchy wifi won't lock you out.
 
 Klipo is Windows-only right now (Windows 10 1809+ and Windows
 11). macOS and Linux are not currently supported. If we ever
-ship them, the roadmap and timing will be announced on
-bluedev.dev/products/klipo — there is no buying claim attached.
+ship them, the announcement will land on this product page on
+Gumroad and on bluedev.dev — no buying claim attached today.
 
 If Klipo isn't a fit, you can let us know via support@bluedev.dev
 — but we encourage you to use the 14-day free trial first to make
@@ -138,19 +145,19 @@ puts a JSON snippet on your clipboard with your Klipo version,
 Windows version, and recent error messages. Paste that into the
 email, saves us a few back-and-forths.
 
-Web: bluedev.dev/products/klipo
+Gumroad listing: bluedev.gumroad.com/l/klipo
+Source / releases: github.com/aydogandagidir/klipo
 
 
 Legal
 
-Klipo is an independent project by bluedev. EULA, privacy policy,
-and refund terms ship inside the install:
+Klipo is an independent project by bluedev. The EULA, privacy
+policy, and refund terms are versioned alongside the source
+and viewable on GitHub:
 
-  EULA          - %INSTALLDIR%\LEGAL\EULA.md
-  Privacy       - %INSTALLDIR%\LEGAL\PRIVACY.md
-  Refund policy - %INSTALLDIR%\LEGAL\REFUND.md
-
-Or the same docs at bluedev.dev/legal/klipo.
+  EULA          - github.com/aydogandagidir/klipo/blob/main/LEGAL/EULA.md
+  Privacy       - github.com/aydogandagidir/klipo/blob/main/LEGAL/PRIVACY.md
+  Refund policy - github.com/aydogandagidir/klipo/blob/main/LEGAL/REFUND.md
 
 Klipo is not affiliated with, endorsed by, or sponsored by
 Microsoft Corporation. Windows is a trademark of Microsoft
