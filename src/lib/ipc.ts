@@ -12,6 +12,14 @@ import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 
 export type ClipKind = "text" | "image" | "file" | "rtf" | "html";
 
+/** One label on a clip. `autoKey` is the stable classifier key for
+ * auto-detected labels (drives the chip color, survives a rename); `null`
+ * for user-created labels. Mirrors `Label` in `src-tauri/src/storage/clips.rs`. */
+export interface Label {
+  name: string;
+  autoKey: string | null;
+}
+
 export interface Clip {
   id: string;
   kind: ClipKind;
@@ -26,7 +34,10 @@ export interface Clip {
   created_at: number;
   pinned: boolean;
   sensitive: boolean;
-  category: string | null;
+  /** Optional user title; shown instead of the preview when present. */
+  title: string | null;
+  /** Labels on this clip (auto-seeded on capture + user-managed). */
+  labels: Label[];
 }
 
 export interface SearchHit {
@@ -262,6 +273,65 @@ export async function resensitizeHistory(): Promise<ResensitizeReport> {
   return invoke<ResensitizeReport>("resensitize_history");
 }
 
+// ---------- Organize: title, tags, category (M9) ----------
+
+/** Set or clear a clip's user title. Pass `null` (or an empty/whitespace
+ * string) to clear it. The title is folded into the FTS index, so it becomes
+ * searchable immediately. */
+export async function setClipTitle(id: string, title: string | null): Promise<void> {
+  return invoke<void>("set_clip_title", { id, title });
+}
+
+/** Add a label (by name) to a clip, creating it if new. Returns the trimmed
+ * name stored. Idempotent. */
+export async function addClipLabel(id: string, name: string): Promise<string> {
+  return invoke<string>("add_clip_label", { id, name });
+}
+
+/** Remove a label (by name) from a clip. No-op if absent. */
+export async function removeClipLabel(id: string, name: string): Promise<void> {
+  return invoke<void>("remove_clip_label", { id, name });
+}
+
+/** Rename a label everywhere it occurs (global). */
+export async function renameLabel(oldName: string, newName: string): Promise<void> {
+  return invoke<void>("rename_label", { old: oldName, new: newName });
+}
+
+/** One label in the vocabulary + usage count. Mirrors `LabelInfo` in
+ * `src-tauri/src/storage/clips.rs`. */
+export interface LabelInfo {
+  name: string;
+  autoKey: string | null;
+  count: number;
+}
+
+/** List the label vocabulary (names in use) with counts, most-used first.
+ * Powers the popup filter chips + the add-label autocomplete. */
+export async function listAllLabels(): Promise<LabelInfo[]> {
+  return invoke<LabelInfo[]>("list_all_labels");
+}
+
+/** Counters from `reclassifyHistory`. Mirrors `ReclassifyReport` in
+ * `src-tauri/src/storage/clips.rs`. */
+export interface ReclassifyReport {
+  /** Total live text clips processed. */
+  scanned: number;
+  /** Rows whose category changed (incl. to/from null). */
+  changed: number;
+  /** Rows whose category was already correct. */
+  unchanged: number;
+}
+
+/**
+ * Re-run the content classifier across every live text clip and update each
+ * row's `category`. Data-preserving — only `category` changes. Sibling of
+ * `resensitizeHistory`; use after the classifier rules are tightened.
+ */
+export async function reclassifyHistory(): Promise<ReclassifyReport> {
+  return invoke<ReclassifyReport>("reclassify_history");
+}
+
 // ---------- Hotkey rebind (M6.3) ----------
 
 /**
@@ -474,6 +544,12 @@ export const ipc = {
   openDataFolder,
   wipeAllData,
   resensitizeHistory,
+  setClipTitle,
+  addClipLabel,
+  removeClipLabel,
+  renameLabel,
+  listAllLabels,
+  reclassifyHistory,
   registerHotkey,
   getAutostart,
   setAutostart,

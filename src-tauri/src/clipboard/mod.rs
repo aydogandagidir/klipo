@@ -8,6 +8,7 @@
 //!
 //! macOS watcher (`watcher_macos`) lands in v0.2 (Phase C).
 
+pub mod classify;
 pub mod pipeline;
 pub mod sensitive;
 pub mod source_app;

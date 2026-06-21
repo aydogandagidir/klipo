@@ -12,7 +12,7 @@ use crate::license::manager::{
     self as license_manager, LicenseStatus, ReverifyOutcome, TrialStatus,
 };
 use crate::perf::StartTime;
-use crate::storage::clips::{Clip, ExcludedApp, ResensitizeReport};
+use crate::storage::clips::{Clip, ExcludedApp, LabelInfo, ReclassifyReport, ResensitizeReport};
 use crate::storage::search::SearchHit;
 use crate::storage::Storage;
 use tauri::State;
@@ -293,9 +293,7 @@ pub async fn get_setting(
         return Err(format!("unknown setting key: {key}"));
     }
     if is_license_setting(&key) {
-        return Err(format!(
-            "{key} is backend-only; use the license commands"
-        ));
+        return Err(format!("{key} is backend-only; use the license commands"));
     }
     storage.get_setting(&key).await.map_err(map_err)
 }
@@ -312,9 +310,7 @@ pub async fn set_setting(
         return Err(format!("unknown setting key: {key}"));
     }
     if is_license_setting(&key) {
-        return Err(format!(
-            "{key} is backend-only; use the license commands"
-        ));
+        return Err(format!("{key} is backend-only; use the license commands"));
     }
     validate_setting(&key, &value)?;
     storage.set_setting(&key, &value).await.map_err(map_err)
@@ -670,9 +666,7 @@ pub async fn register_hotkey(
 /// unchanged counters so the UI can render a toast like
 /// "Scanned 247 clips: 5 newly flagged".
 #[tauri::command]
-pub async fn resensitize_history(
-    storage: State<'_, Storage>,
-) -> Result<ResensitizeReport, String> {
+pub async fn resensitize_history(storage: State<'_, Storage>) -> Result<ResensitizeReport, String> {
     let report = storage
         .resensitize_all(|text| crate::clipboard::sensitive::scan(text).is_sensitive())
         .await
@@ -684,6 +678,82 @@ pub async fn resensitize_history(
         unflagged = report.unflagged,
         unchanged = report.unchanged,
         "user-initiated resensitize finished"
+    );
+    Ok(report)
+}
+
+// ---------------- Organize: title, labels (M9) ----------------
+
+/// Set or clear a clip's user title. Pass `null`/empty to clear it. The title
+/// is folded into the FTS index, so it becomes searchable immediately.
+#[tauri::command]
+pub async fn set_clip_title(
+    storage: State<'_, Storage>,
+    id: String,
+    title: Option<String>,
+) -> Result<(), String> {
+    storage
+        .set_clip_title(&id, title.as_deref())
+        .await
+        .map_err(map_err)
+}
+
+/// Add a label (by name) to a clip, creating it if new. Custom names are
+/// allowed; if the name matches a known auto label its color is inherited.
+/// Returns the trimmed name stored.
+#[tauri::command]
+pub async fn add_clip_label(
+    storage: State<'_, Storage>,
+    id: String,
+    name: String,
+) -> Result<String, String> {
+    storage.add_label(&id, &name).await.map_err(map_err)
+}
+
+/// Remove a label (by name) from a clip. No-op if absent.
+#[tauri::command]
+pub async fn remove_clip_label(
+    storage: State<'_, Storage>,
+    id: String,
+    name: String,
+) -> Result<(), String> {
+    storage.remove_label(&id, &name).await.map_err(map_err)
+}
+
+/// Rename a label everywhere it occurs (global). Used by the editor's
+/// click-to-edit on a label chip.
+#[tauri::command]
+pub async fn rename_label(
+    storage: State<'_, Storage>,
+    old: String,
+    new: String,
+) -> Result<(), String> {
+    storage.rename_label(&old, &new).await.map_err(map_err)
+}
+
+/// List the label vocabulary (names in use on live clips) with usage counts
+/// and a representative auto-key (for chip color). Powers the popup filter
+/// chips + the add-label autocomplete.
+#[tauri::command]
+pub async fn list_all_labels(storage: State<'_, Storage>) -> Result<Vec<LabelInfo>, String> {
+    storage.list_labels().await.map_err(map_err)
+}
+
+/// Re-run the content classifier across all live text clips and re-apply each
+/// clip's auto label (user-created labels are preserved). Sibling of
+/// `resensitize_history`. Triggered from Settings → Privacy.
+#[tauri::command]
+pub async fn reclassify_history(storage: State<'_, Storage>) -> Result<ReclassifyReport, String> {
+    let report = storage
+        .reclassify_all(|text| crate::clipboard::classify::classify(text).map(str::to_string))
+        .await
+        .map_err(map_err)?;
+    tracing::info!(
+        target: "klipo::reclassify",
+        scanned = report.scanned,
+        changed = report.changed,
+        unchanged = report.unchanged,
+        "user-initiated reclassify finished"
     );
     Ok(report)
 }
@@ -778,9 +848,7 @@ pub async fn deactivate_license(storage: State<'_, Storage>) -> Result<(), Strin
 /// this on every render that wants the latest state without going through
 /// a network round-trip.
 #[tauri::command]
-pub async fn get_license_status(
-    storage: State<'_, Storage>,
-) -> Result<LicenseStatus, String> {
+pub async fn get_license_status(storage: State<'_, Storage>) -> Result<LicenseStatus, String> {
     Ok(license_manager::get_status(&storage).await)
 }
 
@@ -790,9 +858,7 @@ pub async fn get_license_status(
 /// — the renderer will see `tier: free, reason: trial-active|trial-expired`
 /// on the next status fetch.
 #[tauri::command]
-pub async fn reverify_license(
-    storage: State<'_, Storage>,
-) -> Result<ReverifyOutcome, String> {
+pub async fn reverify_license(storage: State<'_, Storage>) -> Result<ReverifyOutcome, String> {
     Ok(license_manager::reverify(&storage).await)
 }
 
@@ -800,8 +866,6 @@ pub async fn reverify_license(
 /// Initializes `trial_started_at` if absent, so this can safely be the
 /// very first thing the renderer asks the backend.
 #[tauri::command]
-pub async fn get_trial_status(
-    storage: State<'_, Storage>,
-) -> Result<TrialStatus, String> {
+pub async fn get_trial_status(storage: State<'_, Storage>) -> Result<TrialStatus, String> {
     Ok(license_manager::get_trial_status(&storage).await)
 }

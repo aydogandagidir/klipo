@@ -15,6 +15,7 @@ use sha2::{Digest, Sha256};
 use tauri::{AppHandle, Emitter};
 use tokio::sync::mpsc::UnboundedReceiver;
 
+use crate::clipboard::classify;
 use crate::clipboard::sensitive;
 use crate::clipboard::{CapturedKind, ClipboardEvent};
 use crate::storage::blob::{write_blob, write_thumbnail};
@@ -82,6 +83,20 @@ async fn process_one(storage: &Storage, app: &AppHandle, event: ClipboardEvent) 
             }
         }
         None => false,
+    };
+
+    // 2b. Content classification (text clips only). The classifier's key seeds
+    //     the clip's first auto label *after* insert (see below) — distinct
+    //     from the security `sensitive` flag. Only plain text is classified:
+    //     file clips carry a JSON path list, and html/rtf already announce
+    //     themselves via their kind.
+    let auto_key: Option<String> = match event.kind {
+        CapturedKind::Text => event
+            .text
+            .as_deref()
+            .and_then(classify::classify)
+            .map(str::to_string),
+        _ => None,
     };
 
     // 3. Hash whichever payload exists.
@@ -171,6 +186,17 @@ async fn process_one(storage: &Storage, app: &AppHandle, event: ClipboardEvent) 
                 size = event.size_bytes,
                 "captured new clip"
             );
+            // Seed the auto-detected label (before emitting so the popup's
+            // refresh sees it). Best-effort: a link failure must not lose the clip.
+            if let Some(ref key) = auto_key {
+                if let Err(e) = storage.link_auto_label(&id, key).await {
+                    tracing::warn!(
+                        target: "klipo::pipeline",
+                        error = %e,
+                        "auto-label link failed"
+                    );
+                }
+            }
             let _ = app.emit("clip:new", id);
         }
         Ok(InsertOutcome::Bumped { id }) => {

@@ -132,15 +132,14 @@ mod tests {
     #[tokio::test]
     async fn open_in_memory_runs_migrations() {
         // schema_version is bumped by each migration that touches it. Latest
-        // is `002_turkish_fts.sql` → "2". When migration 003+ lands, expand
-        // this allowlist instead of pinning a single value.
+        // is `005_labels.sql` → "5".
         let storage = Storage::open_in_memory().await.expect("open in memory");
         let row: (String,) =
             sqlx::query_as("SELECT value FROM settings WHERE key='schema_version'")
                 .fetch_one(storage.pool())
                 .await
                 .expect("query schema_version");
-        assert_eq!(row.0, "2");
+        assert_eq!(row.0, "5");
     }
 
     #[tokio::test]

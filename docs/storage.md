@@ -167,6 +167,64 @@ INSERT INTO settings (key, value) VALUES
 
 ---
 
+## 2.1 Organize: title, labels, favorite (003–005)
+
+The "Organize" feature settled over three migrations. Net result:
+
+- **`title`** (003) — an optional per-clip name, folded into the FTS index.
+- **labels** (005) — a clip carries MULTIPLE labels (`clip_labels`). Auto-
+  detection seeds the first; the user can add, rename (globally), and remove
+  them. This replaced the single `category` idea (003 also created free-text
+  `tags`/`clip_tags`, dropped by 004; `category` is left dead in the row,
+  superseded by `clip_labels`).
+- **favorite** — the per-row star toggles the existing `pinned` flag.
+
+```sql
+-- 003: per-clip title (+ title-aware FTS triggers).
+ALTER TABLE clips ADD COLUMN title TEXT;
+
+-- 005: multi-label system. `auto_key` ties an auto label to a classifier key
+-- so detection survives a rename; NULL for user-created labels.
+CREATE TABLE clip_labels (
+    clip_id  TEXT NOT NULL REFERENCES clips(id) ON DELETE CASCADE,
+    name     TEXT NOT NULL,
+    auto_key TEXT,                 -- 'url','email',… for auto labels; NULL custom
+    added_at INTEGER NOT NULL,
+    PRIMARY KEY (clip_id, name)
+);
+CREATE INDEX idx_clip_labels_name ON clip_labels(name);
+CREATE INDEX idx_clip_labels_clip ON clip_labels(clip_id);
+-- 005 also migrates clips.category → seed labels, then drops idx_clips_category.
+```
+
+Behavioural notes:
+
+- **Auto label on capture.** For `kind='text'` clips the pipeline runs
+  `clipboard::classify::classify` (regex/heuristic, fully local — no model, no
+  network) and, after insert, links the matching auto label via
+  `Storage::link_auto_label`. Default display names come from
+  `classify::auto_label_name` (Bağlantı, E-posta, Kod, …); the stable key lives
+  in `auto_key`. Keys: `url`, `email`, `phone`, `iban`, `color`, `code`, `json`,
+  `number`, `path`.
+- **User-managed labels.** `add_label` (custom; inherits `auto_key` if the name
+  matches a known auto label so it keeps its color), `remove_label`, and
+  `rename_label` (global `UPDATE OR REPLACE`, preserving `auto_key` so future
+  auto-detections reuse the renamed label). Each bumps the clip's `sync_version`.
+  `Storage::reclassify_all` re-applies auto labels over history, preserving
+  user-created ones.
+- **Read path.** `get_clip` / `list_clips` / `search_clips` attach a
+  `json_group_array(json_object('name', …, 'autoKey', …))` subquery aliased
+  `labels`; `row_to_clip` parses it into `Vec<Label>`.
+- **Title in FTS.** The `clips_ai/ad/au` triggers (003) index
+  `fold(title + ' ' + text_content)` and fire when a row has a title but no body
+  (e.g. a named image). So a clip's title is searchable with the same
+  Turkish-folded query path as its body. Display uses the original glyphs.
+- **Favorite = `pinned`.** The per-row star toggles the existing `pinned` flag:
+  favorited clips sort first (`ORDER BY pinned DESC`) and are filterable via the
+  popup's "Favoriler" chip. No separate column.
+
+---
+
 ## 3. Insert Path
 
 ```
@@ -287,9 +345,11 @@ Two-character hex sharding keeps any one folder under ~16k files even at 4M tota
 ```
 src-tauri/src/storage/migrations/
 ├─ 001_initial.sql
-├─ 002_add_window_title.sql      (v0.2)
-├─ 003_add_category.sql          (v0.2)
-├─ 004_sync_columns.sql          (v0.3 — populate hlc for existing rows)
+├─ 002_turkish_fts.sql           (FTS5 Turkish-ASCII fold; schema_version → 2)
+├─ 003_organize.sql              (title + tags + category index + title FTS; schema_version → 3)
+├─ 004_drop_tags.sql             (drop tags/clip_tags; schema_version → 4)
+├─ 005_labels.sql                (clip_labels multi-label + migrate category; schema_version → 5)
+├─ 006_sync_columns.sql          (v0.3 — populate hlc for existing rows)
 └─ ...
 ```
 

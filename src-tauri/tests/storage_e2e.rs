@@ -71,3 +71,68 @@ async fn end_to_end_lifecycle_on_disk() {
     // Database file actually exists on disk
     assert!(db_path.exists(), "klipo-e2e.db should be created");
 }
+
+#[tokio::test]
+async fn organize_features_on_disk() {
+    // Exercises the organize migrations end-to-end on a real file: the label
+    // system (auto-seed + manual add + global rename), the title column +
+    // rebuilt FTS triggers (folded + searchable), and favorite top-ordering.
+    let dir = TempDir::new().expect("tempdir");
+    let db_path = dir.path().join("klipo-organize.db");
+    let storage = Storage::open(&db_path).await.expect("open storage");
+
+    let id = match storage
+        .insert_clip(make_text("https://bluedev.dev", "hu"))
+        .await
+        .unwrap()
+    {
+        InsertOutcome::Inserted { id } => id,
+        other => panic!("expected Inserted, got {other:?}"),
+    };
+
+    // Auto label seeds, the user adds a custom one.
+    storage.link_auto_label(&id, "url").await.unwrap();
+    storage.add_label(&id, "müşteri").await.unwrap();
+    let mut names: Vec<String> = storage
+        .get_clip(&id)
+        .await
+        .unwrap()
+        .labels
+        .into_iter()
+        .map(|l| l.name)
+        .collect();
+    names.sort();
+    assert_eq!(names, vec!["Bağlantı".to_string(), "müşteri".to_string()]);
+
+    // Global rename of the auto label, preserving its color key.
+    storage.rename_label("Bağlantı", "Web").await.unwrap();
+    let web = storage
+        .get_clip(&id)
+        .await
+        .unwrap()
+        .labels
+        .into_iter()
+        .find(|l| l.name == "Web")
+        .expect("renamed label present");
+    assert_eq!(web.auto_key.as_deref(), Some("url"));
+
+    // Title is editable AND searchable via the rebuilt, Turkish-folding FTS
+    // triggers — "sirket" must find the title "Şirket sitesi".
+    storage
+        .set_clip_title(&id, Some("Şirket sitesi"))
+        .await
+        .unwrap();
+    let by_title = storage.search_clips("sirket", 50).await.unwrap();
+    assert_eq!(by_title.len(), 1, "title word found via folded FTS on disk");
+    assert_eq!(by_title[0].clip.title.as_deref(), Some("Şirket sitesi"));
+
+    // Favorite (pinned) floats the clip to the top of the list.
+    let _ = storage
+        .insert_clip(make_text("second clip", "h2"))
+        .await
+        .unwrap();
+    storage.pin_clip(&id, true).await.unwrap();
+    let listed = storage.list_clips(50, 0).await.unwrap();
+    assert_eq!(listed[0].id, id, "favorited clip is first");
+    assert!(listed[0].pinned);
+}

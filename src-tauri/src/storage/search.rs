@@ -18,7 +18,7 @@
 use serde::Serialize;
 use sqlx::Row;
 
-use super::clips::{Clip, ClipKind};
+use super::clips::{row_to_clip, Clip};
 use super::error::StorageResult;
 use super::Storage;
 
@@ -95,7 +95,9 @@ impl Storage {
         let rows = sqlx::query(
             "SELECT c.id, c.kind, c.content_hash, c.text_content, c.blob_path,
                     c.size_bytes, c.source_app, c.source_url, c.source_window_title,
-                    c.created_at, c.pinned, c.sensitive, c.category,
+                    c.created_at, c.pinned, c.sensitive, c.title,
+                    (SELECT json_group_array(json_object('name', cl.name, 'autoKey', cl.auto_key))
+                       FROM clip_labels cl WHERE cl.clip_id = c.id) AS labels,
                     bm25(clips_fts) AS rank
              FROM clips c
              JOIN clips_fts f ON c.rowid = f.rowid
@@ -109,23 +111,10 @@ impl Storage {
         .fetch_all(self.pool())
         .await?;
 
+        // Reuse the canonical row→Clip mapping; search only adds the BM25 rank.
         rows.iter()
             .map(|row| {
-                let clip = Clip {
-                    id: row.try_get("id")?,
-                    kind: row.try_get::<&str, _>("kind")?.parse::<ClipKind>()?,
-                    content_hash: row.try_get("content_hash")?,
-                    text_content: row.try_get("text_content")?,
-                    blob_path: row.try_get("blob_path")?,
-                    size_bytes: row.try_get("size_bytes")?,
-                    source_app: row.try_get("source_app")?,
-                    source_url: row.try_get("source_url")?,
-                    source_window_title: row.try_get("source_window_title")?,
-                    created_at: row.try_get("created_at")?,
-                    pinned: row.try_get::<i64, _>("pinned")? != 0,
-                    sensitive: row.try_get::<i64, _>("sensitive")? != 0,
-                    category: row.try_get("category")?,
-                };
+                let clip = row_to_clip(row)?;
                 let rank: f64 = row.try_get("rank")?;
                 Ok(SearchHit {
                     clip,
@@ -139,7 +128,7 @@ impl Storage {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::storage::clips::NewClip;
+    use crate::storage::clips::{ClipKind, InsertOutcome, NewClip};
 
     fn text(body: &str, hash: &str) -> NewClip {
         NewClip {
@@ -280,5 +269,38 @@ mod tests {
         assert_eq!(hits.len(), 1);
         let hits = s.search_clips("ISTANBUL", 50).await.unwrap();
         assert_eq!(hits.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn search_hit_carries_title_and_labels() {
+        let s = Storage::open_in_memory().await.unwrap();
+        let id = match s.insert_clip(text("alpha beta", "h1")).await.unwrap() {
+            InsertOutcome::Inserted { id } => id,
+            _ => unreachable!(),
+        };
+        s.set_clip_title(&id, Some("My Title")).await.unwrap();
+        s.link_auto_label(&id, "url").await.unwrap();
+
+        let hits = s.search_clips("alpha", 50).await.unwrap();
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].clip.title.as_deref(), Some("My Title"));
+        assert_eq!(hits[0].clip.labels.len(), 1);
+        assert_eq!(hits[0].clip.labels[0].name, "Bağlantı");
+        assert_eq!(hits[0].clip.labels[0].auto_key.as_deref(), Some("url"));
+    }
+
+    #[tokio::test]
+    async fn search_finds_by_title_with_turkish_fold() {
+        // Body lacks the word; the title carries it — and a diacritic-stripped
+        // query must still match it through the 003 fold-of-title trigger.
+        let s = Storage::open_in_memory().await.unwrap();
+        let id = match s.insert_clip(text("body only", "h2")).await.unwrap() {
+            InsertOutcome::Inserted { id } => id,
+            _ => unreachable!(),
+        };
+        s.set_clip_title(&id, Some("Ödeme planı")).await.unwrap();
+
+        assert_eq!(s.search_clips("odeme", 50).await.unwrap().len(), 1);
+        assert_eq!(s.search_clips("plani", 50).await.unwrap().len(), 1);
     }
 }

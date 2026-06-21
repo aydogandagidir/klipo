@@ -1,4 +1,4 @@
-import { Folder, ShieldAlert, Trash2 } from "lucide-react";
+import { Folder, ShieldAlert, Tags, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { AlertDialog } from "@/components/AlertDialog";
@@ -7,11 +7,12 @@ import {
   appDataDirPath,
   getSetting,
   openDataFolder,
+  reclassifyHistory,
   resensitizeHistory,
   setSetting,
   wipeAllData,
 } from "@/lib/ipc";
-import type { ResensitizeReport } from "@/lib/ipc";
+import type { ReclassifyReport, ResensitizeReport } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 
 /**
@@ -42,6 +43,7 @@ export function PrivacyTab() {
       <SyncRow />
       <DataFolderRow />
       <ResensitizeRow />
+      <ReclassifyRow />
       <WipeRow />
     </div>
   );
@@ -230,6 +232,73 @@ function ResensitizeRow() {
             Scanned {outcome.report.scanned} clip
             {outcome.report.scanned === 1 ? "" : "s"}: {outcome.report.flagged} newly flagged
             {outcome.report.unflagged > 0 ? `, ${outcome.report.unflagged} unflagged` : ""},{" "}
+            {outcome.report.unchanged} unchanged.
+          </p>
+        ) : null}
+        {outcome?.kind === "err" ? <p className="text-xs text-destructive">{outcome.msg}</p> : null}
+      </div>
+    </Row>
+  );
+}
+
+// ---------------- Re-detect labels (reclassify) ----------------
+
+/**
+ * "Re-detect labels" action.
+ *
+ * Sibling of `ResensitizeRow`: re-runs the local content classifier over every
+ * live text clip and re-applies its auto label (URL, e-mail, code, …) where the
+ * verdict changed. User-created labels are preserved; no clip text/blob is
+ * touched.
+ *
+ * Use case: right after this feature ships, clips captured before it have no
+ * auto label yet. One click backfills them so the label chips + filter work
+ * over the whole history, not just clips copied from now on.
+ */
+function ReclassifyRow() {
+  const [busy, setBusy] = useState(false);
+  const [outcome, setOutcome] = useState<
+    { kind: "ok"; report: ReclassifyReport } | { kind: "err"; msg: string } | null
+  >(null);
+
+  const run = async () => {
+    setBusy(true);
+    setOutcome(null);
+    try {
+      const report = await reclassifyHistory();
+      setOutcome({ kind: "ok", report });
+    } catch (e: unknown) {
+      setOutcome({
+        kind: "err",
+        msg: e instanceof Error ? e.message : String(e),
+      });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Row
+      label="Re-detect labels"
+      description="Re-runs the content classifier over every text clip already in your history and re-applies its auto label (URL, e-mail, code, …) where it changed. Labels you added yourself are kept; no data is deleted. Handy right after enabling this feature so older clips get labeled too."
+    >
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={() => void run()}
+          disabled={busy}
+          className={cn(
+            "inline-flex w-fit items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-accent/40",
+            busy && "opacity-60",
+          )}
+        >
+          <Tags className="h-4 w-4" aria-hidden="true" />
+          {busy ? "Detecting…" : "Re-detect labels"}
+        </button>
+        {outcome?.kind === "ok" ? (
+          <p className="text-xs text-emerald-500">
+            Scanned {outcome.report.scanned} clip
+            {outcome.report.scanned === 1 ? "" : "s"}: {outcome.report.changed} re-labeled,{" "}
             {outcome.report.unchanged} unchanged.
           </p>
         ) : null}
