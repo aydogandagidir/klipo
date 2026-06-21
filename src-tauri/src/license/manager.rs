@@ -288,7 +288,7 @@ pub async fn activate(
 }
 
 /// Background re-check. Does NOT count a device. Updates `last_verified_at`
-/// + extends `grace_until` on success. Clears the license on
+/// and extends `grace_until` on success. Clears the license on
 /// `Invalid`/`Refunded`. Leaves the license intact on `Network`/`Server`.
 pub async fn reverify(storage: &Storage) -> ReverifyOutcome {
     let key = match storage_str(storage, "license_key").await {
@@ -301,8 +301,9 @@ pub async fn reverify(storage: &Storage) -> ReverifyOutcome {
         Ok(result) => {
             // Preserve the original activation timestamp; only bump the
             // verify+grace fields.
-            let activated_at =
-                storage_i64(storage, "license_activated_at").await.unwrap_or_else(now_ms);
+            let activated_at = storage_i64(storage, "license_activated_at")
+                .await
+                .unwrap_or_else(now_ms);
             let now = now_ms();
             if let Err(e) = write_license(
                 storage,
@@ -486,7 +487,10 @@ mod tests {
     async fn trial_starts_on_first_call() {
         let s = fresh_storage().await;
         let before = s.get_setting("trial_started_at").await.unwrap();
-        assert!(before.is_none(), "trial_started_at must be absent on a fresh DB");
+        assert!(
+            before.is_none(),
+            "trial_started_at must be absent on a fresh DB"
+        );
 
         let status = get_trial_status(&s).await;
         assert!(status.started_at > 0);
@@ -507,10 +511,7 @@ mod tests {
             .unwrap();
 
         let status = get_trial_status(&s).await;
-        assert_eq!(
-            status.days_remaining, 9,
-            "5d in → 9 of 14 should remain"
-        );
+        assert_eq!(status.days_remaining, 9, "5d in → 9 of 14 should remain");
         assert!(!status.expired);
     }
 
@@ -558,7 +559,9 @@ mod tests {
             .unwrap();
         // …but a freshly-verified license is on file.
         let now = now_ms();
-        s.set_setting("license_key", "TEST-KEY-1234-5678").await.unwrap();
+        s.set_setting("license_key", "TEST-KEY-1234-5678")
+            .await
+            .unwrap();
         s.set_setting("license_email", "buyer@example.com")
             .await
             .unwrap();
@@ -592,7 +595,9 @@ mod tests {
         // last_verified > GRACE_DAYS ago, but grace_until is still in the future.
         let now = now_ms();
         let long_ago = now - (GRACE_DAYS + 5) * DAY_MS;
-        s.set_setting("license_key", "AB12-CD34-EF56-GH78").await.unwrap();
+        s.set_setting("license_key", "AB12-CD34-EF56-GH78")
+            .await
+            .unwrap();
         s.set_setting("license_activated_at", &long_ago.to_string())
             .await
             .unwrap();
@@ -615,7 +620,9 @@ mod tests {
         let s = fresh_storage().await;
         let now = now_ms();
         let long_ago = now - 90 * DAY_MS;
-        s.set_setting("license_key", "AB12-CD34-EF56-GH78").await.unwrap();
+        s.set_setting("license_key", "AB12-CD34-EF56-GH78")
+            .await
+            .unwrap();
         s.set_setting("license_last_verified_at", &long_ago.to_string())
             .await
             .unwrap();
@@ -644,7 +651,9 @@ mod tests {
         let s = fresh_storage().await;
         s.set_setting("license_key", "ABCD-1234").await.unwrap();
         s.set_setting("license_email", "a@b.c").await.unwrap();
-        s.set_setting("license_last_verified_at", "1234").await.unwrap();
+        s.set_setting("license_last_verified_at", "1234")
+            .await
+            .unwrap();
 
         deactivate(&s).await.unwrap();
 

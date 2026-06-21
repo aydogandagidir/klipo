@@ -391,7 +391,7 @@ function ActivateRow({
         </button>
         {error ? <p className="text-xs text-destructive">{error}</p> : null}
         <p className="text-[11px] text-muted-foreground">
-          Don't have a key?{" "}
+          Don&apos;t have a key?{" "}
           <a
             href={PURCHASE_URL}
             target="_blank"

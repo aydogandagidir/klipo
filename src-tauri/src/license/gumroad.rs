@@ -104,7 +104,11 @@ pub async fn verify_license(
         ("license_key", trimmed),
         (
             "increment_uses_count",
-            if increment_uses_count { "true" } else { "false" },
+            if increment_uses_count {
+                "true"
+            } else {
+                "false"
+            },
         ),
     ];
 

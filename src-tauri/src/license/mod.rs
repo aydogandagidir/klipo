@@ -25,9 +25,7 @@
 pub mod gumroad;
 pub mod manager;
 
-pub use manager::{
-    LicenseStatus, LicenseTier, ManagerError, ReverifyOutcome, TrialStatus,
-};
+pub use manager::{LicenseStatus, LicenseTier, ManagerError, ReverifyOutcome, TrialStatus};
 
 /// Klipo's Gumroad product id, **as accepted by the `/v2/licenses/verify`
 /// API** — a base64-encoded long form, not the short hash that appears in
