@@ -144,7 +144,9 @@ function StatusPill({
             toneClass,
           )}
         >
-          {pill.tone === "green" ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+          {pill.tone === "green" ? (
+            <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+          ) : null}
           {pill.label}
         </span>
         <p className="max-w-prose text-xs text-muted-foreground">{summary}</p>
@@ -155,13 +157,7 @@ function StatusPill({
 
 // ---------------- Pro details row (replace the form when active) ----------------
 
-function ProDetailsRow({
-  status,
-  onChange,
-}: {
-  status: LicenseStatus;
-  onChange: () => void;
-}) {
+function ProDetailsRow({ status, onChange }: { status: LicenseStatus; onChange: () => void }) {
   const [busy, setBusy] = useState<"recheck" | "deactivate" | null>(null);
   const [recheckMsg, setRecheckMsg] = useState<string | null>(null);
   const [recheckOk, setRecheckOk] = useState<boolean | null>(null);
@@ -273,12 +269,7 @@ function ProDetailsRow({
           </button>
         </div>
         {recheckMsg ? (
-          <p
-            className={cn(
-              "text-xs",
-              recheckOk ? "text-emerald-500" : "text-destructive",
-            )}
-          >
+          <p className={cn("text-xs", recheckOk ? "text-emerald-500" : "text-destructive")}>
             {recheckMsg}
           </p>
         ) : null}

@@ -541,7 +541,9 @@ export function App() {
                 onClick={() => setFilter(active ? "all" : l.name)}
                 className={cn(
                   "rounded-full px-2 py-0.5 text-[10px] transition-colors",
-                  active ? labelColor(l.autoKey) : "bg-muted/40 text-muted-foreground hover:bg-muted/60",
+                  active
+                    ? labelColor(l.autoKey)
+                    : "bg-muted/40 text-muted-foreground hover:bg-muted/60",
                 )}
                 title={`${l.name} (${l.count})`}
               >
@@ -704,8 +706,8 @@ function TrialExpiredOverlay() {
           search, and pinning.
         </p>
         <p className="text-xs text-muted-foreground">
-          New captures are paused until you activate. Your existing clips are still here — they&apos;ll
-          stay with you whether you continue or not.
+          New captures are paused until you activate. Your existing clips are still here —
+          they&apos;ll stay with you whether you continue or not.
         </p>
         <div className="flex flex-wrap gap-2">
           <button

@@ -313,9 +313,7 @@ export function ClipCard({
           />
         )}
         <div className="min-w-0 flex-1">
-          {hasTitle ? (
-            <div className="truncate text-sm font-medium">{clip.title}</div>
-          ) : null}
+          {hasTitle ? <div className="truncate text-sm font-medium">{clip.title}</div> : null}
           <div
             className={cn(
               "truncate",
@@ -349,7 +347,9 @@ export function ClipCard({
             {clip.sensitive ? (
               <>
                 <span>·</span>
-                <span className="font-medium uppercase tracking-wide text-sensitive">sensitive</span>
+                <span className="font-medium uppercase tracking-wide text-sensitive">
+                  sensitive
+                </span>
               </>
             ) : null}
           </div>

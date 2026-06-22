@@ -157,8 +157,8 @@ function AboutTab() {
             className="font-medium text-primary underline-offset-2 hover:underline"
           >
             bluedev
-          </a>
-          {" "}— fast, private, local-first. Every clip stays on this machine.
+          </a>{" "}
+          — fast, private, local-first. Every clip stays on this machine.
         </p>
       </div>
       <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
