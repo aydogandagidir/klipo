@@ -5,6 +5,37 @@ All notable changes to Klipo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] — 2026-06-22 — Organize: titles, labels, favorites
+
+### Added — organize your clipboard history
+- **Titles**: give any clip a human-readable name. Titles are folded into
+  the FTS index, so they're searchable with the same Turkish-aware query
+  path as the clip body (`isik` finds a clip titled "Işık notu").
+- **Labels ("Etiket")**: a clip can carry multiple labels. On-device
+  auto-detection seeds the first label on capture — URL, e-mail, phone,
+  IBAN, color, code, JSON, number, path — using local regex/heuristics
+  only (no network, no model, consistent with Klipo's privacy posture).
+  From the inline editor you can **add** new labels (with autocomplete
+  from your vocabulary), **rename** them (applies everywhere), and
+  **remove** them. Auto labels keep a stable color and survive renames.
+- **Favorites**: a per-row **star** keeps important clips at the top and
+  adds a "Favoriler" filter chip. (This is the former pin, restyled.)
+- **Filter bar** over the list by label or favorites.
+- **Settings → Privacy → "Re-detect labels"** re-applies auto labels
+  across existing history (your own labels are preserved) — handy so clips
+  copied before this release get labeled too.
+
+### Changed
+- The pin action is now presented as a star ("Favori") with a dedicated
+  filter — same underlying behavior (favorites sort to the top).
+
+### Internal
+- Storage: migrations 003–005 add a `title` column and a `clip_labels`
+  multi-label table (migrating prior auto-categories into seed labels);
+  the FTS triggers now index title alongside body. New local content
+  classifier + label storage methods, Tauri commands, and TS bindings.
+  Test suite: 101 unit + 2 integration tests, all green.
+
 ## [0.1.8] — 2026-05-13 — Gumroad product_id corrected to long form
 
 ### Fixed — license activation actually works now
